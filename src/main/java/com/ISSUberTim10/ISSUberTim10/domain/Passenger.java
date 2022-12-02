@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 @NoArgsConstructor
@@ -14,6 +16,7 @@ import javax.persistence.Table;
 @ToString
 @Entity
 @Table(name = "passenger")
+@Inheritance(strategy = InheritanceType.JOINED)
 // Passenger - class TODO
-public class Passenger extends User {
+public class Passenger extends AppUser {
 }

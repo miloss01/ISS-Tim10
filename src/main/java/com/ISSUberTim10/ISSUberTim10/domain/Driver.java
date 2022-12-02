@@ -6,18 +6,20 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name="driver")
-public class Driver extends User {
+@Table(name = "driver")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Driver extends AppUser {
 
     // documentList - Mapiranje, kako se cuva u bazi TODO
-    private ArrayList<Document> documentList;
+    private HashSet<Document> documentList;
 
     // vehicle - Mapiranje TODO
     // one to one
@@ -27,6 +29,6 @@ public class Driver extends User {
     // rides - Mapiranje TODO
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
-    private ArrayList<Ride> rides;
+    private Set<Ride> rides;
 
 }

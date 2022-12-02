@@ -24,6 +24,6 @@ public class Remark {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private AppUser appUser;
 
 }

@@ -22,7 +22,7 @@ public class Panic {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private AppUser appUser;
 
     @ManyToOne
     @JoinColumn(name = "current_ride_id")

@@ -22,7 +22,7 @@ public class UserActivation {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private AppUser appUser;
 
     @Column(name = "date_created")
     private LocalDateTime dateCreated;

@@ -4,20 +4,24 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import static javax.persistence.InheritanceType.TABLE_PER_CLASS;
+import static javax.persistence.InheritanceType.JOINED;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
-@Inheritance(strategy=TABLE_PER_CLASS)
-public abstract class User {
+@TableGenerator(name="appUser_id_generator", table="primary_keys", pkColumnName="key_pk", pkColumnValue="appUser", valueColumnName="value_pk")
+@Inheritance(strategy=JOINED)
+public abstract class AppUser {
 
+//    @Id
+//    @SequenceGenerator(name = "SeqGenUser", sequenceName = "SeqUser", initialValue = 1, allocationSize = 1)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SeqGenUser")
+//    private Long id;
     @Id
-    @SequenceGenerator(name = "SeqGenUser", sequenceName = "SeqUser", initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SeqGenUser")
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_id_generator")
+    protected Long id;
 
     @Column(name="name")
     private String name;
