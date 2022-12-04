@@ -45,7 +45,8 @@ public class DriverController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DriverResponseDTO> updateDriver(@PathVariable Integer id, @RequestBody DriverResponseDTO driverDTO) {
+    public ResponseEntity<DriverResponseDTO> updateDriver(@PathVariable Integer id,
+                                                          @RequestBody DriverResponseDTO driverDTO) {
         return new ResponseEntity<>(
                 new DriverResponseDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74"),
                 HttpStatus.OK);
@@ -68,16 +69,12 @@ public class DriverController {
     }
 
     @PutMapping(value = "/{id}/documents", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DocumentResponseDTO> updateDocument(@PathVariable Integer id, @RequestBody DocumentRequestDTO documentDTO) {
+    public ResponseEntity<DocumentResponseDTO> updateDocument(@PathVariable Integer id,
+                                                              @RequestBody DocumentRequestDTO documentDTO) {
         return new ResponseEntity<>(
                 new DocumentResponseDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
                 HttpStatus.OK);
     }
-
-//    @PutMapping(value = "/{id}/block", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<Void> blockUser(@PathVariable Integer id) {
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
 
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleResponseDTO> getVehicle(@PathVariable Integer id) {
@@ -88,7 +85,8 @@ public class DriverController {
     }
 
     @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VehicleResponseDTO> saveVehicle(@PathVariable Integer id, @RequestBody VehicleRequestDTO vehicleDTO) {
+    public ResponseEntity<VehicleResponseDTO> saveVehicle(@PathVariable Integer id,
+                                                          @RequestBody VehicleRequestDTO vehicleDTO) {
         return new ResponseEntity<>(
                 new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new CurrentLocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
@@ -96,7 +94,8 @@ public class DriverController {
     }
 
     @PutMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VehicleResponseDTO> updateVehicle(@PathVariable Integer id, @RequestBody VehicleRequestDTO vehicleDTO) {
+    public ResponseEntity<VehicleResponseDTO> updateVehicle(@PathVariable Integer id,
+                                                            @RequestBody VehicleRequestDTO vehicleDTO) {
         return new ResponseEntity<>(
                 new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new CurrentLocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
@@ -104,7 +103,9 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}/working-hours", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHoursDTO> getWorkingHours(@PathVariable Integer id, Pageable page, @RequestParam String from, @RequestParam String to) {
+    public ResponseEntity<WorkingHoursDTO> getWorkingHours(@PathVariable Integer id, Pageable page,
+                                                           @RequestParam(required = false) String from,
+                                                           @RequestParam(required = false) String to) {
         return new ResponseEntity<WorkingHoursDTO>(
                 new WorkingHoursDTO(
                         243,
@@ -129,7 +130,8 @@ public class DriverController {
     // TODO - add /api/driver/{id}/ride, depends on ride
 
     @GetMapping(value = "/{driver-id}/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHourDTO> getWorkingHour(@PathVariable(name = "driver-id") Integer driverId, @PathVariable(name = "working-hour-id") Integer workingHourId) {
+    public ResponseEntity<WorkingHourDTO> getWorkingHour(@PathVariable(name = "driver-id") Integer driverId,
+                                                         @PathVariable(name = "working-hour-id") Integer workingHourId) {
         return new ResponseEntity<>(
                 new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
                 HttpStatus.OK
@@ -137,7 +139,8 @@ public class DriverController {
     }
 
     @PutMapping(value = "/{driver-id}/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHourDTO> updateWorkingHour(@PathVariable(name = "driver-id") Integer driverId, @PathVariable(name = "working-hour-id") Integer workingHourId) {
+    public ResponseEntity<WorkingHourDTO> updateWorkingHour(@PathVariable(name = "driver-id") Integer driverId,
+                                                            @PathVariable(name = "working-hour-id") Integer workingHourId) {
         return new ResponseEntity<>(
                 new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
                 HttpStatus.OK

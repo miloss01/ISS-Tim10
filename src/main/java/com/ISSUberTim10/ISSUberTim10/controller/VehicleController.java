@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 public class VehicleController {
 
     @PutMapping(value = "/{id}/location", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateVehicle(@PathVariable Integer id, @RequestBody CurrentLocationDTO currentLocationDTO) {
+    public ResponseEntity<Void> updateVehicle(@PathVariable Integer id,
+                                              @RequestBody CurrentLocationDTO currentLocationDTO) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
