@@ -14,7 +14,7 @@ public class VehicleRequestDTO {
     private String vehicleType;
     private String model;
     private String licenseNumber;
-    private CurrentLocationDTO currentLocationDTO;
+    private LocationDTO currentLocationDTO;
     private Integer passengerSeats;
     private Boolean babyTransport;
     private Boolean petTransport;

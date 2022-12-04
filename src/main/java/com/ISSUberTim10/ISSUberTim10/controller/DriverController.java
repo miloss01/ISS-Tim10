@@ -79,7 +79,7 @@ public class DriverController {
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleResponseDTO> getVehicle(@PathVariable Integer id) {
         return new ResponseEntity<>(
-                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new CurrentLocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
         );
     }
@@ -88,7 +88,7 @@ public class DriverController {
     public ResponseEntity<VehicleResponseDTO> saveVehicle(@PathVariable Integer id,
                                                           @RequestBody VehicleRequestDTO vehicleDTO) {
         return new ResponseEntity<>(
-                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new CurrentLocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
         );
     }
@@ -97,7 +97,7 @@ public class DriverController {
     public ResponseEntity<VehicleResponseDTO> updateVehicle(@PathVariable Integer id,
                                                             @RequestBody VehicleRequestDTO vehicleDTO) {
         return new ResponseEntity<>(
-                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new CurrentLocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
         );
     }

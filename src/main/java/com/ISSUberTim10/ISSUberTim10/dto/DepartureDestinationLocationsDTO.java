@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DepartureDestinationLocationsDTO {
 
-    private CurrentLocationDTO departure;
-    private CurrentLocationDTO destination;
+    private LocationDTO departure;
+    private LocationDTO destination;
 
 }

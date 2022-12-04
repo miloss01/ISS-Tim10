@@ -1,6 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.controller;
 
-import com.ISSUberTim10.ISSUberTim10.dto.CurrentLocationDTO;
+import com.ISSUberTim10.ISSUberTim10.dto.LocationDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ public class VehicleController {
 
     @PutMapping(value = "/{id}/location", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateVehicle(@PathVariable Integer id,
-                                              @RequestBody CurrentLocationDTO currentLocationDTO) {
+                                              @RequestBody LocationDTO currentLocationDTO) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
