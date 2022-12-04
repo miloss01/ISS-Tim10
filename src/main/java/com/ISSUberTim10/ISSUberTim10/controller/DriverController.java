@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping(value = "api/driver")
 public class DriverController {
 
-    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DriverResponseDTO> saveDriver(@RequestBody DriverRequestDTO driverDTO) {
         return new ResponseEntity<>(
                 new DriverResponseDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74"),
@@ -68,7 +68,7 @@ public class DriverController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping(value = "/{id}/documents", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{id}/documents", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DocumentResponseDTO> updateDocument(@PathVariable Integer id,
                                                               @RequestBody DocumentRequestDTO documentDTO) {
         return new ResponseEntity<>(
@@ -84,7 +84,7 @@ public class DriverController {
         );
     }
 
-    @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleResponseDTO> saveVehicle(@PathVariable Integer id,
                                                           @RequestBody VehicleRequestDTO vehicleDTO) {
         return new ResponseEntity<>(
@@ -103,7 +103,8 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}/working-hours", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHoursDTO> getWorkingHours(@PathVariable Integer id, Pageable page,
+    public ResponseEntity<WorkingHoursDTO> getWorkingHours(@PathVariable Integer id,
+                                                           Pageable page,
                                                            @RequestParam(required = false) String from,
                                                            @RequestParam(required = false) String to) {
         return new ResponseEntity<WorkingHoursDTO>(
