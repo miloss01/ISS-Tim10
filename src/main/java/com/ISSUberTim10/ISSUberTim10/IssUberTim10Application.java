@@ -23,22 +23,22 @@ public class IssUberTim10Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Driver d1 = new Driver();
-		//d1.setId(1L);
-		d1.setName("d1");
-		appUserRepository.save(d1);
-
-		Driver d2 = new Driver();
-		//d2.setId(2L);
-		d2.setName("d2");
-		appUserRepository.save(d2);
-
-		System.out.println("----------------Ukucani driveri");
-		System.out.println(d1.getId());
-		System.out.println(d2.getId());
-
-		appUserController.createAll();
-		System.out.println(appUserController.getAll());
+//		Driver d1 = new Driver();
+//		//d1.setId(1L);
+//		d1.setName("d1");
+//		appUserRepository.save(d1);
+//
+//		Driver d2 = new Driver();
+//		//d2.setId(2L);
+//		d2.setName("d2");
+//		appUserRepository.save(d2);
+//
+//		System.out.println("----------------Ukucani driveri");
+//		System.out.println(d1.getId());
+//		System.out.println(d2.getId());
+//
+//		appUserController.createAll();
+//		System.out.println(appUserController.getAll());
 
 
 	}
