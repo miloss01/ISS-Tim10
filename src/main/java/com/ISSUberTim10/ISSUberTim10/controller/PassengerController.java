@@ -19,12 +19,20 @@ public class PassengerController {
 //    private PassengerService passengerService;
 
     // Create new passenger
-    @PostMapping(produces = "application/json")
-    public ResponseEntity<PassengerResponseDTO> savePassenger() {
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
 
-        PassengerResponseDTO passengerResponseDTO = getDummyPassengersResponseDTO().get(1);
-        return new ResponseEntity<>(passengerResponseDTO, HttpStatus.OK);
+        Passenger passenger = new Passenger();
+        passenger.setName(passengerRequestDTO.getName());
+        passenger.setLastName(passengerRequestDTO.getLastName());
+        passenger.setProfileImage(passengerRequestDTO.getProfileImage());
+        passenger.setPhone(passengerRequestDTO.getPhone());
+        passenger.setEmail(passengerRequestDTO.getEmail());
+        passenger.setAddress(passengerRequestDTO.getAddress());
+        passenger.setPassword(passengerRequestDTO.getPassword());
 
+        passenger.setId(100L); // Dummy ID
+        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
     }
 
 

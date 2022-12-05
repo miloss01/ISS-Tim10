@@ -12,7 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class PassengerResponseDTO {
 
-    private long id;
+    private Integer id;
 
     private String name;
 
@@ -27,7 +27,7 @@ public class PassengerResponseDTO {
     private String address;
 
     public PassengerResponseDTO(Passenger passenger) {
-        this(passenger.getId(), passenger.getName(), passenger.getLastName(), passenger.getProfileImage(),
+        this((int) (long) passenger.getId(), passenger.getName(), passenger.getLastName(), passenger.getProfileImage(),
                 passenger.getPhone(), passenger.getEmail(), passenger.getAddress());
     }
 

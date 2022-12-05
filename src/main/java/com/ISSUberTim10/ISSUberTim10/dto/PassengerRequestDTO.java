@@ -1,10 +1,11 @@
 package com.ISSUberTim10.ISSUberTim10.dto;
 
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 @Getter
 @Setter
-@ToString
+@AllArgsConstructor
 public class PassengerRequestDTO {
 
     private String name;
@@ -20,5 +21,4 @@ public class PassengerRequestDTO {
     private String address;
 
     private String password;
-
 }
