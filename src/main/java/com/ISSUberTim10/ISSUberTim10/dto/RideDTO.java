@@ -1,8 +1,11 @@
 package com.ISSUberTim10.ISSUberTim10.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.ArrayList;
 
 public class RideDTO {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
     private ArrayList<LocationDTO> locations;
     private String startTime;

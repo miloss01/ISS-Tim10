@@ -9,13 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserExpandedDTO {
+public class PanicExpandedDTO {
 
-    private String name;
-    private String surname;
-    private String profilePicture;
-    private String telephoneNumber;
-    private String email;
-    private String address;
+    private Integer id;
+    private UserExpandedDTO user;
+    private RideDTO ride;
+    private String time;
+    private String reason;
 
 }
