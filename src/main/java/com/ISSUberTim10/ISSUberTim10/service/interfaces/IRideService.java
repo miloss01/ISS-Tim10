@@ -2,8 +2,7 @@ package com.ISSUberTim10.ISSUberTim10.service.interfaces;
 
 import com.ISSUberTim10.ISSUberTim10.domain.Ride;
 import org.springframework.data.domain.Page;
-
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.util.Collection;
 
 public interface IRideService {

@@ -10,7 +10,7 @@ import java.util.Collection;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
 
-    Collection<Ride> findByUser();
+
 
     public Page<Ride> findAll(Pageable pageable);
 

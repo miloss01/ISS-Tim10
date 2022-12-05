@@ -2,9 +2,7 @@ package com.ISSUberTim10.ISSUberTim10.dto;
 
 import java.util.ArrayList;
 
-public class RideDTO {
-    private Long id;
-    private ArrayList<LocationDTO> locations;
+public class RideWithStatusDTO {
     private String startTime;
     private String endTime;
     private int totalCost;
@@ -14,16 +12,16 @@ public class RideDTO {
     private String vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
+    private ArrayList<LocationDTO> locations;
+    private String status;
 
-    public RideDTO() {
+    public RideWithStatusDTO() {
         this.locations = new ArrayList<>();
         this.passengers = new ArrayList<>();
     }
 
-    public RideDTO(Long id, ArrayList<LocationDTO> locations, String startTime, String endTime, int totalCost, UserDTO driver, ArrayList<UserDTO> passengers, int estimatedTimeInMinutes, String vehicleType, boolean babyTransport, boolean petTransport) {
+    public RideWithStatusDTO(String startTime, String endTime, int totalCost, UserDTO driver, ArrayList<UserDTO> passengers, int estimatedTimeInMinutes, String vehicleType, boolean babyTransport, boolean petTransport, ArrayList<LocationDTO> locations, String status) {
         this();
-        this.id = id;
-        this.locations = locations;
         this.startTime = startTime;
         this.endTime = endTime;
         this.totalCost = totalCost;
@@ -33,14 +31,8 @@ public class RideDTO {
         this.vehicleType = vehicleType;
         this.babyTransport = babyTransport;
         this.petTransport = petTransport;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public ArrayList<LocationDTO> getLocations() {
-        return locations;
+        this.locations = locations;
+        this.status = status;
     }
 
     public String getStartTime() {
@@ -77,5 +69,13 @@ public class RideDTO {
 
     public boolean isPetTransport() {
         return petTransport;
+    }
+
+    public ArrayList<LocationDTO> getLocations() {
+        return locations;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }
