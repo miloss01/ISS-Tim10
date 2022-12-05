@@ -16,11 +16,11 @@ public class PassengerResponseDTO {
 
     private String name;
 
-    private String lastName;
+    private String surname;
 
-    private String profileImage;
+    private String profilePicture;
 
-    private String phone;
+    private String telephoneNumber;
 
     private String email;
 

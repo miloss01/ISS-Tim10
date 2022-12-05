@@ -24,9 +24,9 @@ public class PassengerController {
 
         Passenger passenger = new Passenger();
         passenger.setName(passengerRequestDTO.getName());
-        passenger.setLastName(passengerRequestDTO.getLastName());
-        passenger.setProfileImage(passengerRequestDTO.getProfileImage());
-        passenger.setPhone(passengerRequestDTO.getPhone());
+        passenger.setLastName(passengerRequestDTO.getSurname());
+        passenger.setProfileImage(passengerRequestDTO.getProfilePicture());
+        passenger.setPhone(passengerRequestDTO.getTelephoneNumber());
         passenger.setEmail(passengerRequestDTO.getEmail());
         passenger.setAddress(passengerRequestDTO.getAddress());
         passenger.setPassword(passengerRequestDTO.getPassword());
@@ -77,9 +77,9 @@ public class PassengerController {
         //        Passenger passenger = passengerService.findOne(id);
         Passenger passenger = new Passenger();
         passenger.setName(passengerRequestDTO.getName());
-        passenger.setLastName(passengerRequestDTO.getLastName());
-        passenger.setProfileImage(passengerRequestDTO.getProfileImage());
-        passenger.setPhone(passengerRequestDTO.getPhone());
+        passenger.setLastName(passengerRequestDTO.getSurname());
+        passenger.setProfileImage(passengerRequestDTO.getProfilePicture());
+        passenger.setPhone(passengerRequestDTO.getTelephoneNumber());
         passenger.setEmail(passengerRequestDTO.getEmail());
         passenger.setAddress(passengerRequestDTO.getAddress());
         passenger.setPassword(passengerRequestDTO.getPassword());
@@ -111,8 +111,8 @@ public class PassengerController {
     }
 
     private PassengerRidesDTO getDummyPassengerRidesDTO() {
-        UserResponseDTO driver = new UserResponseDTO(1, "driver@c.com", "VOZAC");
-        UserResponseDTO passenger = new UserResponseDTO(2, "passenger@c.com", "PUTNIK");
+        UserResponseDTO driver = new UserResponseDTO(1, "driver@c.com");
+        UserResponseDTO passenger = new UserResponseDTO(2, "passenger@c.com");
         List<UserResponseDTO> passengers = new ArrayList<>();
         passengers.add(passenger);
         LocationDTO location = new LocationDTO("Street Ul.", 24.32121, 43.32423);
