@@ -118,8 +118,8 @@ public class PassengerController {
         LocationDTO location = new LocationDTO("Street Ul.", 24.32121, 43.32423);
         List<LocationDTO> locations = new ArrayList<>();
         locations.add(location);
-        PassengerRideDTO ride = new PassengerRideDTO(15, LocalDateTime.now(), LocalDateTime.now(), 350,
-                driver, passengers, locations, true, false, Vehicle.VEHICLE_TYPE.luxury, 23);
+        PassengerRideDTO ride = new PassengerRideDTO(15, locations, LocalDateTime.now(), LocalDateTime.now(), 350,
+                driver, passengers, 45, Vehicle.VEHICLE_TYPE.luxury, true, true);
         List<PassengerRideDTO> rides = new ArrayList<>();
         rides.add(ride);
         return new PassengerRidesDTO(25, rides);
