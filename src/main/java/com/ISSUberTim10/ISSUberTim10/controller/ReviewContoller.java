@@ -22,7 +22,7 @@ public class ReviewContoller {
 
 
     // Get the reviews for the specific vehicle
-    @GetMapping(value = "/vehicle/{id}", consumes = "application/json")
+    @GetMapping(value = "/vehicle/{id}", produces = "application/json")
     public ResponseEntity<VehicleReviewsDTO> getVehicleReviews(@PathVariable Integer id) {
 
         VehicleReviewResponseDTO reviewDTO = new VehicleReviewResponseDTO(1, 5, "amazing", new UserResponseDTO(2, "em@ail.com"));
@@ -43,7 +43,7 @@ public class ReviewContoller {
     }
 
     // Get the reviews for the specific vehicle
-    @GetMapping(value = "/driver/{id}", consumes = "application/json")
+    @GetMapping(value = "/driver/{id}", produces = "application/json")
     public ResponseEntity<DriverReviewsDTO> getDriverReviews(@PathVariable Integer id) {
 
         DriverReviewResponseDTO reviewDTO = new DriverReviewResponseDTO(1, 5, "good", new UserResponseDTO(2, "em@ail.com"));
