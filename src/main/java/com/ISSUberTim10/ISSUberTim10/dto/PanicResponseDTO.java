@@ -11,10 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PanicResponseDTO {
     private Long id;
-    private Long userId;
-    private Long rideId;
-    private String time;
+    private UserExpandedDTO user;
+    private RideDTO ride;
     private String reason;
+    private String time;
 
 
 }
