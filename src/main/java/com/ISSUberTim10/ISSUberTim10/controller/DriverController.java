@@ -129,18 +129,15 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}/ride", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DriverRidesDTO> getDriversRide(@PathVariable Integer id,
+    public ResponseEntity<RideResponseDTO> getDriversRide(@PathVariable Integer id,
                                                           Pageable page,
                                                           @RequestParam(required = false) String from,
                                                           @RequestParam(required = false) String to) {
 
         UserExpandedDTO user = new UserExpandedDTO(null, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com", "Bulevar Oslobodjenja 74");
 
-        ArrayList<DepartureDestinationLocationsExpandedDTO> locations = new ArrayList<>(Arrays.asList(
-                new DepartureDestinationLocationsExpandedDTO(
-                        "Bulevar oslobodjenja 46",
-                        45.267136,
-                        19.833549,
+        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>(Arrays.asList(
+                new DepartureDestinationLocationsDTO(
                         new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549),
                         new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549)
                 )
@@ -154,12 +151,12 @@ public class DriverController {
 
         RejectionDTO rejection = new RejectionDTO("Ride is canceled due to previous problems with the passenger", "2022-11-25T17:32:28Z");
 
-        DriverRideDTO ride = new DriverRideDTO(123L, locations, "2017-07-21T17:32:28Z", "2017-07-21T17:45:14Z", 1235, driver, passengers, 5, "STANDARDNO", true, true, null, rejection);
+        RideDTO ride = new RideDTO(123L, locations, "2017-07-21T17:32:28Z", "2017-07-21T17:45:14Z", 1235, driver, passengers, 5, "STANDARDNO", true, true, null, rejection);
 
         return new ResponseEntity<>(
-                new DriverRidesDTO(
+                new RideResponseDTO(
                         243,
-                        new ArrayList<DriverRideDTO>(
+                        new ArrayList<RideDTO>(
                                 Arrays.asList(ride)
                         )
                 ),
