@@ -128,9 +128,41 @@ public class DriverController {
         );
     }
 
-    // TODO - add /api/driver/{id}/ride, depends on ride
-    
+    @GetMapping(value = "/{id}/ride", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RideResponseDTO> getDriversRide(@PathVariable Integer id,
+                                                          Pageable page,
+                                                          @RequestParam(required = false) String from,
+                                                          @RequestParam(required = false) String to) {
 
+        UserExpandedDTO user = new UserExpandedDTO(null, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com", "Bulevar Oslobodjenja 74");
+
+        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>(Arrays.asList(
+                new DepartureDestinationLocationsDTO(
+                        new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549),
+                        new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549)
+                )
+        ));
+
+        UserDTO driver = new UserDTO(123L, "user@example.com");
+
+        ArrayList<UserDTO> passengers = new ArrayList<UserDTO>(Arrays.asList(
+                new UserDTO(123L, "user@example.com")
+        ));
+
+        RejectionDTO rejection = new RejectionDTO("Ride is canceled due to previous problems with the passenger", "2022-11-25T17:32:28Z");
+
+        RideDTO ride = new RideDTO(123L, locations, "2017-07-21T17:32:28Z", "2017-07-21T17:45:14Z", 1235, driver, passengers, 5, "STANDARDNO", true, true, null, rejection);
+
+        return new ResponseEntity<>(
+                new RideResponseDTO(
+                        243,
+                        new ArrayList<RideDTO>(
+                                Arrays.asList(ride)
+                        )
+                ),
+                HttpStatus.OK
+        );
+    }
 
     @GetMapping(value = "/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkingHourDTO> getWorkingHour(@PathVariable(name = "working-hour-id") Integer workingHourId) {

@@ -1,19 +1,17 @@
 package com.ISSUberTim10.ISSUberTim10.dto;
 
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class LocationDTO {
+public class VehicleReviewRequestDTO {
 
-    private String address;
+    private Integer rating;
 
-    private double latitude;
-
-    private double longitude;
+    private String comment;
 }
