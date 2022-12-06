@@ -13,10 +13,11 @@ import java.util.List;
 public class ReviewContoller {
 
     // Creating a review about the vehicle
-    @PostMapping(value = "/vehicle/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<VehicleReviewResponseDTO> saveVehicleReview(@PathVariable Integer id,
+    @PostMapping(value = "/{rideId}/vehicle/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<VehicleReviewResponseDTO> saveVehicleReview(@PathVariable Integer rideId,
+                                                                      @PathVariable Integer id,
                                                                @RequestBody VehicleReviewRequestDTO vehicleReviewRequestDTO) {
-        return new ResponseEntity<>(new VehicleReviewResponseDTO(1, 5, "amazing"), HttpStatus.OK);
+        return new ResponseEntity<>(new VehicleReviewResponseDTO(4, 3, "amazing", new UserResponseDTO(2, "em@ail.com")), HttpStatus.OK);
     }
 
 
@@ -24,7 +25,7 @@ public class ReviewContoller {
     @GetMapping(value = "/vehicle/{id}", consumes = "application/json")
     public ResponseEntity<VehicleReviewsDTO> getVehicleReviews(@PathVariable Integer id) {
 
-        VehicleReviewResponseDTO reviewDTO = new VehicleReviewResponseDTO(1, 5, "amazing");
+        VehicleReviewResponseDTO reviewDTO = new VehicleReviewResponseDTO(1, 5, "amazing", new UserResponseDTO(2, "em@ail.com"));
         List<VehicleReviewResponseDTO> reviews = new ArrayList<>();
         reviews.add(reviewDTO);
         VehicleReviewsDTO reviewsDTO = new VehicleReviewsDTO(12, reviews);
@@ -32,11 +33,12 @@ public class ReviewContoller {
         return new ResponseEntity<>(reviewsDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value="/driver/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<DriverReviewResponseDTO> saveDriverReview(@PathVariable Integer id,
+    @PostMapping(value="/{rideId}/driver/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<DriverReviewResponseDTO> saveDriverReview(@PathVariable Integer rideId,
+                                                                    @PathVariable Integer id,
                                                                     @RequestBody DriverReviewRequestDTO driverReviewRequestDTO) {
 
-        return new ResponseEntity<>(new DriverReviewResponseDTO(1, 5, "good"), HttpStatus.OK);
+        return new ResponseEntity<>(new DriverReviewResponseDTO(1, 5, "good", new UserResponseDTO(2, "em@ail.com")), HttpStatus.OK);
 
     }
 
@@ -44,7 +46,7 @@ public class ReviewContoller {
     @GetMapping(value = "/driver/{id}", consumes = "application/json")
     public ResponseEntity<DriverReviewsDTO> getDriverReviews(@PathVariable Integer id) {
 
-        DriverReviewResponseDTO reviewDTO = new DriverReviewResponseDTO(1, 5, "good");
+        DriverReviewResponseDTO reviewDTO = new DriverReviewResponseDTO(1, 5, "good", new UserResponseDTO(2, "em@ail.com"));
         List<DriverReviewResponseDTO> reviews = new ArrayList<>();
         reviews.add(reviewDTO);
         DriverReviewsDTO reviewsDTO = new DriverReviewsDTO(12, reviews);
@@ -54,9 +56,13 @@ public class ReviewContoller {
 
     // Overview of both reviews for the specific ride (driver and vehicle)
     @GetMapping(value = "/{rideId}", produces = "application/json")
-    public ResponseEntity<RideReviewsDTO> getRideReviews(@PathVariable Integer rideId) {
-        return new ResponseEntity<>(new RideReviewsDTO(new VehicleReviewResponseDTO(1, 5, "amazing"),
-                new DriverReviewResponseDTO(1, 5, "good")), HttpStatus.OK);
+    public ResponseEntity<List<ReviewResponseDTO>> getRideReviews(@PathVariable Integer rideId) {
+        VehicleReviewResponseDTO vehicleReviewResponseDTO = new VehicleReviewResponseDTO(1, 5, "amazing", new UserResponseDTO(2, "em@ail.com"));
+        DriverReviewResponseDTO driverReviewResponseDTO = new DriverReviewResponseDTO(1, 5, "good", new UserResponseDTO(2, "em@ail.com"));
+        List<ReviewResponseDTO> results = new ArrayList<>();
+        results.add(vehicleReviewResponseDTO);
+        results.add(driverReviewResponseDTO);
+        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
 

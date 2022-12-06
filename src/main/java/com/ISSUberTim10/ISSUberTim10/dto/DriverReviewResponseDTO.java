@@ -7,14 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class DriverReviewResponseDTO {
+public class DriverReviewResponseDTO extends ReviewResponseDTO {
 
-    private Integer id;
-
-    private int rating;
-
-    private String comment;
-
+    public DriverReviewResponseDTO(int id, int rating, String comment, UserResponseDTO passenger) {
+        super(id, rating, comment, passenger);
+    }
 }

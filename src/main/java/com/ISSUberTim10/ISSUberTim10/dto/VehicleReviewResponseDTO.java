@@ -4,15 +4,10 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class VehicleReviewResponseDTO {
+public class VehicleReviewResponseDTO extends ReviewResponseDTO {
 
-    private Integer id;
-
-    private Integer rating;
-
-    private String comment;
-
+    public VehicleReviewResponseDTO(Integer id , Integer rating, String comment, UserResponseDTO passenger) {
+        super(id, rating, comment, passenger);
+    }
 }
 

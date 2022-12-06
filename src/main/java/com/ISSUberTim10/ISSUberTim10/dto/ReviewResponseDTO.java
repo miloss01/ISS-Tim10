@@ -9,10 +9,14 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RideReviewsDTO {
+public abstract class ReviewResponseDTO {
 
-    private VehicleReviewResponseDTO vehicleReview;
+    private Integer id;
 
-    private DriverReviewResponseDTO driverReview;
+    private Integer rating;
+
+    private String comment;
+
+    private UserResponseDTO passenger;
 
 }
