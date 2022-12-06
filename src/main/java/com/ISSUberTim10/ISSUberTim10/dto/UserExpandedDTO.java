@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserExpandedDTO {
 
+    private Long id;
     private String name;
     private String surname;
     private String profilePicture;

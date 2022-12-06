@@ -1,7 +1,11 @@
 package com.ISSUberTim10.ISSUberTim10.dto;
 
-import java.util.ArrayList;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+@Getter
+@Setter
 public class MessageResponseDTO {
     private int totalCount;
     private ArrayList<MessageReceivedDTO> messages;
@@ -16,11 +20,4 @@ public class MessageResponseDTO {
         this.messages = messages;
     }
 
-    public int getTotalCount() {
-        return totalCount;
-    }
-
-    public ArrayList<MessageReceivedDTO> getMessages() {
-        return messages;
-    }
 }

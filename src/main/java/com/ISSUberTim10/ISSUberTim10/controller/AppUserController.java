@@ -1,7 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.controller;
 
 import com.ISSUberTim10.ISSUberTim10.domain.AppUser;
-import com.ISSUberTim10.ISSUberTim10.domain.Ride;
 import com.ISSUberTim10.ISSUberTim10.dto.*;
 import com.ISSUberTim10.ISSUberTim10.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.service.interfaces.IRideService;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,18 +60,18 @@ public class AppUserController {
                                                          @RequestParam(required = false) String to) {
         //Page<Ride> rides = rideService.getByUser(id, page);
         ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-        ArrayList<LocationDTO> locations = new ArrayList<>();
+        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new LocationDTO("", 10.0, 10.0));
-        passengers.add(new UserDTO(1L, "", "VOZAC"));
-        ridesDTO.add(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, "", "VOZAC"),
-                passengers, 5, "", true, true));
+        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("", 10.0, 10.0), new LocationDTO("", 10.0, 10.0)));
+        passengers.add(new UserDTO(1L, ""));
+        ridesDTO.add(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
+                passengers, 5, "", true, true, null, null));
         return new ResponseEntity<>(new RideResponseDTO(ridesDTO.size(), ridesDTO), HttpStatus.OK);
     }
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<TokenResponceDTO> login(@RequestBody LoginDTO loginDTO){
-        return new ResponseEntity<>(new TokenResponceDTO(),HttpStatus.OK);
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginDTO loginDTO){
+        return new ResponseEntity<>(new TokenResponseDTO(),HttpStatus.OK);
     }
 
     @PutMapping(value = "/user/{id}/block")
@@ -95,6 +93,17 @@ public class AppUserController {
     @PostMapping(value = "/user/{id}/message", consumes = "application/json", produces = "application/json")
     public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Long id,
                                                               @RequestBody MessageSentDTO messageSent) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/user/{id}/note", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<NoteDTO> sendNote(@PathVariable Long id,
+                                            @RequestBody NoteMessageDTO messageDTO){
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user/{id}/note", produces = "application/json")
+    public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Long id, Pageable page){
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
