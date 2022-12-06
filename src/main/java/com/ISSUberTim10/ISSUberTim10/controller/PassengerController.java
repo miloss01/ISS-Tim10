@@ -50,7 +50,7 @@ public class PassengerController {
 
 
     // Activating passenger with the activation email
-    @PostMapping(value="/{activationId}")
+    @GetMapping(value="/activate/{activationId}")
     public ResponseEntity<String> activatePassenger(@PathVariable(required = true) Integer activationId) {
         return new ResponseEntity<>("Successful account activation", HttpStatus.OK);
     }

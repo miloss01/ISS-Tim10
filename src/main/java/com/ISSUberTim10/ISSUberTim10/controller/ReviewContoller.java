@@ -56,12 +56,13 @@ public class ReviewContoller {
 
     // Overview of both reviews for the specific ride (driver and vehicle)
     @GetMapping(value = "/{rideId}", produces = "application/json")
-    public ResponseEntity<List<ReviewResponseDTO>> getRideReviews(@PathVariable Integer rideId) {
+    public ResponseEntity<List<RideReviewDTO>> getRideReviews(@PathVariable Integer rideId) {
         VehicleReviewResponseDTO vehicleReviewResponseDTO = new VehicleReviewResponseDTO(1, 5, "amazing", new UserResponseDTO(2, "em@ail.com"));
         DriverReviewResponseDTO driverReviewResponseDTO = new DriverReviewResponseDTO(1, 5, "good", new UserResponseDTO(2, "em@ail.com"));
-        List<ReviewResponseDTO> results = new ArrayList<>();
-        results.add(vehicleReviewResponseDTO);
-        results.add(driverReviewResponseDTO);
+        RideReviewDTO rideReviewDTO = new RideReviewDTO(vehicleReviewResponseDTO, driverReviewResponseDTO);
+        List<RideReviewDTO> results = new ArrayList<>();
+        results.add(rideReviewDTO);
+        results.add(rideReviewDTO);
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
