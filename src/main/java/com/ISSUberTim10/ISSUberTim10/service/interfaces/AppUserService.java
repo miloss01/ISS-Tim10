@@ -4,6 +4,8 @@ import com.ISSUberTim10.ISSUberTim10.domain.AppUser;
 import com.ISSUberTim10.ISSUberTim10.domain.Driver;
 import com.ISSUberTim10.ISSUberTim10.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -34,5 +36,10 @@ public class AppUserService implements IAppUserService {
     @Override
     public void deleteAll() {
         appUserRepository.deleteAll();
+    }
+
+    @Override
+    public Page<AppUser> getAll(Pageable page) {
+        return appUserRepository.findAll(page);
     }
 }

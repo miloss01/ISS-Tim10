@@ -23,11 +23,11 @@ public class Message {
     // Sender, receiver - TODO
 //    @ManyToOne
 //    @JoinColumn(name = "sender_id")
-//    private User sender;
+   // private AppUser sender;
 
 //    @ManyToOne
 //    @JoinColumn(name = "receiver_id")
-//    private User receiver;
+    //private AppUser receiver;
 
     @Column(name = "message_text")
     private String messageText;
