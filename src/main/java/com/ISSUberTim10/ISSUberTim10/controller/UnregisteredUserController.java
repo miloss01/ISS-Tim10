@@ -16,7 +16,6 @@ public class UnregisteredUserController {
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EstimatedDataResponseDTO> getEstimatedData(@RequestBody EstimatedDataRequestDTO estimatedDataRequestDTO) {
-        System.out.println(estimatedDataRequestDTO);
         return new ResponseEntity<>(
                 new EstimatedDataResponseDTO(10, 450),
                 HttpStatus.OK

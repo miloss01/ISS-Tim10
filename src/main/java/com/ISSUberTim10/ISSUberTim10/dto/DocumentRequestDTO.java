@@ -11,9 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DocumentRequestDTO {
 
-    private Integer id;
     private String name;
     private String documentImage;
-    private Integer driverId;
 
 }

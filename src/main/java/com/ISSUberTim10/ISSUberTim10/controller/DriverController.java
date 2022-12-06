@@ -29,7 +29,7 @@ public class DriverController {
                         243,
                         new ArrayList<DriverResponseDTO>(
                                 Arrays.asList(
-                                        new DriverResponseDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74")
+                                        new DriverResponseDTO(10, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74")
                                 )
                         )
                 ),
@@ -46,7 +46,7 @@ public class DriverController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DriverResponseDTO> updateDriver(@PathVariable Integer id,
-                                                          @RequestBody DriverResponseDTO driverDTO) {
+                                                          @RequestBody DriverRequestDTO driverDTO) {
         return new ResponseEntity<>(
                 new DriverResponseDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74"),
                 HttpStatus.OK);
@@ -132,18 +132,16 @@ public class DriverController {
     
 
 
-    @GetMapping(value = "/{driver-id}/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHourDTO> getWorkingHour(@PathVariable(name = "driver-id") Integer driverId,
-                                                         @PathVariable(name = "working-hour-id") Integer workingHourId) {
+    @GetMapping(value = "/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WorkingHourDTO> getWorkingHour(@PathVariable(name = "working-hour-id") Integer workingHourId) {
         return new ResponseEntity<>(
                 new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
                 HttpStatus.OK
         );
     }
 
-    @PutMapping(value = "/{driver-id}/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHourDTO> updateWorkingHour(@PathVariable(name = "driver-id") Integer driverId,
-                                                            @PathVariable(name = "working-hour-id") Integer workingHourId) {
+    @PutMapping(value = "/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WorkingHourDTO> updateWorkingHour(@PathVariable(name = "working-hour-id") Integer workingHourId) {
         return new ResponseEntity<>(
                 new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
                 HttpStatus.OK
