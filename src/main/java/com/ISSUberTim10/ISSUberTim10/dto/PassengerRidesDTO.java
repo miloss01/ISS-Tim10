@@ -13,6 +13,6 @@ public class PassengerRidesDTO {
 
     private int totalCount;
 
-    private List<PassengerRideDTO> results;
+    private List<RideDTO> results;
 
 }

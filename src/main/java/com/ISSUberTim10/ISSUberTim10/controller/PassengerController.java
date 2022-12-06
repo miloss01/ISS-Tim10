@@ -92,7 +92,7 @@ public class PassengerController {
 
     // Returns paginated rides that can be sorted on specific field
     @GetMapping(value = "/{id}/ride", produces = "application/json")
-    public ResponseEntity<PassengerRidesDTO> getRides(@PathVariable Integer id,
+    public ResponseEntity<RideResponseDTO> getRides(@PathVariable Integer id,
                                                       @RequestParam(required = false) Integer page,
                                                       @RequestParam(required = false) Integer size,
                                                       @RequestParam(required = false) String sort,
@@ -110,19 +110,27 @@ public class PassengerController {
         return dummyPassengers;
     }
 
-    private PassengerRidesDTO getDummyPassengerRidesDTO() {
-        UserResponseDTO driver = new UserResponseDTO(1, "driver@c.com");
-        UserResponseDTO passenger = new UserResponseDTO(2, "passenger@c.com");
-        List<UserResponseDTO> passengers = new ArrayList<>();
-        passengers.add(passenger);
-        LocationDTO location = new LocationDTO("Street Ul.", 24.32121, 43.32423);
-        List<LocationDTO> locations = new ArrayList<>();
-        locations.add(location);
-        PassengerRideDTO ride = new PassengerRideDTO(15, locations, LocalDateTime.now(), LocalDateTime.now(), 350,
-                driver, passengers, 45, Vehicle.VEHICLE_TYPE.luxury, true, true);
-        List<PassengerRideDTO> rides = new ArrayList<>();
-        rides.add(ride);
-        return new PassengerRidesDTO(25, rides);
+    private RideResponseDTO getDummyPassengerRidesDTO() {
+//        UserResponseDTO driver = new UserResponseDTO(1, "driver@c.com");
+//        UserResponseDTO passenger = new UserResponseDTO(2, "passenger@c.com");
+//        List<UserResponseDTO> passengers = new ArrayList<>();
+//        passengers.add(passenger);
+//        LocationDTO location = new LocationDTO("Street Ul.", 24.32121, 43.32423);
+//        List<LocationDTO> locations = new ArrayList<>();
+//        locations.add(location);
+//        PassengerRideDTO ride = new PassengerRideDTO(15, locations, LocalDateTime.now(), LocalDateTime.now(), 350,
+//                driver, passengers, 45, Vehicle.VEHICLE_TYPE.luxury, true, true);
+//        List<PassengerRideDTO> rides = new ArrayList<>();
+//        rides.add(ride);
+        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
+        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+        ArrayList<UserDTO> passengers = new ArrayList<>();
+        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("", 10.0, 10.0), new LocationDTO("", 10.0, 10.0)));
+        passengers.add(new UserDTO(1L, ""));
+        ridesDTO.add(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
+                passengers, 5, "", true, true, null, null));
+
+        return new RideResponseDTO(25, ridesDTO);
     }
 
 }
