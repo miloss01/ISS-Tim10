@@ -1,21 +1,22 @@
 package com.ISSUberTim10.ISSUberTim10.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RideDTO {
+public class DriverRideDTO {
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
-    private ArrayList<DepartureDestinationLocationsDTO> locations;
+    private ArrayList<DepartureDestinationLocationsExpandedDTO> locations;
     private String startTime;
     private String endTime;
     private int totalCost;
@@ -30,6 +31,5 @@ public class RideDTO {
     private String status;
 
     private RejectionDTO rejection;
-
 
 }

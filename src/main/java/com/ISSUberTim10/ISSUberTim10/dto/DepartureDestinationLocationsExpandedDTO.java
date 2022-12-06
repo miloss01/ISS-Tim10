@@ -9,9 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentRequestDTO {
+public class DepartureDestinationLocationsExpandedDTO {
 
-    private String name;
-    private String documentImage;
+    private String address;
+    private Double latitude;
+    private Double longitude;
+    private LocationDTO departure;
+    private LocationDTO destination;
 
 }

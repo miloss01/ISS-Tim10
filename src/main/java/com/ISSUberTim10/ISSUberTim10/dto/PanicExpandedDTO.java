@@ -9,9 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentRequestDTO {
+public class PanicExpandedDTO {
 
-    private String name;
-    private String documentImage;
+    private Integer id;
+    private UserExpandedDTO user;
+    private RideDTO ride;
+    private String time;
+    private String reason;
 
 }
