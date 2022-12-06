@@ -1,28 +1,16 @@
 package com.ISSUberTim10.ISSUberTim10.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class NoteDTO {
     private Long id;
     private String date;
     private String message;
-
-    public NoteDTO() {
-    }
-
-    public NoteDTO(Long id, String date, String message) {
-        this.id = id;
-        this.date = date;
-        this.message = message;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }
