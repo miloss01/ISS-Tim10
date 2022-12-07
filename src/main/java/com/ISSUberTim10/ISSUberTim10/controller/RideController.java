@@ -24,17 +24,17 @@ public class RideController {
     }
 
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
-    ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Long id){
+    ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
-        passengers.add(new UserDTO(1L, ""));
+        passengers.add(new UserDTO(1L, "sandra@gmail"));
         return new ResponseEntity<>(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
+                passengers, 5, "STANDARD", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
     }
 
     @GetMapping(value = "/passenger/{passengerId}/active", produces = "application/json")
-    ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Long id){
+    ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
@@ -44,7 +44,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    ResponseEntity<RideDTO> getRideById(@PathVariable Long id){
+    ResponseEntity<RideDTO> getRideById(@PathVariable Integer id){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
@@ -53,8 +53,8 @@ public class RideController {
                 passengers, 5, "", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/withdraw")
-    ResponseEntity<RideDTO> cancelRide(@PathVariable Long id){
+    @PutMapping(value = "/{id}/withdraw", produces = "application/json")
+    ResponseEntity<RideDTO> cancelRide(@PathVariable Integer id){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
@@ -64,19 +64,19 @@ public class RideController {
     }
 
     @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json")
-    ResponseEntity<PanicResponseDTO> addPanic(@PathVariable Long id, @RequestBody ReasonDTO panic){
+    ResponseEntity<PanicExpandedDTO> addPanic(@PathVariable Integer id, @RequestBody ReasonDTO panic){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
         passengers.add(new UserDTO(1L, ""));
         RideDTO ride = new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
-        passengers, 5, "", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022."));
-        UserExpandedDTO user = new UserExpandedDTO(1L, "Marija", "Ivkov", "src", "05156", "marija@gmail", "Novi Sad");
-        return new ResponseEntity<>(new PanicResponseDTO(10L, user, ride, panic.getReason(), "11.11.2022."), HttpStatus.OK);
+        passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022."));
+        UserExpandedDTO user = new UserExpandedDTO(null, "Marija", "Ivkov", "src", "05156", "marija@gmail", "Novi Sad");
+        return new ResponseEntity<>(new PanicExpandedDTO(10, user, ride, panic.getReason(), "11.11.2022."), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}/accept", produces = "application/json")
-    ResponseEntity<RideDTO> acceptRide(@PathVariable Long id){
+    ResponseEntity<RideDTO> acceptRide(@PathVariable Integer id){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
@@ -86,7 +86,7 @@ public class RideController {
     }
 
     @PutMapping(value = "/{id}/end", produces = "application/json")
-    ResponseEntity<RideDTO> endRide(@PathVariable Long id){
+    ResponseEntity<RideDTO> endRide(@PathVariable Integer id){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
@@ -96,7 +96,7 @@ public class RideController {
     }
 
     @PutMapping(value = "/{id}/cancel", consumes = "application/json", produces = "application/json")
-    ResponseEntity<RideDTO> cancelRideWithExplanation(@PathVariable Long id, @RequestBody ReasonDTO reason){
+    ResponseEntity<RideDTO> cancelRideWithExplanation(@PathVariable Integer id, @RequestBody ReasonDTO reason){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
         locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));

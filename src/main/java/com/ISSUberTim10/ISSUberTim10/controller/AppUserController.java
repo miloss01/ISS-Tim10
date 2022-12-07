@@ -25,7 +25,6 @@ public class AppUserController {
     @Autowired
     IRideService rideService;
 
-    @Autowired
 
     @GetMapping(value = "/user2", produces = "application/json")
     public ResponseEntity<Collection<AppUser>> getAll() {
@@ -38,7 +37,7 @@ public class AppUserController {
         Page<AppUser> users = service.getAll(page);
         ArrayList<UserExpandedDTO> usersDTO = new ArrayList<>();
         usersDTO.add(new UserExpandedDTO(1L, "Marija", "Ivkov", "src", "05156", "marija@gmail", "Novi Sad"));
-        usersDTO.add(new UserExpandedDTO());
+        usersDTO.add(new UserExpandedDTO(1L, "Marija", "Ivkov", "src", "05156", "marija@gmail", "Novi Sad"));
         return new ResponseEntity<>(new AllUsersDTO(usersDTO.size(), usersDTO), HttpStatus.OK);
     }
 
@@ -55,8 +54,9 @@ public class AppUserController {
     }
 
     @GetMapping(value = "/user/{id}/ride", produces = "application/json")
-    public ResponseEntity<RideResponseDTO> getUsersRides(@PathVariable Long id,
+    public ResponseEntity<RideResponseDTO> getUsersRides(@PathVariable Integer id,
                                                          Pageable page,
+                                                         @RequestParam(required = false) String sort,
                                                          @RequestParam(required = false) String from,
                                                          @RequestParam(required = false) String to) {
         //Page<Ride> rides = rideService.getByUser(id, page);
@@ -76,40 +76,39 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/user/{id}/block")
-    public ResponseEntity<String> blockUser(@PathVariable Long id) {
+    public ResponseEntity<String> blockUser(@PathVariable Integer id) {
         return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(value = "/user/{id}/unblock")
-    public ResponseEntity<String> unblockUser(@PathVariable Long id) {
+    public ResponseEntity<String> unblockUser(@PathVariable Integer id) {
         return new ResponseEntity<>("User successfully unblocked", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping(value = "/user/{id}/message", produces = "application/json")
-    public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Long id) {
+    public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Integer id) {
         ArrayList<MessageReceivedDTO> messages = new ArrayList<>();
-        messages.add(new MessageReceivedDTO(10L, "", 1L, 2L, "", "", 3L));
+        messages.add(new MessageReceivedDTO(10L, "11.11.2022.", 1L, 2L, "Message", "RIDE", 3L));
         return new ResponseEntity<>(new MessageResponseDTO(messages.size(), messages), HttpStatus.OK);
     }
 
     @PostMapping(value = "/user/{id}/message", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Long id,
+    public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Integer id,
                                                               @RequestBody MessageSentDTO messageSent) {
         return new ResponseEntity<>(new MessageReceivedDTO(10L, "11.11.2022.", 1L, messageSent.getReceiverId(), messageSent.getMessage(), messageSent.getType(), messageSent.getRideId()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/user/{id}/note", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<NoteDTO> sendNote(@PathVariable Long id,
+    public ResponseEntity<NoteDTO> sendNote(@PathVariable Integer id,
                                             @RequestBody NoteMessageDTO messageDTO){
         return new ResponseEntity<>(new NoteDTO(10L, "11.11.2022.", messageDTO.getMessage()), HttpStatus.OK);
     }
 
     @GetMapping(value = "/user/{id}/note", produces = "application/json")
-    public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Long id, Pageable page){
+    public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page){
         ArrayList<NoteDTO> notes = new ArrayList<>();
         notes.add(new NoteDTO(10L, "11.11.2022.", "lala"));
         return new ResponseEntity<>(new NoteResponseDTO(notes.size(), notes), HttpStatus.OK);
     }
-
 
 }
