@@ -37,7 +37,7 @@ public class PassengerController {
 
 
     // Getting multiple passengers for the need of showing a list
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<AllPassengersDTO> getPassengers(@RequestParam(required = false) Integer page,
                                                           @RequestParam(required = false) Integer size) {
         // parameters page and size set to Integer because primitive type int doesn't allow null
@@ -111,17 +111,6 @@ public class PassengerController {
     }
 
     private RideResponseDTO getDummyPassengerRidesDTO() {
-//        UserResponseDTO driver = new UserResponseDTO(1, "driver@c.com");
-//        UserResponseDTO passenger = new UserResponseDTO(2, "passenger@c.com");
-//        List<UserResponseDTO> passengers = new ArrayList<>();
-//        passengers.add(passenger);
-//        LocationDTO location = new LocationDTO("Street Ul.", 24.32121, 43.32423);
-//        List<LocationDTO> locations = new ArrayList<>();
-//        locations.add(location);
-//        PassengerRideDTO ride = new PassengerRideDTO(15, locations, LocalDateTime.now(), LocalDateTime.now(), 350,
-//                driver, passengers, 45, Vehicle.VEHICLE_TYPE.luxury, true, true);
-//        List<PassengerRideDTO> rides = new ArrayList<>();
-//        rides.add(ride);
         ArrayList<RideDTO> ridesDTO = new ArrayList<>();
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
