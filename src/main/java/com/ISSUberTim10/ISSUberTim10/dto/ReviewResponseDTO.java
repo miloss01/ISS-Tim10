@@ -7,14 +7,16 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class PanicResponseDTO {
-    private Long id;
-    private Long userId;
-    private Long rideId;
-    private String time;
-    private String reason;
+@NoArgsConstructor
+public abstract class ReviewResponseDTO {
 
+    private Integer id;
+
+    private Integer rating;
+
+    private String comment;
+
+    private UserResponseDTO passenger;
 
 }

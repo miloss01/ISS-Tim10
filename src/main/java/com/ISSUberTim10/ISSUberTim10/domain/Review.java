@@ -19,9 +19,9 @@ public class Review {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private int stars;
+    private int rating;
 
-    private String comments;
+    private String comment;
 
     @ManyToOne
     @JoinColumn(name = "ride_id")
