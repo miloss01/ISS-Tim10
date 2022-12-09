@@ -14,6 +14,6 @@ import java.util.List;
 public class DriversDTO {
 
     private Integer totalCount;
-    private List<DriverResponseDTO> results;
+    private List<DriverDTO> results;
 
 }

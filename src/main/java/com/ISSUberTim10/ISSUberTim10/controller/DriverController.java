@@ -16,9 +16,9 @@ import java.util.List;
 public class DriverController {
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DriverResponseDTO> saveDriver(@RequestBody DriverRequestDTO driverDTO) {
+    public ResponseEntity<DriverDTO> saveDriver(@RequestBody DriverDTO driverDTO) {
         return new ResponseEntity<>(
-                new DriverResponseDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74"),
+                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
                 HttpStatus.OK);
     }
 
@@ -27,9 +27,9 @@ public class DriverController {
         return new ResponseEntity<DriversDTO>(
                 new DriversDTO(
                         243,
-                        new ArrayList<DriverResponseDTO>(
+                        new ArrayList<DriverDTO>(
                                 Arrays.asList(
-                                        new DriverResponseDTO(10, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74")
+                                        new DriverDTO(10, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null)
                                 )
                         )
                 ),
@@ -38,26 +38,26 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DriverResponseDTO> getDriver(@PathVariable Integer id) {
+    public ResponseEntity<DriverDTO> getDriver(@PathVariable Integer id) {
         return new ResponseEntity<>(
-                new DriverResponseDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74"),
+                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
                 HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DriverResponseDTO> updateDriver(@PathVariable Integer id,
-                                                          @RequestBody DriverRequestDTO driverDTO) {
+    public ResponseEntity<DriverDTO> updateDriver(@PathVariable Integer id,
+                                                  @RequestBody DriverDTO driverDTO) {
         return new ResponseEntity<>(
-                new DriverResponseDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74"),
+                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
                 HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/documents", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DocumentResponseDTO>> getDocuments(@PathVariable Integer id) {
+    public ResponseEntity<List<DocumentDTO>> getDocuments(@PathVariable Integer id) {
         return new ResponseEntity<>(
-                new ArrayList<DocumentResponseDTO>(
+                new ArrayList<DocumentDTO>(
                         Arrays.asList(
-                                new DocumentResponseDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
+                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
                         )
                 ),
                 HttpStatus.OK);
@@ -69,35 +69,35 @@ public class DriverController {
     }
 
     @PostMapping(value = "/{id}/documents", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DocumentResponseDTO> updateDocument(@PathVariable Integer id,
-                                                              @RequestBody DocumentRequestDTO documentDTO) {
+    public ResponseEntity<DocumentDTO> updateDocument(@PathVariable Integer id,
+                                                      @RequestBody DocumentDTO documentDTO) {
         return new ResponseEntity<>(
-                new DocumentResponseDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
+                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
                 HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VehicleResponseDTO> getVehicle(@PathVariable Integer id) {
+    public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Integer id) {
         return new ResponseEntity<>(
-                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
         );
     }
 
     @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VehicleResponseDTO> saveVehicle(@PathVariable Integer id,
-                                                          @RequestBody VehicleRequestDTO vehicleDTO) {
+    public ResponseEntity<VehicleDTO> saveVehicle(@PathVariable Integer id,
+                                                  @RequestBody VehicleDTO vehicleDTO) {
         return new ResponseEntity<>(
-                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
         );
     }
 
     @PutMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VehicleResponseDTO> updateVehicle(@PathVariable Integer id,
-                                                            @RequestBody VehicleRequestDTO vehicleDTO) {
+    public ResponseEntity<VehicleDTO> updateVehicle(@PathVariable Integer id,
+                                                    @RequestBody VehicleDTO vehicleDTO) {
         return new ResponseEntity<>(
-                new VehicleResponseDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
                 HttpStatus.OK
         );
     }
