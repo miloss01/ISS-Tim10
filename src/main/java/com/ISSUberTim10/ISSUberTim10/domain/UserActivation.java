@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @Getter
@@ -20,8 +21,8 @@ public class UserActivation {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
     private AppUser appUser;
 
     @Column(name = "date_created")
@@ -29,6 +30,6 @@ public class UserActivation {
 
     // Zivotni vek
     @Column(name = "date_expiration")
-    private LocalDateTime dateExpiration;
+    private Date dateExpiration;
 
 }

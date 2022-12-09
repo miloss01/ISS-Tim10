@@ -4,25 +4,24 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
-@Table(name = "working_time")
-// WorkingTime klasa TODO
-public class WorkingTime {
-
+@Table(name = "note")
+public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    private String message;
+    private Date date;
 
-    @Column
-    private Date startTime;
-
-    @Column
-    private Date endTime;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private AppUser user;
 
 }

@@ -20,14 +20,14 @@ public class Message {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    // Sender, receiver - TODO
-//    @ManyToOne
-//    @JoinColumn(name = "sender_id")
-   // private AppUser sender;
 
-//    @ManyToOne
-//    @JoinColumn(name = "receiver_id")
-    //private AppUser receiver;
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private AppUser sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private AppUser receiver;
 
     @Column(name = "message_text")
     private String messageText;

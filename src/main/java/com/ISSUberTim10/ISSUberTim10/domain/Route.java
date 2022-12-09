@@ -1,13 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -19,15 +18,23 @@ public class Route {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departure_coordinates_id")
+    @ToString.Exclude
     private Coordinates departureCoordinates;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "destination_coordinates_id")
+    @ToString.Exclude
     private Coordinates destinationCoordinates;
 
     @Column(name = "mileage", nullable = false)
     private double mileage;
+
+    @Column(name = "orderr", nullable = false)
+    private int orderr;
+
+    @ManyToMany(mappedBy = "routes")
+    private Collection<Ride> rides;
 
 }
