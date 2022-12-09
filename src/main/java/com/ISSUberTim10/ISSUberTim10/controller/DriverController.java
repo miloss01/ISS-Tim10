@@ -63,8 +63,8 @@ public class DriverController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{id}/documents")
-    public ResponseEntity<Void> deleteDocument(@PathVariable Integer id) {
+    @DeleteMapping(value = "/document/{document-id}")
+    public ResponseEntity<Void> deleteDocument(@PathVariable(name = "document-id") Integer documentId) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -102,7 +102,7 @@ public class DriverController {
         );
     }
 
-    @GetMapping(value = "/{id}/working-hours", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}/working-hour", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkingHoursDTO> getWorkingHours(@PathVariable Integer id,
                                                            Pageable page,
                                                            @RequestParam(required = false) String from,
@@ -120,8 +120,9 @@ public class DriverController {
         );
     }
 
-    @PostMapping(value = "/{id}/working-hours", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHourDTO> saveWorkingHour(@PathVariable Integer id) {
+    @PostMapping(value = "/{id}/working-hour", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WorkingHourDTO> saveWorkingHour(@PathVariable Integer id,
+                                                          @RequestBody WorkingHourDTO workingHourDTO) {
         return new ResponseEntity<>(
                 new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
                 HttpStatus.OK
@@ -133,8 +134,6 @@ public class DriverController {
                                                           Pageable page,
                                                           @RequestParam(required = false) String from,
                                                           @RequestParam(required = false) String to) {
-
-        UserExpandedDTO user = new UserExpandedDTO(null, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com", "Bulevar Oslobodjenja 74");
 
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>(Arrays.asList(
                 new DepartureDestinationLocationsDTO(
@@ -172,8 +171,9 @@ public class DriverController {
         );
     }
 
-    @PutMapping(value = "/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkingHourDTO> updateWorkingHour(@PathVariable(name = "working-hour-id") Integer workingHourId) {
+    @PutMapping(value = "/working-hour/{working-hour-id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WorkingHourDTO> updateWorkingHour(@PathVariable(name = "working-hour-id") Integer workingHourId,
+                                                            @RequestBody WorkingHourDTO workingHourDTO) {
         return new ResponseEntity<>(
                 new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
                 HttpStatus.OK
