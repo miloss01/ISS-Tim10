@@ -20,15 +20,16 @@ public class Rejection {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    // ride - Mapiranje TODO
-    //private Ride ride;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ride_id")
+    private Ride ride;
 
     @Column(name = "reason")
     private String reason;
 
-    @ManyToOne
-    @JoinColumn(name = "passenger_id")
-    private Passenger passenger;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private AppUser appUser;
 
     @Column(name = "rejection_time")
     private LocalDateTime rejectionTime;
