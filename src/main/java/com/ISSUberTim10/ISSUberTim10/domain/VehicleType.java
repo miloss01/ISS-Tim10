@@ -12,18 +12,18 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "remark")
-public class Remark {
+@Table(name = "vehicle_type")
+public class VehicleType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "message")
-    private String message;
+    @Enumerated
+    @Column(name = "vehicle_type")
+    private Vehicle.VEHICLE_TYPE name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private AppUser appUser;
+    @Column
+    private double price;
 
 }

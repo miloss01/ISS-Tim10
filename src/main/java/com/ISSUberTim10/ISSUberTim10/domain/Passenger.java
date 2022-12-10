@@ -5,10 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Collection;
 
 @NoArgsConstructor
 @Getter
@@ -19,4 +17,6 @@ import javax.persistence.Table;
 @Inheritance(strategy = InheritanceType.JOINED)
 // Passenger - class TODO
 public class Passenger extends AppUser {
+    @ManyToMany(mappedBy = "passengers")
+    private Collection<Ride> rides;
 }

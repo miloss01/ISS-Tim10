@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class AppUserController {
 
     @Autowired
@@ -32,7 +32,7 @@ public class AppUserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user", produces = "application/json")
+    @GetMapping(produces = "application/json")
     public ResponseEntity<AllUsersDTO> getAll(Pageable page) {
         Page<AppUser> users = service.getAll(page);
         ArrayList<UserExpandedDTO> usersDTO = new ArrayList<>();
@@ -43,17 +43,17 @@ public class AppUserController {
 
 
 
-    @PostMapping(value = "/user")
+    @PostMapping()
     public void createAll() {
         service.createAll();
     }
 
-    @DeleteMapping(value = "/user")
+    @DeleteMapping()
     public void deleteAll() {
         service.deleteAll();
     }
 
-    @GetMapping(value = "/user/{id}/ride", produces = "application/json")
+    @GetMapping(value = "/{id}/ride", produces = "application/json")
     public ResponseEntity<RideResponseDTO> getUsersRides(@PathVariable Integer id,
                                                          Pageable page,
                                                          @RequestParam(required = false) String sort,
@@ -75,36 +75,36 @@ public class AppUserController {
         return new ResponseEntity<>(new TokenResponseDTO("dasdsda", "dfsfsdfsdef"),HttpStatus.OK);
     }
 
-    @PutMapping(value = "/user/{id}/block")
+    @PutMapping(value = "/{id}/block")
     public ResponseEntity<String> blockUser(@PathVariable Integer id) {
         return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping(value = "/user/{id}/unblock")
+    @PutMapping(value = "/{id}/unblock")
     public ResponseEntity<String> unblockUser(@PathVariable Integer id) {
         return new ResponseEntity<>("User successfully unblocked", HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(value = "/user/{id}/message", produces = "application/json")
+    @GetMapping(value = "/{id}/message", produces = "application/json")
     public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Integer id) {
         ArrayList<MessageReceivedDTO> messages = new ArrayList<>();
         messages.add(new MessageReceivedDTO(10L, "11.11.2022.", 1L, 2L, "Message", "RIDE", 3L));
         return new ResponseEntity<>(new MessageResponseDTO(messages.size(), messages), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/user/{id}/message", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/{id}/message", consumes = "application/json", produces = "application/json")
     public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Integer id,
                                                               @RequestBody MessageSentDTO messageSent) {
         return new ResponseEntity<>(new MessageReceivedDTO(10L, "11.11.2022.", 1L, messageSent.getReceiverId(), messageSent.getMessage(), messageSent.getType(), messageSent.getRideId()), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/user/{id}/note", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/{id}/note", consumes = "application/json", produces = "application/json")
     public ResponseEntity<NoteDTO> sendNote(@PathVariable Integer id,
                                             @RequestBody NoteMessageDTO messageDTO){
         return new ResponseEntity<>(new NoteDTO(10L, "11.11.2022.", messageDTO.getMessage()), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user/{id}/note", produces = "application/json")
+    @GetMapping(value = "/{id}/note", produces = "application/json")
     public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page){
         ArrayList<NoteDTO> notes = new ArrayList<>();
         notes.add(new NoteDTO(10L, "11.11.2022.", "lala"));

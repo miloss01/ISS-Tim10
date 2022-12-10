@@ -25,7 +25,7 @@ public class Document {
     @Column(name = "image")
     private String image;
 
-//    driver - Mapiranje TODO
-//    private Driver driver;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Driver driver;
 }
