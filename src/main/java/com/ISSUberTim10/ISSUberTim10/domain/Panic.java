@@ -28,8 +28,9 @@ public class Panic {
     @JoinColumn(name = "current_ride_id")
     private Ride currentRide;
 
+    //da li ide date
     @Column(name = "panic_time")
-    private LocalDateTime panicTime;
+    private LocalDateTime time;
 
     @Column(name = "reason")
     private String reason;

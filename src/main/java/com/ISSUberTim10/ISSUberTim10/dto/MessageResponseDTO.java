@@ -8,16 +8,16 @@ import java.util.ArrayList;
 @Setter
 public class MessageResponseDTO {
     private int totalCount;
-    private ArrayList<MessageReceivedDTO> messages;
+    private ArrayList<MessageReceivedDTO> results;
 
     public MessageResponseDTO() {
-        this.messages = new ArrayList<>();
+        this.results = new ArrayList<>();
     }
 
-    public MessageResponseDTO(int totalCount, ArrayList<MessageReceivedDTO> messages) {
+    public MessageResponseDTO(int totalCount, ArrayList<MessageReceivedDTO> results) {
         this();
         this.totalCount = totalCount;
-        this.messages = messages;
+        this.results = results;
     }
 
 }

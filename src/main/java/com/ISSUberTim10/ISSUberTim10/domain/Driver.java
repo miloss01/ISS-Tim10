@@ -18,15 +18,15 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Driver extends AppUser {
 
-    // documentList - Mapiranje, kako se cuva u bazi TODO
-    private HashSet<Document> documentList;
+    // documentList - Mapiranje, kako se cuva u bazi ---sacuvano u documents
+    //private HashSet<Document> documentList;
 
-    // vehicle - Mapiranje TODO
-    // one to one
-    //@ToString.Exclude
-    //private Vehicle vehicle;
+    @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
+    private Vehicle vehicle;
 
-    // rides - Mapiranje TODO
+    // rides - Mapiranje
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private Set<Ride> rides;

@@ -2,6 +2,7 @@ package com.ISSUberTim10.ISSUberTim10;
 
 import com.ISSUberTim10.ISSUberTim10.controller.AppUserController;
 import com.ISSUberTim10.ISSUberTim10.domain.Driver;
+import com.ISSUberTim10.ISSUberTim10.dto.RideDTO;
 import com.ISSUberTim10.ISSUberTim10.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -39,6 +40,8 @@ public class IssUberTim10Application implements CommandLineRunner {
 //
 //		appUserController.createAll();
 //		System.out.println(appUserController.getAll());
+//		RideDTO ride = new RideDTO();
+//		System.out.println(ride.getPassengers().size());
 
 
 	}

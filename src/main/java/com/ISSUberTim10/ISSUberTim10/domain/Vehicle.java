@@ -19,22 +19,28 @@ public class Vehicle {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    // driver - Mapiranje TODO
+    // driver - Mapiranje TODO je l okej bidirekciona jer zato posto
     // one to one
-    //@ToString.Exclude
-    //private Driver driver;
+    @OneToOne(mappedBy = "vehicle", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Driver driver;
 
+    @Column
     private String model;
 
-    private VEHICLE_TYPE type;
-
+    @Column
     private String registrationPlate;
 
+    @Column
     private int numOfSeats;
 
-    // currentCoordinates - Kako se cuvaju u bazi TODO
-    @Transient
+    // currentCoordinates - Kako se cuvaju u bazi
+    //@Transient
+    @ManyToOne(fetch = FetchType.LAZY)
     private Coordinates currentCoordinates;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private VehicleType vehicleType;
 
     private boolean babyFlag;
 

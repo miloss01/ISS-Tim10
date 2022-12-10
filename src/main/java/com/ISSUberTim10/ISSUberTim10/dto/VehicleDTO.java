@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,14 +10,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehicleResponseDTO {
+public class VehicleDTO {
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer driverId;
     private String vehicleType;
     private String model;
     private String licenseNumber;
-    private LocationDTO currentLocationDTO;
+    private LocationDTO currentLocation;
     private Integer passengerSeats;
     private Boolean babyTransport;
     private Boolean petTransport;

@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "location")
 public class Location {
+    //Ovo je maybe visak, koristimo route and coordinates
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
