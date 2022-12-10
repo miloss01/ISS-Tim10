@@ -19,7 +19,7 @@ public class VehicleDTO {
     private String vehicleType;
     private String model;
     private String licenseNumber;
-    private LocationDTO currentLocationDTO;
+    private LocationDTO currentLocation;
     private Integer passengerSeats;
     private Boolean babyTransport;
     private Boolean petTransport;
