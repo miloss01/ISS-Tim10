@@ -1,6 +1,6 @@
-package com.ISSUberTim10.ISSUberTim10.appUser.service.interfaces;
+package com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -1,4 +1,4 @@
-package com.ISSUberTim10.ISSUberTim10.appUser.dto;
+package com.ISSUberTim10.ISSUberTim10.appUser.account.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenResponseDTO {
-    private String accessToken;
-    private String refreshToken;
+public class NoteDTO {
+    private Long id;
+    private String date;
+    private String message;
 }

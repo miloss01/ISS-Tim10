@@ -1,7 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.AppUser;
-import com.ISSUberTim10.ISSUberTim10.ride.Ride;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

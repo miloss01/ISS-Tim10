@@ -1,8 +1,8 @@
-package com.ISSUberTim10.ISSUberTim10.appUser.controller;
+package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.AppUser;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.*;
-import com.ISSUberTim10.ISSUberTim10.appUser.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.ISSUberTim10.ISSUberTim10.appUser;
+package com.ISSUberTim10.ISSUberTim10.appUser.account;
 
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.UserResponseDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

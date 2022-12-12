@@ -1,10 +1,10 @@
-package com.ISSUberTim10.ISSUberTim10.appUser.controller;
+package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.Passenger;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.AllPassengersDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.PassengerRequestDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.PassengerResponseDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.AllPassengersDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerRequestDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerResponseDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;

@@ -1,4 +1,4 @@
-package com.ISSUberTim10.ISSUberTim10.appUser.controller;
+package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 
 import com.ISSUberTim10.ISSUberTim10.ride.dto.EstimatedDataRequestDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.EstimatedDataResponseDTO;

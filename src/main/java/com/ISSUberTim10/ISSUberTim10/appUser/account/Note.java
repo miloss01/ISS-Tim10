@@ -1,6 +1,6 @@
-package com.ISSUberTim10.ISSUberTim10.appUser;
+package com.ISSUberTim10.ISSUberTim10.appUser.account;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import lombok.*;
 
 import javax.persistence.*;

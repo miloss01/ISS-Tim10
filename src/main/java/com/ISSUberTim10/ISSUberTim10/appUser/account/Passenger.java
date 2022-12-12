@@ -1,5 +1,6 @@
-package com.ISSUberTim10.ISSUberTim10.appUser;
+package com.ISSUberTim10.ISSUberTim10.appUser.account;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import lombok.*;
 

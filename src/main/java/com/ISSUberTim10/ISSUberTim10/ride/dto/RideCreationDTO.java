@@ -1,6 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride.dto;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import lombok.Getter;
 import lombok.Setter;
 

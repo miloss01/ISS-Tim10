@@ -1,6 +1,6 @@
-package com.ISSUberTim10.ISSUberTim10.appUser.dto;
+package com.ISSUberTim10.ISSUberTim10.appUser.account.dto;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.Passenger;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

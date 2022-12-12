@@ -1,7 +1,7 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
