@@ -19,13 +19,10 @@ public class Admin {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "username")
     private String username;
 
-    @Column(name = "password")
     private String password;
 
-    @Column(name = "name")
     private String name;
 
     @Column(name = "last_name")

@@ -19,10 +19,8 @@ public class Document {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "title")
     private String title;
 
-    @Column(name = "image")
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -25,13 +25,10 @@ public class Vehicle {
     @ToString.Exclude
     private Driver driver;
 
-    @Column
     private String model;
 
-    @Column
     private String registrationPlate;
 
-    @Column
     private int numOfSeats;
 
     // currentCoordinates - Kako se cuvaju u bazi

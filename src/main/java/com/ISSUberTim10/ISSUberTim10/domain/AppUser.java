@@ -23,31 +23,22 @@ public abstract class AppUser {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_id_generator")
     protected Long id;
 
-    @Column(name="name")
     private String name;
 
-    @Column(name="last_name")
     private String lastName;
 
-    @Column(name="phone")
     private String phone;
 
-    @Column(name="email")
     private String email;
 
-    @Column(name="password")
     private String password;
 
-    @Column(name="profile_image")
     private String profileImage;
 
-    @Column(name="address")
     private String address;
 
-    @Column(name="blocked_flag")
     private boolean blockedFlag;
 
-    @Column(name="active_flag")
     private boolean activeFlag;
 
 }

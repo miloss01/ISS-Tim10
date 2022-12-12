@@ -21,17 +21,13 @@ public class Rejection {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ride_id")
     private Ride ride;
 
-    @Column(name = "reason")
     private String reason;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     private AppUser appUser;
 
-    @Column(name = "rejection_time")
     private LocalDateTime rejectionTime;
 
 }

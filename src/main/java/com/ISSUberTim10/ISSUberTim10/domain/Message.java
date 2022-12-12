@@ -22,25 +22,19 @@ public class Message {
 
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
     private AppUser sender;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id")
     private AppUser receiver;
 
-    @Column(name = "message_text")
-    private String messageText;
+    private String text;
 
-    @Column(name = "time_sent")
     private LocalDateTime timeSent;
 
-    @Enumerated
-    @Column(name = "message_type")
+    @Enumerated(EnumType.STRING)
     private MESSAGE_TYPE messageType;
 
-    @Column(name = "ride_id", nullable = false)
-    private long rideID;
+    private long rideId;
 
     public enum MESSAGE_TYPE {
         support, ride, panic

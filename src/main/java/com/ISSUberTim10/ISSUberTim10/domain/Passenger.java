@@ -1,14 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Collection;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -19,4 +17,10 @@ import java.util.Collection;
 public class Passenger extends AppUser {
     @ManyToMany(mappedBy = "passengers")
     private Collection<Ride> rides;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "passengers_favourite_rides",
+            joinColumns = @JoinColumn(name = "passenger_id"),
+            inverseJoinColumns = @JoinColumn(name = "ride_id"))
+    private Collection<Ride> favourite_rides;
 }

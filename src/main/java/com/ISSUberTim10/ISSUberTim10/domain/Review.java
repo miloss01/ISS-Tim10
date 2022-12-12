@@ -19,10 +19,8 @@ public class Review {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column
     private int rating;
 
-    @Column
     private String comment;
 
     @ManyToOne
@@ -33,6 +31,5 @@ public class Review {
     @JoinColumn(name = "passenger_id")
     private Passenger passenger;
 
-    @Column
     private boolean forDriver;
 }

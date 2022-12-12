@@ -28,10 +28,8 @@ public class Route {
     @ToString.Exclude
     private Coordinates destinationCoordinates;
 
-    @Column(name = "mileage", nullable = false)
     private double mileage;
 
-    @Column(name = "orderr", nullable = false)
     private int orderr;
 
     @ManyToMany(mappedBy = "routes")

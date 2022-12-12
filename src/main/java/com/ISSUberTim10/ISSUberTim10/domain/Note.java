@@ -18,10 +18,10 @@ public class Note {
     @Column(name = "id", nullable = false)
     private Long id;
     private String message;
-    private Date date;
+    private Date note_date;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
-    private AppUser user;
+    private AppUser appUser;
 
 }

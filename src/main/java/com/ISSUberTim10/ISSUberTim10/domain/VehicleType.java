@@ -19,11 +19,9 @@ public class VehicleType {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Enumerated
-    @Column(name = "vehicle_type")
+    @Enumerated(EnumType.STRING)
     private Vehicle.VEHICLE_TYPE name;
 
-    @Column
     private double price;
 
 }

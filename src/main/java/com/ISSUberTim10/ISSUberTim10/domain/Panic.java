@@ -1,14 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -21,18 +19,13 @@ public class Panic {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private AppUser appUser;
 
     @ManyToOne
-    @JoinColumn(name = "current_ride_id")
-    private Ride currentRide;
+    private Ride ride;
 
-    //da li ide date
-    @Column(name = "panic_time")
-    private LocalDateTime time;
+    private LocalDateTime panicTime;  //ne moze samo time jer je to rezervisana rec
 
-    @Column(name = "reason")
     private String reason;
 
 }

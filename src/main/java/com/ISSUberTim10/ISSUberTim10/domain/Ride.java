@@ -1,9 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -22,7 +20,6 @@ public class Ride {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    //jel ovde ide date i dont know
     @Column
     private LocalDateTime startTime;
 
@@ -55,7 +52,7 @@ public class Ride {
     @Column
     private int estimatedTimeMinutes;
 
-    @Column
+    @Enumerated(EnumType.STRING)
     private RIDE_STATUS rideStatus;
 
 

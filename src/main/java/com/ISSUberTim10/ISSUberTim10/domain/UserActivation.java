@@ -25,11 +25,9 @@ public class UserActivation {
     @ToString.Exclude
     private AppUser appUser;
 
-    @Column(name = "date_created")
     private LocalDateTime dateCreated;
 
     // Zivotni vek
-    @Column(name = "date_expiration")
-    private Date dateExpiration;
+    private LocalDateTime dateExpiration;
 
 }

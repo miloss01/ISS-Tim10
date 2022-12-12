@@ -27,8 +27,8 @@ public class Driver extends AppUser {
     private Vehicle vehicle;
 
     // rides - Mapiranje
-    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private Set<Ride> rides;
+//    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @ToString.Exclude
+//    private Set<Ride> rides;
 
 }

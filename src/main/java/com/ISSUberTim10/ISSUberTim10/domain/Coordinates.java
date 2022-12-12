@@ -19,10 +19,8 @@ public class Coordinates {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "latitude", nullable = false)
     private double latitude;
 
-    @Column(name = "longitude", nullable = false)
     private double longitude;
 
     @Column
