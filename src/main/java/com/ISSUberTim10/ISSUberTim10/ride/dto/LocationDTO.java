@@ -1,14 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.ride.dto;
 
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class LocationDTO {
 
     private String address;
