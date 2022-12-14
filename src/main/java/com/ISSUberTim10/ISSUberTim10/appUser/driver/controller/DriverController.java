@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "api/driver")
 public class DriverController {
 
@@ -59,6 +60,7 @@ public class DriverController {
         return new ResponseEntity<>(
                 new ArrayList<DocumentDTO>(
                         Arrays.asList(
+                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
                                 new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
                         )
                 ),
@@ -81,7 +83,7 @@ public class DriverController {
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Integer id) {
         return new ResponseEntity<>(
-                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, false, true),
                 HttpStatus.OK
         );
     }

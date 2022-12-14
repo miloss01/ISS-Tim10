@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.dto;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class PassengerResponseDTO {
 
     private String address;
 
-    public PassengerResponseDTO(Passenger passenger) {
+    public PassengerResponseDTO(AppUser passenger) {
         this((int) (long) passenger.getId(), passenger.getName(), passenger.getLastName(), passenger.getProfileImage(),
                 passenger.getPhone(), passenger.getEmail(), passenger.getAddress());
     }

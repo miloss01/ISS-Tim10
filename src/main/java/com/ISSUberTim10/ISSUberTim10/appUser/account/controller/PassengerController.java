@@ -5,10 +5,13 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.AllPassengersDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerRequestDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "api/passenger")
 public class PassengerController {
 
-//    @Autowired
-//    private PassengerService passengerService;
+    @Autowired
+    private IPassengerService passengerService;
+
+    @Autowired
+    private IAppUserService appUserService;
 
     // Create new passenger
     @PostMapping(produces = "application/json", consumes = "application/json")
@@ -62,6 +69,7 @@ public class PassengerController {
 
 
     // Returns passenger details, where the password field is always empty
+
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<PassengerResponseDTO> getPassenger(@PathVariable(required = true) Integer id) {
 
@@ -69,8 +77,10 @@ public class PassengerController {
 //
 //        if (passenger == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        return new ResponseEntity<>(new PassengerResponseDTO(200, "Name", "LastName",
-                "imgURL", "06324134", "it@email.com", "Street Ul."), HttpStatus.OK);
+//        return new ResponseEntity<>(new PassengerResponseDTO(200, "Name", "LastName",
+//                "https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512",
+//                "06324134", "it@email.com", "Street Ul."), HttpStatus.OK);
+        return appUserService.getPassenger(id);
     }
 
 
@@ -91,7 +101,8 @@ public class PassengerController {
         passenger.setId(500L); // Dummy ID
         //        passengerService.save(passenger);
 
-        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
+//        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
+        return passengerService.updatePassenger(id, passengerRequestDTO);
     }
 
 

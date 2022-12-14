@@ -15,9 +15,9 @@ registration_plate, current_coordinates_id, vehicle_type_id) values
 
 
 insert into app_user (id, active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image)
-values (1, 0, 'Bulevar Oslobodjenja', 1, 'nana@DEsi.com', 'Petrovic', 'Petar', '333', '0654324', 'src:slikaje');
+values (1, 0, 'Bulevar Oslobodjenja', 1, 'nana@DEsi.com', 'Petrovic', 'Petar', '333', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512');
 insert into app_user (id, active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image)
-values (2, 0, 'Bulevar Oslobodjenja', 1, 'boki@DEsi.com', 'Petrovic', 'Bojan', '333', '0654324', 'src:slikaje');
+values (2, 0, 'Bulevar Oslobodjenja', 1, 'boki@DEsi.com', 'Petrovic', 'Bojan', '333', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512');
 
 insert into driver (id, vehicle_id) values (1, 1);
 
