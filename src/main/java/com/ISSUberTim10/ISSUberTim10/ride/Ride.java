@@ -1,7 +1,7 @@
 package com.ISSUberTim10.ISSUberTim10.ride;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
-import com.ISSUberTim10.ISSUberTim10.appUser.Passenger;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import lombok.*;
 
 import javax.persistence.*;

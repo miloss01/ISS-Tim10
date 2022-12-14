@@ -1,7 +1,7 @@
 package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.UserDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.dto.UserExpandedDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserExpandedDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

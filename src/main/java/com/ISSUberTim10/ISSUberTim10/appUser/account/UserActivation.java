@@ -1,4 +1,4 @@
-package com.ISSUberTim10.ISSUberTim10.ride;
+package com.ISSUberTim10.ISSUberTim10.appUser.account;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import lombok.Getter;
@@ -14,21 +14,20 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @Entity
-@Table(name = "rejection")
-public class Rejection {
+@Table(name = "user_activation")
+public class UserActivation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Ride ride;
-
-    private String reason;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
     private AppUser appUser;
 
-    private LocalDateTime rejectionTime;
+    private LocalDateTime dateCreated;
+
+    // Zivotni vek
+    private LocalDateTime dateExpiration;
 
 }
