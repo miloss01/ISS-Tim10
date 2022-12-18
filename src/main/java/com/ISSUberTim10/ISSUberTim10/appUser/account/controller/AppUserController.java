@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/user")
 public class AppUserController {
@@ -93,7 +95,11 @@ public class AppUserController {
         SecurityContext sc = SecurityContextHolder.getContext();
         sc.setAuthentication(auth);
 
-        String token = jwtTokenUtil.generateToken(loginDTO.getEmail());
+        String role = sc.getAuthentication().getAuthorities().toString();
+
+        String token = jwtTokenUtil.generateToken(
+            loginDTO.getEmail(),
+            Role.valueOf(role.substring(role.indexOf("_") + 1, role.length() - 1)));
 
         return new ResponseEntity<>(
                 new TokenResponseDTO(token, ""),
