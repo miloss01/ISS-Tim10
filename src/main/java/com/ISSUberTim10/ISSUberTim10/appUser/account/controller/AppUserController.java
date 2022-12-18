@@ -3,6 +3,7 @@ package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -25,6 +31,12 @@ public class AppUserController {
 
     @Autowired
     IRideService rideService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
 
     @GetMapping(value = "/user2", produces = "application/json")
@@ -73,7 +85,21 @@ public class AppUserController {
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginDTO loginDTO){
-        return new ResponseEntity<>(new TokenResponseDTO("dasdsda", "dfsfsdfsdef"),HttpStatus.OK);
+
+        UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
+
+        Authentication auth = authenticationManager.authenticate(authReq);
+
+        SecurityContext sc = SecurityContextHolder.getContext();
+        sc.setAuthentication(auth);
+
+        String token = jwtTokenUtil.generateToken(loginDTO.getEmail());
+
+        return new ResponseEntity<>(
+                new TokenResponseDTO(token, ""),
+                HttpStatus.OK
+        );
+
     }
 
     @PutMapping(value = "/{id}/block")

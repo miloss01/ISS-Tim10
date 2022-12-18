@@ -11,7 +11,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+//@ToString
 @Entity
 @Table(name = "passenger")
 @Inheritance(strategy = InheritanceType.JOINED)
