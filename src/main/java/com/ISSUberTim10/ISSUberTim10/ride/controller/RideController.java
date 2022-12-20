@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/ride")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RideController {
 
     @Autowired
@@ -47,12 +48,13 @@ public class RideController {
 
     @GetMapping(value = "/{id}", produces = "application/json")
     ResponseEntity<RideDTO> getRideById(@PathVariable Integer id){
-        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-        ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
-        passengers.add(new UserDTO(1L, ""));
-        return new ResponseEntity<>(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
+//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+//        ArrayList<UserDTO> passengers = new ArrayList<>();
+//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
+//        passengers.add(new UserDTO(1L, ""));
+//        return new ResponseEntity<>(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
+//                passengers, 5, "", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
+        return rideService.getRideById(id);
     }
 
     @PutMapping(value = "/{id}/withdraw", produces = "application/json")

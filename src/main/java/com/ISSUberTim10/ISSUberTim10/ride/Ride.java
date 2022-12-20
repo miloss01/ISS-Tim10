@@ -66,6 +66,10 @@ public class Ride {
     @Column(name = "pets_flag", nullable = false)
     private boolean petsFlag;
 
+    @OneToOne(mappedBy = "ride", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Rejection rejection;
+
 //    @Enumerated
 //    @Column(name = "vehicle_type")
 //    private Vehicle.VEHICLE_TYPE vehicleType;
@@ -77,6 +81,18 @@ public class Ride {
         rejected,
         active,
         finished
+    }
+
+    public String getVehicleType() {
+        return this.getDriver().getVehicle().getVehicleType().toString();
+    }
+
+    public boolean isBabyTransport() {
+        return this.getDriver().getVehicle().isBabyFlag();
+    }
+
+    public boolean isPetTransport() {
+        return this.getDriver().getVehicle().isPetsFlag();
     }
 
 }

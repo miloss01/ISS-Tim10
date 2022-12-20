@@ -32,9 +32,9 @@ public class WebSecurityConfiguration {
 
         http.csrf().disable().authorizeRequests()
             .antMatchers("/*").permitAll()
-            .antMatchers("/api/user/login").permitAll()
-            .antMatchers("/api/unregisteredUser").permitAll()
-            .antMatchers("/api/**").authenticated()
+//            .antMatchers("/api/user/login").permitAll()
+//            .antMatchers("/api/unregisteredUser").permitAll()
+//            .antMatchers("/api/**").authenticated()
 //            .antMatchers("/api/**").authenticated()
 //            .antMatchers("/api/unregisteredUser").authenticated()
 //            .antMatchers("/api/user/login").permitAll()
