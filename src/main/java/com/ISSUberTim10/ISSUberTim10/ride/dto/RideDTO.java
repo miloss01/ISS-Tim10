@@ -36,7 +36,7 @@ public class RideDTO {
     public RideDTO(Ride ride) { //TODO sredi ovo sa listama molim te
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
+        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
         passengers.add(new UserDTO(1L, ""));
         this.id = ride.getId();
         this.locations = locations;
