@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class AppUserService implements IAppUserService {
@@ -53,4 +54,7 @@ public class AppUserService implements IAppUserService {
         PassengerResponseDTO passengerResponse = new PassengerResponseDTO(passenger);
         return new ResponseEntity<>(passengerResponse, HttpStatus.OK);
     }
+
+    @Override
+    public Optional<AppUser> findByEmail(String email) { return appUserRepository.findByEmail(email); }
 }

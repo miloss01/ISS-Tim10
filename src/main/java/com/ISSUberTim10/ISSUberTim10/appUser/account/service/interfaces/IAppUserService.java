@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IAppUserService {
     public Collection<AppUser> getAll();
@@ -18,4 +19,5 @@ public interface IAppUserService {
     Page<AppUser> getAll(Pageable page);
 
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id);
+    public Optional<AppUser> findByEmail(String email);
 }

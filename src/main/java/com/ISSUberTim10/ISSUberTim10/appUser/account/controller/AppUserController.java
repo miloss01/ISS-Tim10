@@ -99,7 +99,8 @@ public class AppUserController {
 
         String token = jwtTokenUtil.generateToken(
             loginDTO.getEmail(),
-            Role.valueOf(role.substring(role.indexOf("_") + 1, role.length() - 1)));
+            Role.valueOf(role.substring(role.indexOf("_") + 1, role.length() - 1)),
+            service.findByEmail(loginDTO.getEmail()).get().getId());
 
         return new ResponseEntity<>(
                 new TokenResponseDTO(token, ""),
