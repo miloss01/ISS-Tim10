@@ -29,9 +29,9 @@ public class WebSecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
+//        http.cors();
         http.csrf().disable().authorizeRequests()
-            .antMatchers("/*").permitAll()
+            .antMatchers("/**").permitAll()
 //            .antMatchers("/api/user/login").permitAll()
 //            .antMatchers("/api/unregisteredUser").permitAll()
 //            .antMatchers("/api/**").authenticated()
@@ -42,7 +42,7 @@ public class WebSecurityConfiguration {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-//        http.headers().frameOptions().disable();
+        http.headers().frameOptions().disable();
 //        http.cors();
 
         return http.build();
