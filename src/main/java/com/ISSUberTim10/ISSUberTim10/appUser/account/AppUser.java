@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -40,5 +41,7 @@ public abstract class AppUser {
     private boolean blockedFlag;
 
     private boolean activeFlag;
+
+    private Role role;
 
 }
