@@ -4,9 +4,9 @@ insert into vehicle_type (id, name, price) values (3, 'van', 123.1);
 
 
 insert into coordinates (id, latitude, longitude, address)
-values (1, 10.1, 11.1, 'Maksima Gorkog');
+values (1, 45.2501342, 19.8480507, 'Strazilovska 19, Novi Sad');
 insert into coordinates (id, latitude, longitude, address)
-values (2, 20.1, 11.1, 'Maksima Slatkog');
+values (2, 45.2523302, 19.7586626, 'Fruskogorska 5, Novi Sad');
 
 
 insert into vehicle (id, baby_flag, model, num_of_seats, pets_flag,
@@ -41,7 +41,7 @@ values (1, 2.3, 1, 1, 2);
 
 insert into ride (id, baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(1, 0, '2016-04-12 07:03:24', '2026-04-12 07:03:24', 5, 1, 0, 100.0, 'finished', 1);
+(1, 0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 1);
 
 
 insert into passengers_rides (passenger_id, ride_id) values (2, 1);
