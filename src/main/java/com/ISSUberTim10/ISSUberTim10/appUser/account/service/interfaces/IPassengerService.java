@@ -7,4 +7,5 @@ import org.springframework.http.ResponseEntity;
 public interface IPassengerService {
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id);
     public ResponseEntity<PassengerResponseDTO> updatePassenger(Integer id, PassengerRequestDTO passengerRequestDTO);
+    public ResponseEntity<PassengerResponseDTO> savePassenger(PassengerRequestDTO passengerRequestDTO);
 }

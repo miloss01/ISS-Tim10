@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "api/passenger")
 public class PassengerController {
 
@@ -33,18 +33,7 @@ public class PassengerController {
     // Create new passenger
     @PostMapping(produces = "application/json", consumes = "application/json")
     public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
-
-        Passenger passenger = new Passenger();
-        passenger.setName(passengerRequestDTO.getName());
-        passenger.setLastName(passengerRequestDTO.getSurname());
-        passenger.setProfileImage(passengerRequestDTO.getProfilePicture());
-        passenger.setPhone(passengerRequestDTO.getTelephoneNumber());
-        passenger.setEmail(passengerRequestDTO.getEmail());
-        passenger.setAddress(passengerRequestDTO.getAddress());
-        passenger.setPassword(passengerRequestDTO.getPassword());
-
-        passenger.setId(100L); // Dummy ID
-        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
+        return passengerService.savePassenger(passengerRequestDTO);
     }
 
 
