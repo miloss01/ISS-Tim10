@@ -51,8 +51,12 @@ public class AppUserService implements IAppUserService {
 
     @Override
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id) {
-        AppUser passenger = appUserRepository.getById(id.longValue());
-        PassengerResponseDTO passengerResponse = new PassengerResponseDTO(passenger);
+        Optional<AppUser> found = appUserRepository.findById(id.longValue());
+        if (!found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+        }
+        AppUser appUser = found.get();
+        PassengerResponseDTO passengerResponse = new PassengerResponseDTO(appUser);
         return new ResponseEntity<>(passengerResponse, HttpStatus.OK);
     }
 

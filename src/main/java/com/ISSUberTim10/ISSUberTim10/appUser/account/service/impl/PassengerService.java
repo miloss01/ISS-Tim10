@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Service
 public class PassengerService implements IPassengerService {
@@ -22,8 +25,12 @@ public class PassengerService implements IPassengerService {
 
     @Override //moze se obrisati, stoji u AppUserService jer treba i za passengera i za drivera
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id) {
-        AppUser passenger = appUserRepository.getById(id.longValue());
-        PassengerResponseDTO passengerResponse = new PassengerResponseDTO(passenger);
+        Optional<Passenger> found = passengerRepository.findById(id.longValue());
+        if (!found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+        }
+        AppUser appUser = found.get();
+        PassengerResponseDTO passengerResponse = new PassengerResponseDTO(appUser);
         return new ResponseEntity<>(passengerResponse, HttpStatus.OK);
     }
 

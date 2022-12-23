@@ -1,7 +1,9 @@
 package com.ISSUberTim10.ISSUberTim10.ride.dto;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
+import com.ISSUberTim10.ISSUberTim10.ride.Route;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.ArrayList;
 import lombok.AllArgsConstructor;
@@ -33,11 +35,15 @@ public class RideDTO {
     private RejectionDTO rejection;
 
 
-    public RideDTO(Ride ride) { //TODO sredi ovo sa listama molim te
+    public RideDTO(Ride ride) {
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+        for (Route route: ride.getRoutes()) {
+            locations.add(new DepartureDestinationLocationsDTO(route));
+        }
         ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
-        passengers.add(new UserDTO(1L, ""));
+        for (Passenger passenger: ride.getPassengers()) {
+            passengers.add(new UserDTO(passenger));
+        }
         this.id = ride.getId();
         this.locations = locations;
         this.startTime = ride.getStartTime().toString();
