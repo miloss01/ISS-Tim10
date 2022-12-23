@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.ArrayList;
@@ -111,7 +112,12 @@ public class AppUserController {
 
     @PutMapping(value = "/{id}/block")
     public ResponseEntity<String> blockUser(@PathVariable Integer id) {
-        return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
+        try {
+            return service.blockUser(id);
+        } catch (Exception responseStatusException) {
+            return new ResponseEntity<>(responseStatusException.getMessage() + "Aloooooo", HttpStatus.NOT_FOUND);
+        }
+        //return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(value = "/{id}/unblock")
