@@ -38,7 +38,11 @@ public class PassengerService implements IPassengerService {
 
     @Override
     public ResponseEntity<PassengerResponseDTO> updatePassenger(Integer id, PassengerRequestDTO passengerRequestDTO) {
-        Passenger passenger = passengerRepository.getById(id.longValue());
+        Optional<Passenger> found = passengerRepository.findById(id.longValue());
+        if (!found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+        }
+        Passenger passenger = found.get();
         passenger.setName(passengerRequestDTO.getName());
         passenger.setLastName(passengerRequestDTO.getSurname());
         passenger.setProfileImage(passengerRequestDTO.getProfilePicture());

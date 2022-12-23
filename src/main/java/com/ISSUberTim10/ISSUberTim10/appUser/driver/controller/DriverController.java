@@ -62,14 +62,15 @@ public class DriverController {
 
     @GetMapping(value = "/{id}/documents", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DocumentDTO>> getDocuments(@PathVariable Integer id) {
-        return new ResponseEntity<>(
-                new ArrayList<DocumentDTO>(
-                        Arrays.asList(
-                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
-                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
-                        )
-                ),
-                HttpStatus.OK);
+//        return new ResponseEntity<>(
+//                new ArrayList<DocumentDTO>(
+//                        Arrays.asList(
+//                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
+//                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
+//                        )
+//                ),
+//                HttpStatus.OK);
+        return driverService.getDocuments(id);
     }
 
     @DeleteMapping(value = "/document/{document-id}")

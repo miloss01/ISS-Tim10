@@ -52,7 +52,7 @@ insert into passengers_favourite_rides (passenger_id, ride_id) values (1, 1);
 
 
 insert into review (id, comment, rating, passenger_id, ride_id, for_driver)
-values (1, 'Dobar', 5, 1, 1, 0);
+values (1, 'Dobar', 5, 1, 1, 2);
 
 
 insert into rejection (id, reason, rejection_time, app_user_id, ride_id)
