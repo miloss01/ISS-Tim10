@@ -27,8 +27,8 @@ insert into admin (last_name, name, password, profile_image, username)
 values ('Mirkovic', 'Mirka', '123', 'src', 'je l ovo mejl');
 
 
-insert into user_activation (date_created, date_expiration, app_user_id)
-values ('2016-04-12 07:03:24', '2026-04-12 07:03:24', 1);
+--insert into user_activation (name, last_name, phone, email, password, profile_image, address, date_created, date_expiration)
+--values ('Petar', '2016-04-12 07:03:24', '2026-04-12 07:03:24');
 
 
 insert into working_time (start_time, end_time, driver_id)

@@ -57,4 +57,9 @@ public class AppUserService implements IAppUserService {
 
     @Override
     public Optional<AppUser> findByEmail(String email) { return appUserRepository.findByEmail(email); }
+
+    @Override
+    public Optional<AppUser> findById(Long id) {
+        return appUserRepository.findById(id);
+    }
 }

@@ -20,4 +20,5 @@ public interface IAppUserService {
 
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id);
     public Optional<AppUser> findByEmail(String email);
+    public Optional<AppUser> findById(Long id);
 }

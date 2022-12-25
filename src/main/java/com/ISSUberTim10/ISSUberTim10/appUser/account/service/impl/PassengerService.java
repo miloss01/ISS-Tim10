@@ -58,4 +58,9 @@ public class PassengerService implements IPassengerService {
                 HttpStatus.OK
         );
     }
+
+    @Override
+    public Passenger savePassenger(Passenger passenger) {
+        return passengerRepository.save(passenger);
+    }
 }
