@@ -65,9 +65,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.sendgrid</groupId>
-			<artifactId>sendgrid-java</artifactId>
-			<version>4.0.1</version>
+			<groupId>com.wildbit.java</groupId>
+			<artifactId>postmark</artifactId>
+			<version>1.9.0</version>
 		</dependency>
 
 	</dependencies>

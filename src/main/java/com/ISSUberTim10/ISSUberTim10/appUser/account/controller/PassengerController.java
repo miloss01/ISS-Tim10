@@ -11,17 +11,25 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IUserActivationService;
+import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideResponseDTO;
+import com.postmarkapp.postmark.Postmark;
+import com.postmarkapp.postmark.client.ApiClient;
+import com.postmarkapp.postmark.client.data.model.message.Message;
+import com.postmarkapp.postmark.client.data.model.message.MessageResponse;
+import com.postmarkapp.postmark.client.exception.PostmarkException;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +50,15 @@ public class PassengerController {
     @Autowired
     private IUserActivationService userActivationService;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Value("${server.port}")
+    private String port;
+
+    @Value("${postmark.receiver}")
+    private String receiver;
+
     // Create new passenger
     @PostMapping(produces = "application/json", consumes = "application/json")
     public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
@@ -57,7 +74,11 @@ public class PassengerController {
         userActivation.setDateCreated(LocalDateTime.now());
         userActivation.setDateExpiration(userActivation.getDateCreated().plusMinutes(10L));
 
-        return new ResponseEntity<>(new PassengerResponseDTO(userActivationService.save(userActivation)), HttpStatus.OK);
+        UserActivation saved = userActivationService.save(userActivation);
+
+        emailService.sendEmail(receiver, "http://localhost:" + port + "/api/passenger/activate/" + saved.getId());
+
+        return new ResponseEntity<>(new PassengerResponseDTO(saved), HttpStatus.OK);
     }
 
 
