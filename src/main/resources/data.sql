@@ -18,9 +18,15 @@ insert into app_user (active_flag, address, blocked_flag, email, last_name, name
 values (0, 'Bulevar Oslobodjenja', 1, 'nana@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (0, 'Bulevar Oslobodjenja', 1, 'boki@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (1, 'Misurinova', 1, 'mail@gmail.com', 'Milic', 'Milica', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (0, 'Bulevar Oslobodjenja', 1, 'popov@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
 
 insert into passenger (id) values (1);
 insert into driver (id, vehicle_id) values (2, 1);
+insert into driver (id, vehicle_id) values (3, 1);
+insert into driver (id, vehicle_id) values (4, 1);
 
 
 insert into admin (last_name, name, password, profile_image, username)
@@ -76,10 +82,10 @@ insert into document (image, title, driver_id)
 values ('scr', 'licna', 2);
 
 
-insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag)
-values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 2, 0, 'promena', 'registracija', 3, 1, 1);
+insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
+values ('work', 'boki@DEsi.com', 'every night', 'and', 'day', 'https://material.angular.io/assets/img/examples/shiba2.jpg', 2, 0, 'promena', 'registracija', 3, 1, 1, '2020-04-12 07:03:24', 'standard');
+insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
+values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 3, 0, 'promena', 'registracija', 3, 1, 1, '2022-04-12 07:03:24', 'standard');
 
-
-
-
-
+insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
+values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 4, 1, 'promena', 'registracija', 3, 1, 1, '2016-04-12 07:03:24', 'standard');

@@ -1,6 +1,5 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.ChangeRequest;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Document;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -136,5 +134,49 @@ public class DriverService implements IDriverService {
         }
         changeRequestRepository.save(newChangeRequest);
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ChangeRequestResponseDTO> getChangeRequests() {
+        ArrayList<ChangeRequestDTO> changeRequestDTOS = new ArrayList<>();
+        List<ChangeRequest> changeRequests = changeRequestRepository.findAll();
+        for (ChangeRequest changeRequest: changeRequests) {
+            if(!changeRequest.isApproved()){changeRequestDTOS.add(new ChangeRequestDTO(changeRequest));}
+        }
+        return new ResponseEntity<>(new ChangeRequestResponseDTO(changeRequestDTOS.size(), changeRequestDTOS), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ChangeRequestDTO> approveChangeRequest(Integer driverId, ChangeRequestDTO requestDTO) {
+        Optional<Driver> foundDriver = driverRepository.findById(Long.valueOf(driverId));
+        if (!foundDriver.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+        }
+        Optional<ChangeRequest> found = changeRequestRepository.findByDriverId(Long.valueOf(driverId));
+        if (!found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+        }
+        Driver driver = updateDriverWithNewInfo(requestDTO, foundDriver.get());
+        ChangeRequest changeRequest = found.get();
+        changeRequest.setApproved(true);
+        changeRequestRepository.save(changeRequest);
+        driverRepository.save(driver);
+        return new ResponseEntity<>(requestDTO, HttpStatus.OK);
+    }
+
+    private Driver updateDriverWithNewInfo(ChangeRequestDTO requestDTO, Driver driver) {
+        driver.setName(requestDTO.getUserDTO().getName());
+        driver.setLastName(requestDTO.getUserDTO().getSurname());
+        driver.setProfileImage(requestDTO.getUserDTO().getProfilePicture());
+        driver.setPhone(requestDTO.getUserDTO().getTelephoneNumber());
+        driver.setEmail(requestDTO.getUserDTO().getEmail());
+        driver.setAddress(requestDTO.getUserDTO().getAddress());
+        driver.getVehicle().setBabyFlag(requestDTO.getVehicleDTO().getBabyTransport());
+        driver.getVehicle().setModel(requestDTO.getVehicleDTO().getModel());
+        //driver.getVehicle().setVehicleType(requestDTO.getVehicleDTO().getVehicleType());
+        driver.getVehicle().setNumOfSeats(requestDTO.getVehicleDTO().getPassengerSeats());
+        driver.getVehicle().setPetsFlag(requestDTO.getVehicleDTO().getPetTransport());
+        driver.getVehicle().setRegistrationPlate(requestDTO.getVehicleDTO().getLicenseNumber());
+        return driver;
     }
 }

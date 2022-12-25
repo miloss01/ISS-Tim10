@@ -191,4 +191,20 @@ public class DriverController {
         );
     }
 
+    @GetMapping(value = "/change-requests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChangeRequestResponseDTO> getChangeRequests(){
+        return driverService.getChangeRequests();
+    }
+
+    @PutMapping(value = "/change-request/{driverId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChangeRequestDTO> updateChangeRequest(@PathVariable Integer driverId,@RequestBody ChangeRequestDTO requestDTO){
+        return driverService.updateChangeRequest(driverId, requestDTO);
+    }
+
+    @PutMapping(value = "/change-request/approve/{driverId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChangeRequestDTO> approveChangeRequest(@PathVariable Integer driverId,@RequestBody ChangeRequestDTO requestDTO){
+        return driverService.approveChangeRequest(driverId, requestDTO);
+    }
+
+
 }

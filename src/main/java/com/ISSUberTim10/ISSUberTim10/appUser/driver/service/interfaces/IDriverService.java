@@ -53,4 +53,8 @@ public interface IDriverService {
     public ResponseEntity<WorkingHourDTO> updateWorkingHour(Integer workingHourId, WorkingHourDTO workingHourDTO);
 
     public ResponseEntity<ChangeRequestDTO> updateChangeRequest(Integer driverId, ChangeRequestDTO requestDTO);
+
+    public ResponseEntity<ChangeRequestResponseDTO> getChangeRequests();
+
+    ResponseEntity<ChangeRequestDTO> approveChangeRequest(Integer driverId, ChangeRequestDTO requestDTO);
 }

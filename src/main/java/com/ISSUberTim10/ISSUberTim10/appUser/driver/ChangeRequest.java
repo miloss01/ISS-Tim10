@@ -2,6 +2,8 @@ package com.ISSUberTim10.ISSUberTim10.appUser.driver;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.ChangeRequestDTO;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.Collection;
 import javax.persistence.*;
 
@@ -45,6 +47,10 @@ public class ChangeRequest {
     private boolean babyFlag;
 
     private boolean petsFlag;
+    private LocalDateTime dateCreated;
+
+    @Enumerated(EnumType.STRING)
+    private Vehicle.VEHICLE_TYPE vehicleType;
 
     public ChangeRequest(ChangeRequestDTO requestDTO, Driver driver) {
         this.id = 0L;
@@ -61,5 +67,7 @@ public class ChangeRequest {
         this.numOfSeats = requestDTO.getVehicleDTO().getPassengerSeats();
         this.babyFlag = requestDTO.getVehicleDTO().getBabyTransport();
         this.petsFlag = requestDTO.getVehicleDTO().getPetTransport();
+        this.vehicleType = Vehicle.VEHICLE_TYPE.valueOf(requestDTO.getVehicleDTO().getVehicleType());
+        this.dateCreated = LocalDateTime.now();
     }
 }
