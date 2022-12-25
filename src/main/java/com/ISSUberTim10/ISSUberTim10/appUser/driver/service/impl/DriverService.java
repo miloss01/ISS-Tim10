@@ -121,10 +121,15 @@ public class DriverService implements IDriverService {
 
     @Override
     public ResponseEntity<ChangeRequestDTO> updateChangeRequest(Integer driverId, ChangeRequestDTO requestDTO) {
-        ChangeRequest newChangeRequest = new ChangeRequest(0L, requestDTO.)
+        Optional<Driver> foundDriver = driverRepository.findById(Long.valueOf(driverId));
+        if (!foundDriver.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+        }
+        Driver driver = foundDriver.get();
+
+        ChangeRequest newChangeRequest = new ChangeRequest(requestDTO, driver);
         Optional<ChangeRequest> found = changeRequestRepository.findByDriverId(Long.valueOf(driverId));
         if (found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
             ChangeRequest changeRequest = found.get();
             newChangeRequest.setId(changeRequest.getId());
             //newChangeRequest.setApproved(false);

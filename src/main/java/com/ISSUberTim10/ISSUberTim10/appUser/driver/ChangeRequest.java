@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.ChangeRequestDTO;
 import lombok.*;
 import java.util.Collection;
 import javax.persistence.*;
@@ -45,4 +46,20 @@ public class ChangeRequest {
 
     private boolean petsFlag;
 
+    public ChangeRequest(ChangeRequestDTO requestDTO, Driver driver) {
+        this.id = 0L;
+        this.name = requestDTO.getUserDTO().getName();
+        this.lastName = requestDTO.getUserDTO().getSurname();
+        this.phone = requestDTO.getUserDTO().getTelephoneNumber();
+        this.email = requestDTO.getUserDTO().getEmail();
+        this.profileImage = requestDTO.getUserDTO().getProfilePicture();
+        this.address = requestDTO.getUserDTO().getAddress();
+        this.approved = false;
+        this.driver = driver;
+        this.model = requestDTO.getVehicleDTO().getModel();
+        this.registrationPlate = requestDTO.getVehicleDTO().getLicenseNumber();
+        this.numOfSeats = requestDTO.getVehicleDTO().getPassengerSeats();
+        this.babyFlag = requestDTO.getVehicleDTO().getBabyTransport();
+        this.petsFlag = requestDTO.getVehicleDTO().getPetTransport();
+    }
 }

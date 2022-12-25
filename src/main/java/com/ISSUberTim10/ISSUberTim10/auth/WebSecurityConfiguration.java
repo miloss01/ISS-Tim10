@@ -3,6 +3,7 @@ package com.ISSUberTim10.ISSUberTim10.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -36,6 +37,7 @@ public class WebSecurityConfiguration {
             .antMatchers("/h2-console/**").permitAll()
             .antMatchers("/api/user/login").permitAll()
             .antMatchers("/api/unregisteredUser").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/passenger").permitAll()
             .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
