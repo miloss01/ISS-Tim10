@@ -1,6 +1,7 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.ChangeRequest;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import org.springframework.data.domain.Pageable;
@@ -50,4 +51,6 @@ public interface IDriverService {
     public ResponseEntity<WorkingHourDTO> getWorkingHour(Integer workingHourId);
 
     public ResponseEntity<WorkingHourDTO> updateWorkingHour(Integer workingHourId, WorkingHourDTO workingHourDTO);
+
+    public ResponseEntity<ChangeRequestDTO> updateChangeRequest(Integer driverId, ChangeRequestDTO requestDTO);
 }

@@ -1,8 +1,7 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import lombok.*;
-
+import java.util.Collection;
 import javax.persistence.*;
 
 @NoArgsConstructor
@@ -34,4 +33,16 @@ public class ChangeRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Driver driver;
+
+    //private Collection<Document> documents;
+    private String model;
+
+    private String registrationPlate;
+
+    private int numOfSeats;
+
+    private boolean babyFlag;
+
+    private boolean petsFlag;
+
 }

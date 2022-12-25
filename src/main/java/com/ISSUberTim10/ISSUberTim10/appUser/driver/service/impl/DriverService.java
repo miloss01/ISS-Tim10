@@ -1,10 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.ChangeRequest;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Document;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.ChangeRequestRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.DocumentRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.DriverRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleRepository;
@@ -25,7 +27,7 @@ import java.util.Optional;
 @Service
 public class DriverService implements IDriverService {
     @Autowired
-    VehicleRepository vehicleRepository;
+    ChangeRequestRepository changeRequestRepository;
     @Autowired
     DriverRepository driverRepository;
     @Autowired
@@ -115,5 +117,19 @@ public class DriverService implements IDriverService {
     @Override
     public ResponseEntity<WorkingHourDTO> updateWorkingHour(Integer workingHourId, WorkingHourDTO workingHourDTO) {
         return null;
+    }
+
+    @Override
+    public ResponseEntity<ChangeRequestDTO> updateChangeRequest(Integer driverId, ChangeRequestDTO requestDTO) {
+        ChangeRequest newChangeRequest = new ChangeRequest(0L, requestDTO.)
+        Optional<ChangeRequest> found = changeRequestRepository.findByDriverId(Long.valueOf(driverId));
+        if (found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+            ChangeRequest changeRequest = found.get();
+            newChangeRequest.setId(changeRequest.getId());
+            //newChangeRequest.setApproved(false);
+        }
+        changeRequestRepository.save(newChangeRequest);
+        return new ResponseEntity<>(requestDTO, HttpStatus.OK);
     }
 }
