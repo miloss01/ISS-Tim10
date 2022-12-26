@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/review")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ReviewContoller {
 
     // Creating a review about the vehicle
