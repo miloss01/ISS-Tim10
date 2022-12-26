@@ -38,6 +38,7 @@ public class WebSecurityConfiguration {
             .antMatchers("/api/user/login").permitAll()
             .antMatchers("/api/unregisteredUser").permitAll()
             .antMatchers(HttpMethod.POST, "/api/passenger").permitAll()
+            .antMatchers("/api/passenger/activate/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

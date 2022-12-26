@@ -64,6 +64,11 @@ public class AppUserService implements IAppUserService {
     public Optional<AppUser> findByEmail(String email) { return appUserRepository.findByEmail(email); }
 
     @Override
+    public Optional<AppUser> findById(Long id) {
+        return appUserRepository.findById(id);
+    }
+
+    @Override
     public ResponseEntity<String> blockUser(Integer id) {
         Optional<AppUser> found = appUserRepository.findById(id.longValue());
         if (!found.isPresent()) {
@@ -75,4 +80,5 @@ public class AppUserService implements IAppUserService {
         }
         return new ResponseEntity<String>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
+
 }
