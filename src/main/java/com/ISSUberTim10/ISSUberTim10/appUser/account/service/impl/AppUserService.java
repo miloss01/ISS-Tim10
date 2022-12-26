@@ -76,5 +76,5 @@ public class AppUserService implements IAppUserService {
         }
         return new ResponseEntity<String>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
-    
+
 }
