@@ -21,7 +21,7 @@ public abstract class AppUser {
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SeqGenUser")
 //    private Long id;
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
     private String name;
