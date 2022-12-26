@@ -21,9 +21,19 @@ public class UserActivation {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private AppUser appUser;
+    private String name;
+
+    private String lastName;
+
+    private String phone;
+
+    private String email;
+
+    private String password;
+
+    private String profileImage;
+
+    private String address;
 
     private LocalDateTime dateCreated;
 
