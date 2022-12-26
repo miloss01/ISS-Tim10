@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -57,4 +58,17 @@ public class AppUserService implements IAppUserService {
 
     @Override
     public Optional<AppUser> findByEmail(String email) { return appUserRepository.findByEmail(email); }
+
+    @Override
+    public ResponseEntity<String> blockUser(Integer id) {
+        Optional<AppUser> found = appUserRepository.findById(id.longValue());
+        if (!found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+        } else {
+            AppUser appUser = found.get();
+            appUser.setBlockedFlag(true);
+            appUserRepository.save(appUser);
+        }
+        return new ResponseEntity<String>("User successfully blocked", HttpStatus.NO_CONTENT);
+    }
 }

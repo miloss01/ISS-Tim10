@@ -5,6 +5,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
+import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -74,14 +77,29 @@ public class AppUserController {
                                                          @RequestParam(required = false) String sort,
                                                          @RequestParam(required = false) String from,
                                                          @RequestParam(required = false) String to) {
-        //Page<Ride> rides = rideService.getByUser(id, page);
+        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
+        List<Ride> rides;
         ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-        ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
-        passengers.add(new UserDTO(1L, ""));
-        ridesDTO.add(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+        rides = resultPage.getContent();
+        for (Ride ride : rides) {
+            ridesDTO.add(new RideDTO(ride));
+        }
+        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
+
+//
+//        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
+//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+//        ArrayList<UserDTO> passengers = new ArrayList<>();
+//        passengers.add(new UserDTO(2L, "pepe"));
+//        passengers.add(new UserDTO(2L, "guug"));
+//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
+//        passengers.add(new UserDTO(1L, "eheh"));
+//        ridesDTO.add(new RideDTO(1L, locations, "12.10.2022. 11:17", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
         return new ResponseEntity<>(new RideResponseDTO(ridesDTO.size(), ridesDTO), HttpStatus.OK);
     }
 
@@ -111,7 +129,12 @@ public class AppUserController {
 
     @PutMapping(value = "/{id}/block")
     public ResponseEntity<String> blockUser(@PathVariable Integer id) {
-        return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
+        try {
+            return service.blockUser(id);
+        } catch (Exception responseStatusException) {
+            return new ResponseEntity<>(responseStatusException.getMessage() + "Aloooooo", HttpStatus.NOT_FOUND);
+        }
+        //return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(value = "/{id}/unblock")

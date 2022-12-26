@@ -130,10 +130,20 @@ public class PassengerController {
         ArrayList<RideDTO> ridesDTO = new ArrayList<>();
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("", 10.0, 10.0), new LocationDTO("", 10.0, 10.0)));
+        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Takovska 15", 10.0, 10.0), new LocationDTO("Bulevar Evrope", 10.0, 10.0)));
         passengers.add(new UserDTO(1L, ""));
-        ridesDTO.add(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
+        ridesDTO.add(new RideDTO(1L, locations, "14.01.2022. 20:15", "13.01.2022. 21:15", 123, new UserDTO(1L, ""),
                 passengers, 5, "", true, true, null, null));
+
+        locations.remove(0);
+        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Andriceva 22", 10.0, 10.0), new LocationDTO("Bulevar Oslobodjenja 20", 10.0, 10.0)));
+        ridesDTO.add(new RideDTO(1L, locations, "14.01.2022. 22:15", "14.01.2022. 23:30", 123, new UserDTO(1L, ""),
+                passengers, 5, "", true, true, null, null));
+        ridesDTO.add(new RideDTO(1L, locations, "14.05.2021. 20:15", "14.05.2021. 21:15", 123, new UserDTO(1L, ""),
+                passengers, 5, "", true, true, null, null));
+        ridesDTO.add(new RideDTO(1L, locations, "17.10.2021. 20:15", "17.10.2021. 21:15", 123, new UserDTO(1L, ""),
+                passengers, 5, "", true, true, null, null));
+
 
         return new RideResponseDTO(25, ridesDTO);
     }

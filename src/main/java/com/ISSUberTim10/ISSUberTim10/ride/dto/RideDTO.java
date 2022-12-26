@@ -1,13 +1,17 @@
 package com.ISSUberTim10.ISSUberTim10.ride.dto;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
@@ -40,8 +44,8 @@ public class RideDTO {
         passengers.add(new UserDTO(1L, ""));
         this.id = ride.getId();
         this.locations = locations;
-        this.startTime = ride.getStartTime().toString();
-        this.endTime = ride.getEndTime().toString();
+        this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatter);
+        this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatter);
         this.totalCost = (int) ride.getPrice();
         this.driver = new UserDTO(ride.getDriver());
         this.passengers = passengers;
@@ -50,6 +54,6 @@ public class RideDTO {
         this.babyTransport = ride.isBabyTransport();
         this.petTransport = ride.isPetTransport();
         this.status = ride.getRideStatus().toString();
-        this.rejection = new RejectionDTO(ride.getRejection());
+        if (ride.getRejection() != null) this.rejection = new RejectionDTO(ride.getRejection());
     }
 }
