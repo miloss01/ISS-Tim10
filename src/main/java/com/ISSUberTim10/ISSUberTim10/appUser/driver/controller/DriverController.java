@@ -32,7 +32,7 @@ public class DriverController {
                         243,
                         new ArrayList<DriverDTO>(
                                 Arrays.asList(
-                                        new DriverDTO(10, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null)
+                                        new DriverDTO(1, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null)
                                 )
                         )
                 ),
