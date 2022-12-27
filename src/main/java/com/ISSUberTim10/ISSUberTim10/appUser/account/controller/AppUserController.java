@@ -59,6 +59,11 @@ public class AppUserController {
         return new ResponseEntity<>(new AllUsersDTO(usersDTO.size(), usersDTO), HttpStatus.OK);
     }
 
+    @GetMapping(value="/1", produces = "application/json")
+    public ResponseEntity<UserExpandedDTO> getById(@RequestParam Integer id) {
+        return new ResponseEntity<>(service.getById(id), HttpStatus.OK);
+    }
+
 
 
     @PostMapping()
@@ -133,14 +138,18 @@ public class AppUserController {
         try {
             return service.blockUser(id);
         } catch (Exception responseStatusException) {
-            return new ResponseEntity<>(responseStatusException.getMessage() + "Aloooooo", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(responseStatusException.getMessage(), HttpStatus.NOT_FOUND);
         }
         //return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(value = "/{id}/unblock")
     public ResponseEntity<String> unblockUser(@PathVariable Integer id) {
-        return new ResponseEntity<>("User successfully unblocked", HttpStatus.NO_CONTENT);
+        try {
+            return service.unblockUser(id);
+        } catch (Exception responseStatusException) {
+            return new ResponseEntity<>(responseStatusException.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(value = "/{id}/message", produces = "application/json")
@@ -167,6 +176,11 @@ public class AppUserController {
         ArrayList<NoteDTO> notes = new ArrayList<>();
         notes.add(new NoteDTO(10L, "11.11.2022.", "lala"));
         return new ResponseEntity<>(new NoteResponseDTO(notes.size(), notes), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/isBlocked", produces = "application/json")
+    public ResponseEntity<IsBlockedDTO> isBlocked(@RequestParam Integer id){
+        return service.isBlocked(id);
     }
 
 }

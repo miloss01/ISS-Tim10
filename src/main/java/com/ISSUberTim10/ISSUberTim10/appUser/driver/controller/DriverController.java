@@ -6,11 +6,13 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.VehicleType;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleTypeService;
 import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.DriverService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -63,7 +65,7 @@ public class DriverController {
                         243,
                         new ArrayList<DriverDTO>(
                                 Arrays.asList(
-                                        new DriverDTO(10, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null)
+                                        new DriverDTO(1, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null)
                                 )
                         )
                 ),
@@ -88,14 +90,15 @@ public class DriverController {
 
     @GetMapping(value = "/{id}/documents", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DocumentDTO>> getDocuments(@PathVariable Integer id) {
-        return new ResponseEntity<>(
-                new ArrayList<DocumentDTO>(
-                        Arrays.asList(
-                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
-                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
-                        )
-                ),
-                HttpStatus.OK);
+//        return new ResponseEntity<>(
+//                new ArrayList<DocumentDTO>(
+//                        Arrays.asList(
+//                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
+//                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
+//                        )
+//                ),
+//                HttpStatus.OK);
+        return driverService.getDocuments(id);
     }
 
     @DeleteMapping(value = "/document/{document-id}")
@@ -113,10 +116,11 @@ public class DriverController {
 
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Integer id) {
-        return new ResponseEntity<>(
-                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, false, true),
-                HttpStatus.OK
-        );
+//        return new ResponseEntity<>(
+//                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, false, true),
+//                HttpStatus.OK
+//        );
+        return driverService.getVehicle(id);
     }
 
     @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -232,5 +236,21 @@ public class DriverController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping(value = "/change-requests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChangeRequestResponseDTO> getChangeRequests(){
+        return driverService.getChangeRequests();
+    }
+
+    @PutMapping(value = "/change-request/{driverId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChangeRequestDTO> updateChangeRequest(@PathVariable Integer driverId,@RequestBody ChangeRequestDTO requestDTO){
+        return driverService.updateChangeRequest(driverId, requestDTO);
+    }
+
+    @PutMapping(value = "/change-request/approve/{driverId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChangeRequestDTO> approveChangeRequest(@PathVariable Integer driverId,@RequestBody ChangeRequestDTO requestDTO){
+        return driverService.approveChangeRequest(driverId, requestDTO);
+    }
+
 
 }

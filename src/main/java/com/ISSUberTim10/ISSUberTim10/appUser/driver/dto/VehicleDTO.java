@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.dto;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -25,4 +26,15 @@ public class VehicleDTO {
     private Boolean babyTransport;
     private Boolean petTransport;
 
+    public VehicleDTO(Vehicle vehicle) {
+        this.id = Math.toIntExact(vehicle.getId());
+        this.driverId = Math.toIntExact(vehicle.getDriver().getId());
+        this.vehicleType = vehicle.getVehicleType().getName().toString();
+        this.model = vehicle.getModel();
+        this.licenseNumber = vehicle.getRegistrationPlate();
+        this.currentLocation = new LocationDTO(vehicle.getCurrentCoordinates());
+        this.passengerSeats = vehicle.getNumOfSeats();
+        this.babyTransport = vehicle.isBabyFlag();
+        this.petTransport = vehicle.isPetsFlag();
+    }
 }
