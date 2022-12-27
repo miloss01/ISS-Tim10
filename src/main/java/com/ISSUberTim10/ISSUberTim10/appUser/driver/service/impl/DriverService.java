@@ -1,27 +1,31 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.ChangeRequest;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.Document;
+
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.DriverRepository;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.ChangeRequest;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Document;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.ChangeRequestRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.DocumentRepository;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.DriverRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleRepository;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+
+
 @Service
 public class DriverService implements IDriverService {
     @Autowired
@@ -30,6 +34,23 @@ public class DriverService implements IDriverService {
     DriverRepository driverRepository;
     @Autowired
     DocumentRepository documentRepository;
+
+    @Override
+    public Driver getById(Long id) {
+        return driverRepository.getById(id);
+    }
+
+    @Override
+    public Driver setVehicle(Vehicle vehicle) {
+        Driver driver = driverRepository.getById(vehicle.getDriver().getId());
+        driver.setVehicle(vehicle);
+        return driverRepository.save(driver);
+    }
+
+    @Override
+    public Driver saveDriver(Driver driver) {
+        return driverRepository.save(driver);
+    }
 
     @Override
     public ResponseEntity<VehicleDTO> getVehicle(Integer id) {
@@ -179,4 +200,5 @@ public class DriverService implements IDriverService {
         driver.getVehicle().setRegistrationPlate(requestDTO.getVehicleDTO().getLicenseNumber());
         return driver;
     }
+
 }

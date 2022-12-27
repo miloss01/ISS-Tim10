@@ -1,10 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.DriverDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 
@@ -20,7 +22,7 @@ public class Driver extends AppUser {
     // documentList - Mapiranje, kako se cuva u bazi ---sacuvano u documents
     //private HashSet<Document> documentList;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @ToString.Exclude
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
     private Vehicle vehicle;

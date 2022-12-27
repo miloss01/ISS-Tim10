@@ -1,14 +1,24 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.controller;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.Role;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.VehicleType;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.DriverService;
+
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleService;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleTypeService;
+import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.DriverService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,13 +31,31 @@ import java.util.List;
 public class DriverController {
 
     @Autowired
-    DriverService driverService;
+    private DriverService driverService;
+    @Autowired
+    private VehicleService vehicleService;
+    @Autowired
+    private VehicleTypeService vehicleTypeService;
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DriverDTO> saveDriver(@RequestBody DriverDTO driverDTO) {
-        return new ResponseEntity<>(
-                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
-                HttpStatus.OK);
+
+        Driver driver = new Driver();
+        driver.setName(driverDTO.getName());
+        driver.setLastName(driverDTO.getSurname());
+        driver.setEmail(driverDTO.getEmail());
+        driver.setAddress(driverDTO.getAddress());
+        driver.setPhone(driverDTO.getTelephoneNumber());
+        driver.setProfileImage(driverDTO.getProfilePicture());
+        driver.setRole(Role.DRIVER);
+        driver.setPassword(new BCryptPasswordEncoder().encode(driverDTO.getPassword()));
+
+        Driver saved = driverService.saveDriver(driver);
+
+        driverDTO.setId((int) (long) saved.getId());
+
+        return new ResponseEntity<>(driverDTO, HttpStatus.OK);
+
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -98,10 +126,28 @@ public class DriverController {
     @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleDTO> saveVehicle(@PathVariable Integer id,
                                                   @RequestBody VehicleDTO vehicleDTO) {
-        return new ResponseEntity<>(
-                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
-                HttpStatus.OK
-        );
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setModel(vehicleDTO.getModel());
+        vehicle.setRegistrationPlate(vehicleDTO.getLicenseNumber());
+        vehicle.setBabyFlag(vehicleDTO.getBabyTransport());
+        vehicle.setNumOfSeats(vehicleDTO.getPassengerSeats());
+        vehicle.setPetsFlag(vehicleDTO.getPetTransport());
+        vehicle.setCurrentCoordinates(new Coordinates(vehicleDTO.getCurrentLocation()));
+        vehicle.setVehicleType(vehicleTypeService.getByName(Vehicle.VEHICLE_TYPE.valueOf(vehicleDTO.getVehicleType().toLowerCase())));
+
+        Driver driver = driverService.getById(id.longValue());
+
+        vehicle.setDriver(driver);
+        vehicleDTO.setDriverId(id);
+
+        Driver savedDriver = driverService.setVehicle(vehicle);
+
+        Vehicle saved = vehicleService.saveVehicle(vehicle);
+        vehicleDTO.setId((int) (long) saved.getId());
+
+        return new ResponseEntity<>(vehicleDTO, HttpStatus.OK);
+
     }
 
     @PutMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

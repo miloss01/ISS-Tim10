@@ -24,7 +24,7 @@ public class Vehicle {
 
     // driver - Mapiranje TODO je l okej bidirekciona jer zato posto
     // one to one
-    @OneToOne(mappedBy = "vehicle", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @ToString.Exclude
     private Driver driver;
 
@@ -36,10 +36,10 @@ public class Vehicle {
 
     // currentCoordinates - Kako se cuvaju u bazi
     //@Transient
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Coordinates currentCoordinates;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private VehicleType vehicleType;
 
     private boolean babyFlag;

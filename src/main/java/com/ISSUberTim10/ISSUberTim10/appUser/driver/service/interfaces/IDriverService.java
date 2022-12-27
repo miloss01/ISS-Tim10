@@ -1,5 +1,8 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces;
 
+
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.ChangeRequest;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
@@ -14,7 +17,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public interface IDriverService {
+
+    public Driver setVehicle(Vehicle vehicle);
+    public Driver saveDriver(Driver driver);
+
+    public Driver getById(Long id);
     public ResponseEntity<VehicleDTO> getVehicle(Integer id);
 
     public ResponseEntity<VehicleDTO> saveVehicle(Integer id, VehicleDTO vehicleDTO) ;
@@ -57,4 +66,5 @@ public interface IDriverService {
     public ResponseEntity<ChangeRequestResponseDTO> getChangeRequests();
 
     ResponseEntity<ChangeRequestDTO> approveChangeRequest(Integer driverId, ChangeRequestDTO requestDTO);
+
 }

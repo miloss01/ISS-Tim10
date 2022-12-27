@@ -119,11 +119,12 @@ public class AppUserController {
         sc.setAuthentication(auth);
 
         String role = sc.getAuthentication().getAuthorities().toString();
+        AppUser user = service.findByEmail(loginDTO.getEmail()).get();
 
         String token = jwtTokenUtil.generateToken(
             loginDTO.getEmail(),
             Role.valueOf(role.substring(role.indexOf("_") + 1, role.length() - 1)),
-            service.findByEmail(loginDTO.getEmail()).get().getId());
+            user.getId());
 
         return new ResponseEntity<>(
                 new TokenResponseDTO(token, ""),
