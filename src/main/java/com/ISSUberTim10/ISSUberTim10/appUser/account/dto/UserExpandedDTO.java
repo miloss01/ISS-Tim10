@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.dto;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,4 +21,8 @@ public class UserExpandedDTO {
     private String email;
     private String address;
 
+    public UserExpandedDTO(AppUser user) {
+        this(user.getId(), user.getName(), user.getLastName(), user.getProfileImage(),
+                user.getPhone(), user.getEmail(), user.getAddress());
+    }
 }
