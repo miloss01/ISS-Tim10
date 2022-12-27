@@ -29,7 +29,7 @@ public class VehicleDTO {
     public VehicleDTO(Vehicle vehicle) {
         this.id = Math.toIntExact(vehicle.getId());
         this.driverId = Math.toIntExact(vehicle.getDriver().getId());
-        this.vehicleType = vehicle.getVehicleType().toString();
+        this.vehicleType = vehicle.getVehicleType().getName().toString();
         this.model = vehicle.getModel();
         this.licenseNumber = vehicle.getRegistrationPlate();
         this.currentLocation = new LocationDTO(vehicle.getCurrentCoordinates());

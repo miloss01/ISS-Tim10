@@ -106,6 +106,6 @@ insert into change_request (address, email, last_name, name, phone, profile_imag
 values ('work', 'boki@DEsi.com', 'every night', 'and', 'day', 'https://material.angular.io/assets/img/examples/shiba2.jpg', 2, 0, 'promena', 'registracija', 3, 1, 1, '2020-04-12 07:03:24', 'standard');
 insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
 values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 3, 0, 'promena', 'registracija', 3, 1, 1, '2022-04-12 07:03:24', 'standard');
-
-insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
-values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 4, 1, 'promena', 'registracija', 3, 1, 1, '2016-04-12 07:03:24', 'standard');
+--
+--insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
+--values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 4, 1, 'promena', 'registracija', 3, 1, 1, '2016-04-12 07:03:24', 'standard');
