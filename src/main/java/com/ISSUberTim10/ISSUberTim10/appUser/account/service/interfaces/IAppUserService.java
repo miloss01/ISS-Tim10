@@ -38,4 +38,5 @@ public interface IAppUserService {
                                                @RequestBody NoteMessageDTO messageDTO);
 
 
+    ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page);
 }

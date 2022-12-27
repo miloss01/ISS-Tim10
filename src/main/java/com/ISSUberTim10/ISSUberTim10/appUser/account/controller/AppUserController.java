@@ -172,10 +172,9 @@ public class AppUserController {
     }
 
     @GetMapping(value = "/{id}/note", produces = "application/json")
-    public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page){
-        ArrayList<NoteDTO> notes = new ArrayList<>();
-        notes.add(new NoteDTO(10L, "11.11.2022.", "lala"));
-        return new ResponseEntity<>(new NoteResponseDTO(notes.size(), notes), HttpStatus.OK);
+    public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id,
+                                                    @RequestParam(required = false) Pageable page){
+        return service.getNotes(id, null);
     }
 
     @GetMapping(value = "/isBlocked", produces = "application/json")
