@@ -166,8 +166,9 @@ public class AppUserController {
 
     @PostMapping(value = "/{id}/note", consumes = "application/json", produces = "application/json")
     public ResponseEntity<NoteDTO> sendNote(@PathVariable Integer id,
-                                            @RequestBody NoteMessageDTO messageDTO){
-        return new ResponseEntity<>(new NoteDTO(10L, "11.11.2022.", messageDTO.getMessage()), HttpStatus.OK);
+                                            @RequestBody NoteMessageDTO messageDTO) {
+
+        return service.sendMessage(id, messageDTO);
     }
 
     @GetMapping(value = "/{id}/note", produces = "application/json")

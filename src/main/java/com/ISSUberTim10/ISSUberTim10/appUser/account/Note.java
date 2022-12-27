@@ -1,6 +1,5 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,7 +17,7 @@ public class Note {
     @Column(name = "id", nullable = false)
     private Long id;
     private String message;
-    private Date note_date;
+    private Date noteDate;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
