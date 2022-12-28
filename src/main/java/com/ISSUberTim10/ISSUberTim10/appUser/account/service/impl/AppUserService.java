@@ -140,4 +140,19 @@ public class AppUserService implements IAppUserService {
         return noteService.getAll(id);
     }
 
+    @Override
+    public ResponseEntity<IsActiveDTO> changeActiveFlag(Integer id, IsActiveDTO isActiveDTO) {
+        Optional<AppUser> found = appUserRepository.findById(id.longValue());
+        if (!found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        AppUser appUser = found.get();
+        appUser.setActiveFlag(isActiveDTO.isActive());
+        if (appUser.isBlockedFlag()) {
+            appUser.setActiveFlag(false);
+        }
+        appUserRepository.save(appUser);
+        return new ResponseEntity<>(isActiveDTO, HttpStatus.OK);
+    }
+
 }
