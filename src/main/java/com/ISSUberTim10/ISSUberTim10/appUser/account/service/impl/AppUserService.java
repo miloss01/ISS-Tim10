@@ -1,10 +1,10 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.service.impl;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.IsBlockedDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerResponseDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserExpandedDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Note;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.INoteService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -23,6 +24,10 @@ public class AppUserService implements IAppUserService {
 
     @Autowired
     AppUserRepository appUserRepository;
+
+    @Autowired
+    private INoteService noteService;
+
     @Override
     public Collection<AppUser> getAll() {
         return appUserRepository.findAll();
@@ -115,5 +120,15 @@ public class AppUserService implements IAppUserService {
                     new IsBlockedDTO(appUser.getId().intValue(), appUser.isBlockedFlag()), HttpStatus.OK);
         }
 
+    }
+
+    @Override
+    public ResponseEntity<NoteDTO> sendMessage(Integer id, NoteMessageDTO messageDTO) {
+        Note note = new Note();
+        note.setMessage(messageDTO.getMessage());
+        note.setNoteDate(new Date());
+        note.setAppUser(appUserRepository.findById(id.longValue()).get());
+        NoteDTO noteDTO = new NoteDTO(noteService.save(note));
+        return new ResponseEntity<>(noteDTO, HttpStatus.OK);
     }
 }
