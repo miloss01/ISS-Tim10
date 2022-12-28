@@ -76,7 +76,7 @@ public class PassengerController {
 
         UserActivation saved = userActivationService.save(userActivation);
 
-        emailService.sendEmail(receiver, "http://localhost:" + port + "/api/passenger/activate/" + saved.getId());
+        emailService.sendEmail(receiver, "Passenger account activation", "http://localhost:" + port + "/api/passenger/activate/" + saved.getId());
 
         return new ResponseEntity<>(new PassengerResponseDTO(saved), HttpStatus.OK);
     }

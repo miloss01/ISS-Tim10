@@ -155,4 +155,9 @@ public class AppUserService implements IAppUserService {
         return new ResponseEntity<>(isActiveDTO, HttpStatus.OK);
     }
 
+    @Override
+    public AppUser save(AppUser appUser) {
+        return appUserRepository.save(appUser);
+    }
+
 }

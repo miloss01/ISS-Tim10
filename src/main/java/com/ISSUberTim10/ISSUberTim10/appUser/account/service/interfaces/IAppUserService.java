@@ -40,5 +40,8 @@ public interface IAppUserService {
 
     ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page);
 
+
     ResponseEntity<IsActiveDTO> changeActiveFlag(Integer id, IsActiveDTO isActiveDTO);
+    public AppUser save(AppUser appUser);
+
 }

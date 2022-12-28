@@ -2,29 +2,38 @@ package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.PasswordResetCode;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPasswordResetCodeService;
+import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -36,6 +45,15 @@ public class AppUserController {
 
     @Autowired
     IRideService rideService;
+
+    @Autowired
+    IPasswordResetCodeService passwordResetCodeService;
+
+    @Autowired
+    EmailService emailService;
+
+    @Value("${postmark.receiver}")
+    private String receiver;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -183,10 +201,58 @@ public class AppUserController {
         return service.isBlocked(id);
     }
 
-
     @PutMapping(value = "/changeActiveFlag/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<IsActiveDTO> changeActiveFlag(@PathVariable Integer id, @RequestBody IsActiveDTO isActiveDTO) {
         return service.changeActiveFlag(id, isActiveDTO);
+    }
+
+    @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> requestCode(@RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
+        System.out.println("u post");
+
+        Optional<AppUser> appUser = service.findByEmail(passwordResetCodeDTO.getEmail());
+
+        if (!appUser.isPresent())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        String resetCode = "neki kod";
+
+        PasswordResetCode passwordResetCode = new PasswordResetCode();
+        passwordResetCode.setEmail(passwordResetCodeDTO.getEmail());
+        passwordResetCode.setCode(resetCode);
+        passwordResetCode.setDateExpiration(LocalDateTime.now().plusMinutes(10L));
+
+        passwordResetCodeService.save(passwordResetCode);
+
+        emailService.sendEmail(receiver, "Password reset code", resetCode);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
+
+    @PutMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> applyCode(@RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
+        System.out.println("u put");
+        Optional<AppUser> appUser = service.findByEmail(passwordResetCodeDTO.getEmail());
+        System.out.println(passwordResetCodeDTO);
+        if (!appUser.isPresent())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        Optional<PasswordResetCode> code = passwordResetCodeService.findByEmail(passwordResetCodeDTO.getEmail());
+        System.out.println(code.get());
+
+        if (!code.isPresent() ||
+            !code.get().getCode().equals(passwordResetCodeDTO.getCode()) ||
+            code.get().getDateExpiration().isBefore(LocalDateTime.now()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        appUser.get().setPassword(new BCryptPasswordEncoder().encode(passwordResetCodeDTO.getNewPassword()));
+        service.save(appUser.get());
+
+        passwordResetCodeService.deleteById(code.get().getId());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
 }

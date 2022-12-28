@@ -36,6 +36,7 @@ public class WebSecurityConfiguration {
             .antMatchers("/*").permitAll()
             .antMatchers("/h2-console/**").permitAll()
             .antMatchers("/api/user/login").permitAll()
+            .antMatchers("/api/user/resetPassword").permitAll()
             .antMatchers("/api/unregisteredUser").permitAll()
             .antMatchers(HttpMethod.POST, "/api/passenger").permitAll()
             .antMatchers("/api/passenger/activate/**").permitAll()
