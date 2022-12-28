@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
@@ -75,7 +76,9 @@ public class AppUserService implements IAppUserService {
     }
 
     @Override
-    public Optional<AppUser> findByEmail(String email) { return appUserRepository.findByEmail(email); }
+    public Optional<AppUser> findByEmail(String email) {
+        return appUserRepository.findByEmail(email);
+    }
 
     @Override
     public Optional<AppUser> findById(Long id) {
@@ -131,4 +134,10 @@ public class AppUserService implements IAppUserService {
         NoteDTO noteDTO = new NoteDTO(noteService.save(note));
         return new ResponseEntity<>(noteDTO, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<NoteResponseDTO> getNotes(Integer id, Pageable page) {
+        return noteService.getAll(id);
+    }
+
 }
