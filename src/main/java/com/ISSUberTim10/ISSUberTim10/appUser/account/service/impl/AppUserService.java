@@ -140,4 +140,9 @@ public class AppUserService implements IAppUserService {
         return noteService.getAll(id);
     }
 
+    @Override
+    public AppUser save(AppUser appUser) {
+        return appUserRepository.save(appUser);
+    }
+
 }

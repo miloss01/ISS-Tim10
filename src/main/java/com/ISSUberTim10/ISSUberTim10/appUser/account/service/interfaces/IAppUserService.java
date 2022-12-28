@@ -39,4 +39,6 @@ public interface IAppUserService {
 
 
     ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page);
+
+    public AppUser save(AppUser appUser);
 }
