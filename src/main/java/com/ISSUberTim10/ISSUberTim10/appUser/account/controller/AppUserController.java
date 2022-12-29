@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/user")
 public class AppUserController {
@@ -199,6 +199,11 @@ public class AppUserController {
     @GetMapping(value = "/isBlocked", produces = "application/json")
     public ResponseEntity<IsBlockedDTO> isBlocked(@RequestParam Integer id){
         return service.isBlocked(id);
+    }
+
+    @PutMapping(value = "/changeActiveFlag/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<IsActiveDTO> changeActiveFlag(@PathVariable Integer id, @RequestBody IsActiveDTO isActiveDTO) {
+        return service.changeActiveFlag(id, isActiveDTO);
     }
 
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)

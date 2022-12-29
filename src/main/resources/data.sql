@@ -15,9 +15,9 @@ registration_plate, current_coordinates_id, vehicle_type_id) values
 
 
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
-values (0, 'Bulevar Oslobodjenja', 1, 'nana@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
+values (0, 'Bulevar Oslobodjenja', 0, 'nana@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
-values (0, 'Bulevar Oslobodjenja', 1, 'boki@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+values (0, 'Bulevar Oslobodjenja', 0, 'boki@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Misurinova', 1, 'mail@gmail.com', 'Milic', 'Milica', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
