@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,6 +94,7 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Driver')")
     public ResponseEntity<DriverDTO> getDriver(@PathVariable Integer id) {
 
         Driver driver = driverService.getById(id.longValue());
