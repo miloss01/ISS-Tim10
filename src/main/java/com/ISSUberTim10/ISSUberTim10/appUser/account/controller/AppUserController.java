@@ -100,29 +100,30 @@ public class AppUserController {
                                                          @RequestParam(required = false) String sort,
                                                          @RequestParam(required = false) String from,
                                                          @RequestParam(required = false) String to) {
-        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
-        List<Ride> rides;
-        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-        rides = resultPage.getContent();
-        for (Ride ride : rides) {
-            ridesDTO.add(new RideDTO(ride));
-        }
-        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
-
-//
+//        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
+//        List<Ride> rides;
 //        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-//        ArrayList<UserDTO> passengers = new ArrayList<>();
-//        passengers.add(new UserDTO(2L, "pepe"));
-//        passengers.add(new UserDTO(2L, "guug"));
-//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
-//        passengers.add(new UserDTO(1L, "eheh"));
-//        ridesDTO.add(new RideDTO(1L, locations, "12.10.2022. 11:17", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+//        rides = resultPage.getContent();
+//        for (Ride ride : rides) {
+//            ridesDTO.add(new RideDTO(ride));
+//            System.out.println(ride.getId());
+//        }
+//        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
+
+
+        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
+        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+        ArrayList<UserDTO> passengers = new ArrayList<>();
+        passengers.add(new UserDTO(2L, "pepe"));
+        passengers.add(new UserDTO(2L, "guug"));
+        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
+        passengers.add(new UserDTO(1L, "eheh"));
+        ridesDTO.add(new RideDTO(1L, locations, "12.10.2022. 11:17", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
         return new ResponseEntity<>(new RideResponseDTO(ridesDTO.size(), ridesDTO), HttpStatus.OK);
     }
 
