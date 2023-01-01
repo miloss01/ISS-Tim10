@@ -13,15 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 public interface IDriverService {
 
     public Driver setVehicle(Vehicle vehicle);
     public Driver saveDriver(Driver driver);
+    public List<Driver> getAllDrivers(Pageable pageable);
 
     public Driver getById(Long id);
     public ResponseEntity<VehicleDTO> getVehicle(Integer id);

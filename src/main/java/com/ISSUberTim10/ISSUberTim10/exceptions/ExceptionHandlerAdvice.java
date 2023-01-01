@@ -7,6 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.format.DateTimeParseException;
+
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
 
@@ -15,10 +17,16 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>(new ErrorMessage(ex.message), ex.httpStatus);
     }
 
-    @ExceptionHandler(value = { ConstraintViolationException.class })
-    protected ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException ex) {
+//    @ExceptionHandler(value = { ConstraintViolationException.class })
+//    protected ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException ex) {
+//        System.out.println(ex);
+//        return new ResponseEntity<>("zabrana", HttpStatus.BAD_REQUEST);
+//    }
+
+    @ExceptionHandler(value = { DateTimeParseException.class })
+    protected ResponseEntity<String> handleDateTimeParseException(DateTimeParseException ex) {
         System.out.println(ex);
-        return new ResponseEntity<>("zabrana", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Wrong date format!", HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 public interface IVehicleService {
     public Vehicle saveVehicle(Vehicle vehicle);
+    public Vehicle getById(Long id);
     public ResponseEntity<Void> updateVehicle(Integer id, LocationDTO currentLocationDTO);
 
 }

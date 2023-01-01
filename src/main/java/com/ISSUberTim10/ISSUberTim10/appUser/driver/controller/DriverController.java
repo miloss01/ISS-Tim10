@@ -1,14 +1,14 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.Role;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.VehicleType;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleTypeService;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.*;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.DriverService;
@@ -21,9 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -31,11 +34,15 @@ import java.util.List;
 public class DriverController {
 
     @Autowired
-    private DriverService driverService;
+    private IDriverService driverService;
     @Autowired
-    private VehicleService vehicleService;
+    private IVehicleService vehicleService;
     @Autowired
-    private VehicleTypeService vehicleTypeService;
+    private IVehicleTypeService vehicleTypeService;
+    @Autowired
+    private IDocumentService documentService;
+    @Autowired
+    private IWorkingTimeService workingTimeService;
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DriverDTO> saveDriver(@RequestBody DriverDTO driverDTO) {
@@ -60,32 +67,69 @@ public class DriverController {
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DriversDTO> getDrivers(Pageable page) {
-        return new ResponseEntity<DriversDTO>(
-                new DriversDTO(
-                        243,
-                        new ArrayList<DriverDTO>(
-                                Arrays.asList(
-                                        new DriverDTO(1, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null)
-                                )
-                        )
-                ),
+
+        List<Driver> drivers = driverService.getAllDrivers(page);
+        ArrayList<DriverDTO> driverDTOs = new ArrayList<>();
+
+        for (Driver driver : drivers)
+            driverDTOs.add(new DriverDTO(driver));
+
+        return new ResponseEntity<>(
+                new DriversDTO(driverDTOs.size(), driverDTOs),
                 HttpStatus.OK
         );
+
+//        return new ResponseEntity<DriversDTO>(
+//                new DriversDTO(
+//                        243,
+//                        new ArrayList<DriverDTO>(
+//                                Arrays.asList(
+//                                        new DriverDTO(1, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null)
+//                                )
+//                        )
+//                ),
+//                HttpStatus.OK
+//        );
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DriverDTO> getDriver(@PathVariable Integer id) {
-        return new ResponseEntity<>(
-                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
-                HttpStatus.OK);
+
+        Driver driver = driverService.getById(id.longValue());
+
+        return new ResponseEntity<>(new DriverDTO(driver), HttpStatus.OK);
+
+//        return new ResponseEntity<>(
+//                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
+//                HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DriverDTO> updateDriver(@PathVariable Integer id,
                                                   @RequestBody DriverDTO driverDTO) {
+
+        Driver driver = driverService.getById(id.longValue());
+
+        driver.setName(driverDTO.getName());
+        driver.setLastName(driverDTO.getSurname());
+        driver.setProfileImage(driverDTO.getProfilePicture());
+        driver.setPhone(driverDTO.getTelephoneNumber());
+        driver.setAddress(driverDTO.getAddress());
+        driver.setEmail(driverDTO.getEmail());
+
+        if (driverDTO.getPassword() != null)
+            driver.setPassword(new BCryptPasswordEncoder().encode(driverDTO.getPassword()));
+
+        Driver saved = driverService.saveDriver(driver);
+
         return new ResponseEntity<>(
-                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
-                HttpStatus.OK);
+                new DriverDTO(saved),
+                HttpStatus.OK
+        );
+
+//        return new ResponseEntity<>(
+//                new DriverDTO(123, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com\"", "Bulevar Oslobodjenja 74", null),
+//                HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/documents", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -103,15 +147,28 @@ public class DriverController {
 
     @DeleteMapping(value = "/document/{document-id}")
     public ResponseEntity<Void> deleteDocument(@PathVariable(name = "document-id") Integer documentId) {
+        documentService.deleteById(documentId.longValue());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(value = "/{id}/documents", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DocumentDTO> updateDocument(@PathVariable Integer id,
+    public ResponseEntity<DocumentDTO> postDocument(@PathVariable Integer id,
                                                       @RequestBody DocumentDTO documentDTO) {
+
+        Driver driver = driverService.getById(id.longValue());
+
+        Document document = new Document();
+        document.setDriver(driver);
+        document.setImage(documentDTO.getDocumentImage());
+        document.setTitle(documentDTO.getName());
+
+        Document saved = documentService.save(document);
+
         return new ResponseEntity<>(
-                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
-                HttpStatus.OK);
+                new DocumentDTO(saved),
+                HttpStatus.OK
+        );
+
     }
 
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -153,10 +210,29 @@ public class DriverController {
     @PutMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleDTO> updateVehicle(@PathVariable Integer id,
                                                     @RequestBody VehicleDTO vehicleDTO) {
+
+        Driver driver = driverService.getById(id.longValue());
+
+        Vehicle vehicle = vehicleService.getById(driver.getVehicle().getId());
+        vehicle.setModel(vehicleDTO.getModel());
+        vehicle.setRegistrationPlate(vehicleDTO.getLicenseNumber());
+        vehicle.setBabyFlag(vehicleDTO.getBabyTransport());
+        vehicle.setNumOfSeats(vehicleDTO.getPassengerSeats());
+        vehicle.setPetsFlag(vehicleDTO.getPetTransport());
+        vehicle.setCurrentCoordinates(new Coordinates(vehicleDTO.getCurrentLocation(), vehicle.getCurrentCoordinates().getId()));
+        vehicle.setVehicleType(vehicleTypeService.getByName(Vehicle.VEHICLE_TYPE.valueOf(vehicleDTO.getVehicleType().toLowerCase())));
+
+        Vehicle saved = vehicleService.saveVehicle(vehicle);
+
         return new ResponseEntity<>(
-                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+                new VehicleDTO(saved),
                 HttpStatus.OK
         );
+
+//        return new ResponseEntity<>(
+//                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
+//                HttpStatus.OK
+//        );
     }
 
     @GetMapping(value = "/{id}/working-hour", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -164,26 +240,59 @@ public class DriverController {
                                                            Pageable page,
                                                            @RequestParam(required = false) String from,
                                                            @RequestParam(required = false) String to) {
-        return new ResponseEntity<WorkingHoursDTO>(
-                new WorkingHoursDTO(
-                        243,
-                        new ArrayList<WorkingHourDTO>(
-                                Arrays.asList(
-                                        new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z")
-                                )
-                        )
-                ),
+
+        Driver driver = driverService.getById(id.longValue());
+        List<WorkingTime> workingTimes = workingTimeService.getByDriver(page, driver, from ,to);
+
+        ArrayList<WorkingHourDTO> workingHourDTOs = new ArrayList<>();
+
+        for (WorkingTime workingTime : workingTimes)
+            workingHourDTOs.add(new WorkingHourDTO(workingTime));
+
+        return new ResponseEntity<>(
+                new WorkingHoursDTO(workingHourDTOs.size(), workingHourDTOs),
                 HttpStatus.OK
         );
+
+//        return new ResponseEntity<WorkingHoursDTO>(
+//                new WorkingHoursDTO(
+//                        243,
+//                        new ArrayList<WorkingHourDTO>(
+//                                Arrays.asList(
+//                                        new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z")
+//                                )
+//                        )
+//                ),
+//                HttpStatus.OK
+//        );
     }
 
     @PostMapping(value = "/{id}/working-hour", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkingHourDTO> saveWorkingHour(@PathVariable Integer id,
                                                           @RequestBody WorkingHourDTO workingHourDTO) {
-        return new ResponseEntity<>(
-                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
-                HttpStatus.OK
-        );
+
+        Driver driver = driverService.getById(id.longValue());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        WorkingTime workingTime = new WorkingTime();
+        workingTime.setDriver(driver);
+        workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getStart(), formatter));
+        workingTime.setEndTime(null);
+
+        WorkingTime saved = workingTimeService.save(workingTime);
+
+        WorkingHourDTO ret = new WorkingHourDTO();
+        ret.setId(saved.getId().intValue());
+        ret.setStart(saved.getStartTime().toString());
+
+        return new ResponseEntity<>(ret, HttpStatus.OK);
+
+
+//        return new ResponseEntity<>(
+//                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
+//                HttpStatus.OK
+//        );
     }
 
     @GetMapping(value = "/{id}/ride", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -222,19 +331,41 @@ public class DriverController {
 
     @GetMapping(value = "/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkingHourDTO> getWorkingHour(@PathVariable(name = "working-hour-id") Integer workingHourId) {
-        return new ResponseEntity<>(
-                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
-                HttpStatus.OK
-        );
+
+        WorkingTime workingTime = workingTimeService.getById(workingHourId.longValue());
+
+        WorkingHourDTO workingHourDTO = new WorkingHourDTO();
+        workingHourDTO.setId(workingTime.getId().intValue());
+        workingHourDTO.setStart(workingTime.getStartTime().toString());
+        if (workingTime.getEndTime() != null)
+            workingHourDTO.setEnd(workingTime.getEndTime().toString());
+
+        return new ResponseEntity<>(workingHourDTO, HttpStatus.OK);
+
+//        return new ResponseEntity<>(
+//                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
+//                HttpStatus.OK
+//        );
     }
 
     @PutMapping(value = "/working-hour/{working-hour-id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkingHourDTO> updateWorkingHour(@PathVariable(name = "working-hour-id") Integer workingHourId,
                                                             @RequestBody WorkingHourDTO workingHourDTO) {
-        return new ResponseEntity<>(
-                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
-                HttpStatus.OK
-        );
+
+        WorkingTime workingTime = workingTimeService.getById(workingHourId.longValue());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getEnd(), formatter));
+
+        WorkingTime saved = workingTimeService.save(workingTime);
+
+        return new ResponseEntity<>(new WorkingHourDTO(saved), HttpStatus.OK);
+
+//        return new ResponseEntity<>(
+//                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
+//                HttpStatus.OK
+//        );
     }
 
     @GetMapping(value = "/change-requests", produces = MediaType.APPLICATION_JSON_VALUE)
