@@ -8,6 +8,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUser
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPasswordResetCodeService;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
@@ -213,7 +214,7 @@ public class AppUserController {
         Optional<AppUser> appUser = service.findByEmail(passwordResetCodeDTO.getEmail());
 
         if (!appUser.isPresent())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
 
         String resetCode = "neki kod";
 
@@ -232,19 +233,24 @@ public class AppUserController {
 
     @PutMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> applyCode(@RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
-        System.out.println("u put");
+
         Optional<AppUser> appUser = service.findByEmail(passwordResetCodeDTO.getEmail());
-        System.out.println(passwordResetCodeDTO);
+
         if (!appUser.isPresent())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
 
         Optional<PasswordResetCode> code = passwordResetCodeService.findByEmail(passwordResetCodeDTO.getEmail());
-        System.out.println(code.get());
 
-        if (!code.isPresent() ||
-            !code.get().getCode().equals(passwordResetCodeDTO.getCode()) ||
-            code.get().getDateExpiration().isBefore(LocalDateTime.now()))
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (!code.isPresent())
+            throw new CustomException("Code is not found!", HttpStatus.NOT_FOUND);
+
+        if (!code.get().getCode().equals(passwordResetCodeDTO.getCode()))
+            throw new CustomException("Code is not correct!", HttpStatus.BAD_REQUEST);
+
+        if (code.get().getDateExpiration().isBefore(LocalDateTime.now())) {
+            passwordResetCodeService.deleteById(code.get().getId());
+            throw new CustomException("Code is expired!", HttpStatus.BAD_REQUEST);
+        }
 
         appUser.get().setPassword(new BCryptPasswordEncoder().encode(passwordResetCodeDTO.getNewPassword()));
         service.save(appUser.get());

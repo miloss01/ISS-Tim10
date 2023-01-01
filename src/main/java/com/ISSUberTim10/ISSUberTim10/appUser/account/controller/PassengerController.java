@@ -12,6 +12,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUser
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IUserActivationService;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -97,17 +99,20 @@ public class PassengerController {
 
     // Activating passenger with the activation email
     @GetMapping(value="/activate/{activationId}")
+    @PreAuthorize(value = "hasRole('ROLE_PASSENGER')")
     public ResponseEntity<String> activatePassenger(@PathVariable(required = true) Integer activationId) {
 
         Optional<UserActivation> optionalUserActivation = userActivationService.findById(((Number) activationId).longValue());
 
         if (!optionalUserActivation.isPresent())
-            return new ResponseEntity<>("No activation for user", HttpStatus.NOT_FOUND);
+            throw new CustomException("Activation with entered id does not exist!", HttpStatus.NOT_FOUND);
 
         UserActivation userActivation = optionalUserActivation.get();
 
-        if (userActivation.getDateExpiration().isBefore(LocalDateTime.now()))
-            return new ResponseEntity<>("Activation is expired", HttpStatus.BAD_REQUEST);
+        if (userActivation.getDateExpiration().isBefore(LocalDateTime.now())) {
+            userActivationService.deleteById(userActivation.getId());
+            throw new CustomException("Activation expired. Register again!", HttpStatus.BAD_REQUEST);
+        }
 
         Passenger passenger = new Passenger();
         passenger.setName(userActivation.getName());
@@ -120,11 +125,9 @@ public class PassengerController {
         passenger.setPassword(userActivation.getPassword());
 
         userActivationService.deleteById(userActivation.getId());
+        passengerService.savePassenger(passenger);
 
-        return new ResponseEntity(
-                new PassengerResponseDTO(passengerService.savePassenger(passenger)),
-                HttpStatus.OK
-        );
+        return new ResponseEntity("Successful account activation!", HttpStatus.OK);
     }
 
 
