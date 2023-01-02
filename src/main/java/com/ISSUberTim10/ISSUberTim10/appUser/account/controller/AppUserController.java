@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -154,6 +155,7 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/{id}/block")
+//    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<String> blockUser(@PathVariable Integer id) {
         try {
             return service.blockUser(id);
@@ -164,6 +166,7 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/{id}/unblock")
+//    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<String> unblockUser(@PathVariable Integer id) {
         try {
             return service.unblockUser(id);
@@ -173,6 +176,7 @@ public class AppUserController {
     }
 
     @GetMapping(value = "/{id}/message", produces = "application/json")
+//    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Message')")
     public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Integer id) {
         ArrayList<MessageReceivedDTO> messages = new ArrayList<>();
         messages.add(new MessageReceivedDTO(10L, "11.11.2022.", 1L, 2L, "Message", "RIDE", 3L));
@@ -180,12 +184,14 @@ public class AppUserController {
     }
 
     @PostMapping(value = "/{id}/message", consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Message')")
     public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Integer id,
                                                               @RequestBody MessageSentDTO messageSent) {
         return new ResponseEntity<>(new MessageReceivedDTO(10L, "11.11.2022.", 1L, messageSent.getReceiverId(), messageSent.getMessage(), messageSent.getType(), messageSent.getRideId()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/{id}/note", consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<NoteDTO> sendNote(@PathVariable Integer id,
                                             @RequestBody NoteMessageDTO messageDTO) {
 
@@ -193,6 +199,7 @@ public class AppUserController {
     }
 
     @GetMapping(value = "/{id}/note", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id,
                                                     @RequestParam(required = false) Pageable page){
         return service.getNotes(id, null);
@@ -204,6 +211,7 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/changeActiveFlag/{id}", consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
     public ResponseEntity<IsActiveDTO> changeActiveFlag(@PathVariable Integer id, @RequestBody IsActiveDTO isActiveDTO) {
         return service.changeActiveFlag(id, isActiveDTO);
     }

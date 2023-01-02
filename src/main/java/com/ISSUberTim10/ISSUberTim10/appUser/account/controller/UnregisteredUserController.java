@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class UnregisteredUserController {
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<EstimatedDataResponseDTO> getEstimatedData(@RequestBody EstimatedDataRequestDTO estimatedDataRequestDTO) {
         System.out.println(SecurityContextHolder.getContext().getAuthentication());
         System.out.println(estimatedDataRequestDTO);

@@ -7,6 +7,7 @@ import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class RideController {
     IRideService rideService;
 
     @PostMapping(consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
         return new ResponseEntity<>(new RideDTO(1L, rideCreation.getLocations(), "", "", 123, new UserDTO(1L, ""),
                 rideCreation.getPassengers(), 5, rideCreation.getVehicleType(), rideCreation.isBabyTransport(), rideCreation.isPetTransport(), "PENDING", new RejectionDTO("zato", "11.11.2022.")),
@@ -27,6 +29,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();
@@ -37,6 +40,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/passenger/{passengerId}/active", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #passengerId, 'Ride')")
     ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
         ArrayList<UserDTO> passengers = new ArrayList<>();

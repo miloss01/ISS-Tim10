@@ -64,6 +64,12 @@ public class PassengerController {
     // Create new passenger
     @PostMapping(produces = "application/json", consumes = "application/json")
     public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
+
+        Optional<AppUser> appUser = appUserService.findByEmail(passengerRequestDTO.getEmail());
+
+        if (appUser.isPresent())
+            throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
+
         UserActivation userActivation = new UserActivation();
         userActivation.setName(passengerRequestDTO.getName());
         userActivation.setLastName(passengerRequestDTO.getSurname());
@@ -99,7 +105,6 @@ public class PassengerController {
 
     // Activating passenger with the activation email
     @GetMapping(value="/activate/{activationId}")
-    @PreAuthorize(value = "hasRole('ROLE_PASSENGER')")
     public ResponseEntity<String> activatePassenger(@PathVariable(required = true) Integer activationId) {
 
         Optional<UserActivation> optionalUserActivation = userActivationService.findById(((Number) activationId).longValue());
@@ -134,6 +139,8 @@ public class PassengerController {
     // Returns passenger details, where the password field is always empty
 
     @GetMapping(value = "/{id}", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger'))")
+    // mozda mora da se dopusti i vozacu da moze da vidi podatke, jer mozda negde treba da se prikazu podaci o putnicima koje je vozio
     public ResponseEntity<PassengerResponseDTO> getPassenger(@PathVariable(required = true) Integer id) {
 
 //        Passenger passenger = passengerService.findOne(id);
@@ -149,6 +156,7 @@ public class PassengerController {
 
     // Update existing passenger, non required fields send only if changed
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger')")
     public ResponseEntity<PassengerResponseDTO> updatePassenger(@PathVariable(required = true) Integer id,
                                                               @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
@@ -171,6 +179,7 @@ public class PassengerController {
 
     // Returns paginated rides that can be sorted on specific field
     @GetMapping(value = "/{id}/ride", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Working time'))")
     public ResponseEntity<RideResponseDTO> getRides(@PathVariable Integer id,
                                                     @RequestParam(required = false) Integer page,
                                                     @RequestParam(required = false) Integer size,

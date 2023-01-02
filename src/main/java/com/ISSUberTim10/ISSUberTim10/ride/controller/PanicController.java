@@ -6,6 +6,7 @@ import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 public class PanicController {
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<PanicsDTO> getPanics() {
 
         UserExpandedDTO user = new UserExpandedDTO(null, "Pera", "Perić", "U3dhZ2dlciByb2Nrcw==", "+381123123", "pera.peric@email.com", "Bulevar Oslobodjenja 74");
