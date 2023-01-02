@@ -22,15 +22,18 @@ insert into app_user (active_flag, address, blocked_flag, email, last_name, name
 values (1, 'Misurinova', 1, 'mail@gmail.com', 'Milic', 'Milica', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (0, 'Bulevar Oslobodjenja', 1, 'popov@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (0, 'Bulevar Oslobodjenja', 1, 'dmina@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
+
 
 insert into passenger (id) values (1);
 insert into driver (id, vehicle_id) values (2, 1);
 insert into driver (id, vehicle_id) values (3, 1);
 insert into driver (id, vehicle_id) values (4, 1);
+insert into admin (id) values (5);
 
-
-insert into admin (last_name, name, password, profile_image, username)
-values ('Mirkovic', 'Mirka', '123', 'src', 'je l ovo mejl');
+--insert into admin (last_name, name, password, profile_image, username)
+--values ('Mirkovic', 'Mirka', '123', 'src', 'je l ovo mejl');
 
 
 --insert into user_activation (name, last_name, phone, email, password, profile_image, address, date_created, date_expiration)
