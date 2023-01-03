@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.LocalDateTime;
@@ -92,6 +93,16 @@ public class AppUserController {
     @GetMapping(value="/1", produces = "application/json")
     public ResponseEntity<UserExpandedDTO> getById(@RequestParam Integer id) {
         return new ResponseEntity<>(appUserService.getById(id), HttpStatus.OK);
+    }
+
+    @GetMapping(value="/email", produces = "application/json")
+    public ResponseEntity<UserResponseDTO> getById(@RequestParam String email) {
+        Optional<AppUser> found = appUserService.getByEmail(email);
+        if (!found.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        AppUser appUser = found.get();
+        return new ResponseEntity<>(new UserResponseDTO(appUser), HttpStatus.OK);
     }
 
     @PostMapping()

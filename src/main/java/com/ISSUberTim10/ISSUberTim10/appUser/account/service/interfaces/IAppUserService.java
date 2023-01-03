@@ -45,4 +45,5 @@ public interface IAppUserService {
     ResponseEntity<IsActiveDTO> changeActiveFlag(Integer id, IsActiveDTO isActiveDTO);
     public AppUser save(AppUser appUser);
 
+    Optional<AppUser> getByEmail(String email);
 }
