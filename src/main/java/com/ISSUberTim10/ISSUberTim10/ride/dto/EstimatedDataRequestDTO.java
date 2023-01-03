@@ -15,11 +15,13 @@ public class EstimatedDataRequestDTO {
 
     @Valid
     private List<DepartureDestinationLocationsDTO> locations;
-    @NotNull(message = "Field (vehicleType) is required!")
+//    @NotNull(message = "Field (vehicleType) is required!")
     private String vehicleType;
-    @NotNull(message = "Field (babyTransport) is required!")
+//    @NotNull(message = "Field (babyTransport) is required!")
     private Boolean babyTransport;
-    @NotNull(message = "Field (petTransport) is required!")
+//    @NotNull(message = "Field (petTransport) is required!")
     private Boolean petTransport;
+    @NotNull(message = "Field (distance) is required!")
+    private Double distance;
 
 }
