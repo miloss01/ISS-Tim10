@@ -174,7 +174,7 @@ public class DriverController {
     @PostMapping(value = "/{id}/documents", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Document'))")
     public ResponseEntity<DocumentDTO> postDocument(@Min(value = 3) @PathVariable Integer id,
-                                                    @Valid @RequestBody DocumentDTO documentDTO) {
+                                                    @RequestBody DocumentDTO documentDTO) {
 
         Driver driver = driverService.getById(id.longValue());
 
@@ -205,7 +205,7 @@ public class DriverController {
     @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Vehicle'))")
     public ResponseEntity<VehicleDTO> saveVehicle(@PathVariable Integer id,
-                                                  @Valid @RequestBody VehicleDTO vehicleDTO) {
+                                                  @RequestBody VehicleDTO vehicleDTO) {
 
         Vehicle vehicle = new Vehicle();
         vehicle.setModel(vehicleDTO.getModel());
@@ -404,13 +404,15 @@ public class DriverController {
 
     @PutMapping(value = "/change-request/{driverId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Change request'))")
-    public ResponseEntity<ChangeRequestDTO> updateChangeRequest(@PathVariable Integer driverId,@RequestBody ChangeRequestDTO requestDTO){
+    public ResponseEntity<ChangeRequestDTO> updateChangeRequest(@PathVariable Integer driverId,
+                                                                @RequestBody ChangeRequestDTO requestDTO){
         return driverService.updateChangeRequest(driverId, requestDTO);
     }
 
     @PutMapping(value = "/change-request/approve/{driverId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN')")
-    public ResponseEntity<ChangeRequestDTO> approveChangeRequest(@PathVariable Integer driverId,@RequestBody ChangeRequestDTO requestDTO){
+    public ResponseEntity<ChangeRequestDTO> approveChangeRequest(@PathVariable Integer driverId,
+                                                                 @RequestBody ChangeRequestDTO requestDTO){
         return driverService.approveChangeRequest(driverId, requestDTO);
     }
 

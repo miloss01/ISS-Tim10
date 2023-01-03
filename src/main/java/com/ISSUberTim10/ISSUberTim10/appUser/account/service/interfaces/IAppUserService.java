@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface IAppUserService {
@@ -22,7 +23,7 @@ public interface IAppUserService {
 
     public void deleteAll();
 
-    Page<AppUser> getAll(Pageable page);
+    List<AppUser> getAll(Pageable page);
 
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id);
     public Optional<AppUser> findByEmail(String email);
