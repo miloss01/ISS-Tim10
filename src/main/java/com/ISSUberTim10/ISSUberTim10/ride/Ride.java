@@ -84,7 +84,7 @@ public class Ride {
     }
 
     public String getVehicleType() {
-        return this.getDriver().getVehicle().getVehicleType().toString();
+        return this.getDriver().getVehicle().getVehicleType().getName().toString();
     }
 
     public boolean isBabyTransport() {
