@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,10 +20,18 @@ public class VehicleDTO {
     private Integer id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer driverId;
+    @NotNull(message = "Field (vehicleType) is required!")
     private String vehicleType;
+    @NotBlank(message = "Field (model) is required!")
+    @Size(max = 100, message = "Field (model) cannot be longer than 100 characters!")
     private String model;
+    @NotBlank(message = "Field (licenseNumber) is required!")
+    @Size(max = 20, message = "Field (licenseNumber) cannot be longer than 20 characters!")
     private String licenseNumber;
     private LocationDTO currentLocation;
+    @NotNull(message = "Field (passengerSeats) is required!")
+    @Min(value = 1, message = "Field (passengerSeats) cannot be smaller than 1!")
+    @Max(value = 20, message = "Field (passengerSeats) cannot be bigger than 20!")
     private Integer passengerSeats;
     private Boolean babyTransport;
     private Boolean petTransport;

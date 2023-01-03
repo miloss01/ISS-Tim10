@@ -3,6 +3,8 @@ package com.ISSUberTim10.ISSUberTim10.ride.dto;
 import com.ISSUberTim10.ISSUberTim10.ride.Route;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -10,7 +12,9 @@ import lombok.*;
 @ToString
 public class DepartureDestinationLocationsDTO {
 
+    @NotNull(message = "Field (departure) is required!")
     private LocationDTO departure;
+    @NotNull(message = "Field (destination) is required!")
     private LocationDTO destination;
 
     public DepartureDestinationLocationsDTO(Route route) {
