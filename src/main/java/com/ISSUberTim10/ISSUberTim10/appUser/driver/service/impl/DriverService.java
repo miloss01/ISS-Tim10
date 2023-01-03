@@ -49,6 +49,11 @@ public class DriverService implements IDriverService {
     }
 
     @Override
+    public Optional<Driver> getByEmail(String email) {
+        return driverRepository.findByEmail(email);
+    }
+
+    @Override
     public Driver setVehicle(Vehicle vehicle) {
         Optional<Driver> driver = driverRepository.findById(vehicle.getDriver().getId());
 

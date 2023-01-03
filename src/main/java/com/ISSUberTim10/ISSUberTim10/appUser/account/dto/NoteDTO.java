@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Size;
+
 import static com.ISSUberTim10.ISSUberTim10.helper.StringFormatting.simpleDateFormat;
 
 @Getter
@@ -15,6 +17,7 @@ import static com.ISSUberTim10.ISSUberTim10.helper.StringFormatting.simpleDateFo
 public class NoteDTO {
     private Long id;
     private String date;
+    @Size(max = 500, message = "Field (message) cannot be longer than 500 characters!")
     private String message;
 
     public NoteDTO(Note note) {

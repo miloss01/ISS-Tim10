@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Size;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoteMessageDTO {
+    @Size(max = 500, message = "Field (message) cannot be longer than 500 characters!")
     private String message;
 
 

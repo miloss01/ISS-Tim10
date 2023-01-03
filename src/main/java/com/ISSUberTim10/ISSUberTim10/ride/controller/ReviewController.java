@@ -5,6 +5,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -13,10 +14,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/review")
 @CrossOrigin(origins = "http://localhost:4200")
-public class ReviewContoller {
+public class ReviewController {
 
     // Creating a review about the vehicle
     @PostMapping(value = "/{rideId}/vehicle/{id}", consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Review')")
     public ResponseEntity<VehicleReviewResponseDTO> saveVehicleReview(@PathVariable Integer rideId,
                                                                       @PathVariable Integer id,
                                                                       @RequestBody VehicleReviewRequestDTO vehicleReviewRequestDTO) {
@@ -26,6 +28,7 @@ public class ReviewContoller {
 
     // Get the reviews for the specific vehicle
     @GetMapping(value = "/vehicle/{id}", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Review'))")
     public ResponseEntity<VehicleReviewsDTO> getVehicleReviews(@PathVariable Integer id) {
 
         VehicleReviewResponseDTO reviewDTO = new VehicleReviewResponseDTO(1, 5, "amazing", new UserResponseDTO(2, "em@ail.com"));
@@ -37,6 +40,7 @@ public class ReviewContoller {
     }
 
     @PostMapping(value="/{rideId}/driver/{id}", consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('PASSENGER')")
     public ResponseEntity<DriverReviewResponseDTO> saveDriverReview(@PathVariable Integer rideId,
                                                                     @PathVariable Integer id,
                                                                     @RequestBody DriverReviewRequestDTO driverReviewRequestDTO) {
@@ -47,6 +51,7 @@ public class ReviewContoller {
 
     // Get the reviews for the specific vehicle
     @GetMapping(value = "/driver/{id}", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Review'))")
     public ResponseEntity<DriverReviewsDTO> getDriverReviews(@PathVariable Integer id) {
 
         DriverReviewResponseDTO reviewDTO = new DriverReviewResponseDTO(1, 5, "good", new UserResponseDTO(2, "em@ail.com"));

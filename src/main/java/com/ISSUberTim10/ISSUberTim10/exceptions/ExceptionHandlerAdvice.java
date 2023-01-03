@@ -9,6 +9,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -29,7 +30,7 @@ public class ExceptionHandlerAdvice {
 
         for (ConstraintViolation violation : ex.getConstraintViolations()) {
             String fieldName = ((PathImpl) violation.getPropertyPath()).getLeafNode().toString();
-            ret += "Field (" + fieldName + ") format is not valid\n";
+            ret += "Constraint violation. Field (" + fieldName + ") format is not valid!\n";
         }
 
         return new ResponseEntity<>(ret, HttpStatus.BAD_REQUEST);
@@ -44,6 +45,14 @@ public class ExceptionHandlerAdvice {
             ret += error.getDefaultMessage() + "\n";
 
         return new ResponseEntity<>(ret, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = { MethodArgumentTypeMismatchException.class })
+    protected ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+
+        String fieldName = ex.getName();
+
+        return new ResponseEntity<>("Wrong type. Field (" + fieldName + ") format is not valid!\n", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = { DateTimeParseException.class })

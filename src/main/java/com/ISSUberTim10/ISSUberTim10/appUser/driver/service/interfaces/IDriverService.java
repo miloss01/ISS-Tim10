@@ -23,6 +23,7 @@ public interface IDriverService {
     public List<Driver> getAllDrivers(Pageable pageable);
 
     public Driver getById(Long id);
+    public Optional<Driver> getByEmail(String email);
     public ResponseEntity<VehicleDTO> getVehicle(Integer id);
 
     public ResponseEntity<VehicleDTO> saveVehicle(Integer id, VehicleDTO vehicleDTO) ;

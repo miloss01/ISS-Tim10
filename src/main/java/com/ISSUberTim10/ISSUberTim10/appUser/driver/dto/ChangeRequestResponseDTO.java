@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 @Getter
 @Setter
@@ -12,5 +13,6 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class ChangeRequestResponseDTO {
     private int numberOfRequests;
+    @Valid
     private ArrayList<ChangeRequestDTO> requestDTOS;
 }
