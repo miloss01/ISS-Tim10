@@ -11,12 +11,16 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IUserActivationService;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
+import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideResponseDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import com.postmarkapp.postmark.Postmark;
 import com.postmarkapp.postmark.client.ApiClient;
 import com.postmarkapp.postmark.client.data.model.message.Message;
@@ -53,6 +57,9 @@ public class PassengerController {
 
     @Autowired
     private IUserActivationService userActivationService;
+
+    @Autowired
+    private IRideService rideService;
 
     @Autowired
     private EmailService emailService;
@@ -197,12 +204,41 @@ public class PassengerController {
     @GetMapping(value = "/{id}/ride", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Working time'))")
     public ResponseEntity<RideResponseDTO> getRides(@PathVariable Integer id,
-                                                    @RequestParam(required = false) Integer page,
-                                                    @RequestParam(required = false) Integer size,
-                                                    @RequestParam(required = false) String sort,
+                                                    Pageable page,
                                                     @RequestParam(required = false) String from,
                                                     @RequestParam(required = false) String to) {
-        return new ResponseEntity<>(getDummyPassengerRidesDTO(), HttpStatus.OK);
+
+        Passenger passenger = passengerService.getPassenger(id.longValue());
+
+        List<Ride> rides = rideService.getByPassenger(page, passenger);
+
+        ArrayList<RideDTO> rideDTOs = new ArrayList<>();
+
+        LocalDateTime fromDate;
+        LocalDateTime toDate;
+
+        if (from == null)
+            fromDate = LocalDateTime.of(2000, 1, 1, 1, 1);
+        else
+            fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatterWithSeconds);
+
+        if (to == null)
+            toDate = LocalDateTime.of(3000, 1, 1, 1, 1);
+        else
+            toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatterWithSeconds);
+
+        for (Ride ride : rides)
+            if (ride.getStartTime() != null &&
+                ride.getEndTime() != null &&
+                ride.getStartTime().isAfter(fromDate) &&
+                ride.getEndTime().isBefore(toDate))
+                rideDTOs.add(new RideDTO(ride));
+
+        return new ResponseEntity<>(
+                new RideResponseDTO(rideDTOs.size(), rideDTOs),
+                HttpStatus.OK
+        );
+
     }
 
     private List<PassengerResponseDTO> getDummyPassengersResponseDTO() {

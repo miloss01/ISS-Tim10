@@ -56,8 +56,8 @@ public class RideDTO {
         }
         this.id = ride.getId();
         this.locations = locations;
-        this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatter);
-        this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatter);
+        this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatterWithSeconds);
+        this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatterWithSeconds);
         this.totalCost = (int) ride.getPrice();
         this.driver = new UserDTO(ride.getDriver());
         this.passengers = passengers;

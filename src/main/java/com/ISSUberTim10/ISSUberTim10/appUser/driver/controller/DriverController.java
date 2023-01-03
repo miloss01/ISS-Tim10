@@ -2,6 +2,7 @@ package com.ISSUberTim10.ISSUberTim10.appUser.driver.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
@@ -11,10 +12,13 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleTypeService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.*;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
+import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.DriverService;
 
+import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,6 +56,8 @@ public class DriverController {
     private IWorkingTimeService workingTimeService;
     @Autowired
     private IAppUserService appUserService;
+    @Autowired
+    private IRideService rideService;
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN')")
@@ -327,32 +333,63 @@ public class DriverController {
                                                           @RequestParam(required = false) String from,
                                                           @RequestParam(required = false) String to) {
 
-        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>(Arrays.asList(
-                new DepartureDestinationLocationsDTO(
-                        new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549),
-                        new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549)
-                )
-        ));
+        Driver driver = driverService.getById(id.longValue());
 
-        UserDTO driver = new UserDTO(123L, "user@example.com");
+        List<Ride> rides = rideService.getByDriver(page, driver);
 
-        ArrayList<UserDTO> passengers = new ArrayList<UserDTO>(Arrays.asList(
-                new UserDTO(123L, "user@example.com")
-        ));
+        ArrayList<RideDTO> rideDTOs = new ArrayList<>();
 
-        RejectionDTO rejection = new RejectionDTO("Ride is canceled due to previous problems with the passenger", "2022-11-25T17:32:28Z");
+        LocalDateTime fromDate;
+        LocalDateTime toDate;
 
-        RideDTO ride = new RideDTO(123L, locations, "2017-07-21T17:32:28Z", "2017-07-21T17:45:14Z", 1235, driver, passengers, 5, "STANDARDNO", true, true, null, rejection);
+        if (from == null)
+            fromDate = LocalDateTime.of(2000, 1, 1, 1, 1);
+        else
+            fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatterWithSeconds);
+
+        if (to == null)
+            toDate = LocalDateTime.of(3000, 1, 1, 1, 1);
+        else
+            toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatterWithSeconds);
+
+        for (Ride ride : rides)
+            if (ride.getStartTime() != null &&
+                ride.getEndTime() != null &&
+                ride.getStartTime().isAfter(fromDate) &&
+                ride.getEndTime().isBefore(toDate))
+                rideDTOs.add(new RideDTO(ride));
 
         return new ResponseEntity<>(
-                new RideResponseDTO(
-                        243,
-                        new ArrayList<RideDTO>(
-                                Arrays.asList(ride)
-                        )
-                ),
+                new RideResponseDTO(rideDTOs.size(), rideDTOs),
                 HttpStatus.OK
         );
+
+//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>(Arrays.asList(
+//                new DepartureDestinationLocationsDTO(
+//                        new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549),
+//                        new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549)
+//                )
+//        ));
+//
+//        UserDTO driver = new UserDTO(123L, "user@example.com");
+//
+//        ArrayList<UserDTO> passengers = new ArrayList<UserDTO>(Arrays.asList(
+//                new UserDTO(123L, "user@example.com")
+//        ));
+//
+//        RejectionDTO rejection = new RejectionDTO("Ride is canceled due to previous problems with the passenger", "2022-11-25T17:32:28Z");
+//
+//        RideDTO ride = new RideDTO(123L, locations, "2017-07-21T17:32:28Z", "2017-07-21T17:45:14Z", 1235, driver, passengers, 5, "STANDARDNO", true, true, null, rejection);
+//
+//        return new ResponseEntity<>(
+//                new RideResponseDTO(
+//                        243,
+//                        new ArrayList<RideDTO>(
+//                                Arrays.asList(ride)
+//                        )
+//                ),
+//                HttpStatus.OK
+//        );
     }
 
     @GetMapping(value = "/working-hour/{working-hour-id}", produces = MediaType.APPLICATION_JSON_VALUE)

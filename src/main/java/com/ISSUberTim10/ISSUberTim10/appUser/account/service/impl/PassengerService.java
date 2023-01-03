@@ -8,6 +8,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.AppUserRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.PassengerRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,18 @@ public class PassengerService implements IPassengerService {
         AppUser appUser = found.get();
         PassengerResponseDTO passengerResponse = new PassengerResponseDTO(appUser);
         return new ResponseEntity<>(passengerResponse, HttpStatus.OK);
+    }
+
+    @Override
+    public Passenger getPassenger(Long id) {
+
+        Optional<Passenger> passenger = passengerRepository.findById(id);
+
+        if (!passenger.isPresent())
+            throw new CustomException("Passenger does not exist!", HttpStatus.NOT_FOUND);
+
+        return passenger.get();
+
     }
 
     @Override

@@ -1,6 +1,10 @@
 package com.ISSUberTim10.ISSUberTim10.ride.service.impl;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.ride.Rejection;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
@@ -16,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RideService implements IRideService {
@@ -61,6 +67,30 @@ public class RideService implements IRideService {
         RideDTO rideDTO = new RideDTO(ride);
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 
+    }
+
+    @Override
+    public Ride getRideById(Long id) {
+
+        Optional<Ride> ride = rideRepository.findById(id);
+
+        if (!ride.isPresent())
+            throw new CustomException("Ride does not exist!", HttpStatus.NOT_FOUND);
+
+        return ride.get();
+
+    }
+
+    @Override
+    public List<Ride> getByDriver(Pageable pageable, Driver driver) {
+
+        return rideRepository.findAllByDriver(pageable, driver).getContent();
+
+    }
+
+    @Override
+    public List<Ride> getByPassenger(Pageable pageable, Passenger passenger) {
+        return rideRepository.findAllByPassengersContaining(pageable, passenger).getContent();
     }
 
     @Override
