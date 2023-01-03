@@ -205,7 +205,7 @@ public class DriverController {
     @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Vehicle'))")
     public ResponseEntity<VehicleDTO> saveVehicle(@PathVariable Integer id,
-                                                  @RequestBody VehicleDTO vehicleDTO) {
+                                                  @Valid @RequestBody VehicleDTO vehicleDTO) {
 
         Vehicle vehicle = new Vehicle();
         vehicle.setModel(vehicleDTO.getModel());
@@ -413,7 +413,5 @@ public class DriverController {
     public ResponseEntity<ChangeRequestDTO> approveChangeRequest(@PathVariable Integer driverId,@RequestBody ChangeRequestDTO requestDTO){
         return driverService.approveChangeRequest(driverId, requestDTO);
     }
-
-
 
 }

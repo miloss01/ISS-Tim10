@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoteMessageDTO {
-    @Size(max = 500, message = "Field (message) cannot be longer than 100 characters!")
+    @Size(max = 500, message = "Field (message) cannot be longer than 500 characters!")
     private String message;
 
 

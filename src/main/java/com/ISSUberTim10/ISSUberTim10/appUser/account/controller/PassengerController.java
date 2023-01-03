@@ -31,6 +31,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -92,14 +94,28 @@ public class PassengerController {
 
     // Getting multiple passengers for the need of showing a list
     @GetMapping(produces = "application/json")
-    public ResponseEntity<AllPassengersDTO> getPassengers(@RequestParam(required = false) Integer page,
-                                                          @RequestParam(required = false) Integer size) {
+    public ResponseEntity<AllPassengersDTO> getPassengers(Pageable pageable) {
         // parameters page and size set to Integer because primitive type int doesn't allow null
 
-        List<PassengerResponseDTO> dummyPassengers = getDummyPassengersResponseDTO();
-        AllPassengersDTO allPassengersDTO = new AllPassengersDTO(dummyPassengers.size(), dummyPassengers);
+        List<Passenger> passengers = passengerService.getAllPassengers(pageable);
 
-        return new ResponseEntity<>(allPassengersDTO, HttpStatus.OK);
+        List<PassengerResponseDTO> passengerResponseDTOs = new ArrayList<>();
+
+        for (Passenger passenger : passengers)
+            passengerResponseDTOs.add(new PassengerResponseDTO(passenger));
+
+        return new ResponseEntity<>(
+                new AllPassengersDTO(
+                        passengerResponseDTOs.size(),
+                        passengerResponseDTOs
+                ),
+                HttpStatus.OK
+        );
+
+//        List<PassengerResponseDTO> dummyPassengers = getDummyPassengersResponseDTO();
+//        AllPassengersDTO allPassengersDTO = new AllPassengersDTO(dummyPassengers.size(), dummyPassengers);
+//
+//        return new ResponseEntity<>(allPassengersDTO, HttpStatus.OK);
     }
 
 

@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
 public class LocationDTO {
 
     private String address;
-    @NotNull(message = "Field (vehicleType) is required!")
+    @NotNull(message = "Field (latitude) is required!")
     @Min(value = -90, message = "Field (latitude) cannot be smaller than -90!")
     @Max(value = 90, message = "Field (latitude) cannot be bigger than 90!")
     private double latitude;
-    @NotNull(message = "Field (vehicleType) is required!")
+    @NotNull(message = "Field (longitude) is required!")
     @Min(value = -180, message = "Field (longitude) cannot be smaller than -180!")
     @Max(value = 180, message = "Field (longitude) cannot be bigger than 180!")
     private double longitude;

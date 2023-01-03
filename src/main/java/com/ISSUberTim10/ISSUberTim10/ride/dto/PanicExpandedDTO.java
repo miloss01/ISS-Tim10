@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -16,7 +17,9 @@ import javax.validation.constraints.Size;
 public class PanicExpandedDTO {
 
     private Integer id;
+    @Valid
     private UserExpandedDTO user;
+    @Valid
     private RideDTO ride;
     private String time;
     @NotBlank(message = "Field (reason) is required!")

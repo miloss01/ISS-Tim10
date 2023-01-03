@@ -8,14 +8,16 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDTO {
-    @Email
+    @Email(message = "Field (email) does not have valid format.")
+    @Size(max = 100, message = "Field (email) cannot be longer than 100 characters!")
     private String email;
-    @NotBlank
+    @NotBlank(message = "Field (password) is required!")
     private String password;
 }

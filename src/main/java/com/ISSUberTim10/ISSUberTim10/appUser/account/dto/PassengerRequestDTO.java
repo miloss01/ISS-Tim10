@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -30,5 +31,6 @@ public class PassengerRequestDTO {
     @Size(max = 100, message = "Field (address) cannot be longer than 100 characters!")
     private String address;
 
+    @NotBlank(message = "Field (password) is required!")
     private String password;
 }
