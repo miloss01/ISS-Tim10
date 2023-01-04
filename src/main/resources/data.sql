@@ -12,24 +12,33 @@ values (45.2523302, 19.7586626, 'Fruskogorska 5, Novi Sad');
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 1, 1);
+insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+registration_plate, current_coordinates_id, vehicle_type_id) values
+(1, 'neka tojota nesto', 5, 1, '007-sg', 1, 3);
+insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+registration_plate, current_coordinates_id, vehicle_type_id) values
+(1, 'neka tojota nesto', 5, 1, '007-sg', 1, 2);
+insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+registration_plate, current_coordinates_id, vehicle_type_id) values
+(1, 'neka tojota nesto', 5, 1, '007-sg', 1, 1);
 
 
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (0, 'Bulevar Oslobodjenja', 0, 'nana@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
-values (0, 'Bulevar Oslobodjenja', 0, 'boki@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+values (1, 'Bulevar Oslobodjenja', 0, 'boki@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Misurinova', 1, 'mail@gmail.com', 'Milic', 'Milica', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
-values (0, 'Bulevar Oslobodjenja', 1, 'popov@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+values (1, 'Bulevar Oslobodjenja', 1, 'popov@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
-values (0, 'Bulevar Oslobodjenja', 1, 'dmina@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
+values (1, 'Bulevar Oslobodjenja', 1, 'dmina@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
 
 
 insert into passenger (id) values (1);
 insert into passenger (id) values (3);
 insert into driver (id, vehicle_id) values (2, 1);
-insert into driver (id, vehicle_id) values (4, 1);
+insert into driver (id, vehicle_id) values (4, 4);
 insert into admin (id) values (5);
 
 --insert into admin (last_name, name, password, profile_image, username)
@@ -42,6 +51,8 @@ insert into admin (id) values (5);
 
 insert into working_time (start_time, end_time, driver_id)
 values ('2016-04-12 07:03:24', '2016-04-12 07:03:24', 2);
+insert into working_time (start_time, end_time, driver_id)
+values ('2023-01-04 20:03:24', '2023-01-04 20:33:24', 2);
 
 
 insert into route (mileage, orderr, departure_coordinates_id, destination_coordinates_id)
@@ -50,7 +61,7 @@ values (2.3, 1, 1, 2);
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2023-01-13 01:03:24', '2023-01-13 02:03:24', 15, 1, 0, 100.0, 'finished', 2);
+(0, '2023-01-04 01:03:24', '2023-01-04 02:03:24', 15, 1, 0, 100.0, 'finished', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2026-08-11 07:15:24', 15, 1, 0, 100.0, 'finished', 2);
@@ -65,13 +76,13 @@ panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2024-02-05 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-07-11 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
+(0, '2026-04-12 07:03:24', '2026-07-11 07:03:24', 15, 1, 0, 100.0, 'accepted', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'active', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 2);
 
 insert into passengers_rides (passenger_id, ride_id) values (1, 1);
 insert into passengers_rides (passenger_id, ride_id) values (1, 2);

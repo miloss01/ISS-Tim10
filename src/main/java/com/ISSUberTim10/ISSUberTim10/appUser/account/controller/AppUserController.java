@@ -113,6 +113,7 @@ public class AppUserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         AppUser appUser = found.get();
+        appUser.setId(0L);
         return new ResponseEntity<>(new UserResponseDTO(appUser), HttpStatus.OK);
     }
 
