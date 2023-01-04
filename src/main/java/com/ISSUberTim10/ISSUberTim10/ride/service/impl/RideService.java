@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -121,7 +122,10 @@ public class RideService implements IRideService {
     @Override
     public ResponseEntity<RideDTO> cancelRideWithExplanation(Integer id, ReasonDTO reason) {
 
-        Ride ride = rideRepository.getById(Long.valueOf(id));
+        Optional<Ride> found = rideRepository.findById(Long.valueOf(id));
+        if (!found.isPresent())
+            throw new CustomException("Passenger does not exist!", HttpStatus.NOT_FOUND);
+        Ride ride = found.get();
         ride.setRideStatus(Ride.RIDE_STATUS.rejected);
         Rejection rejection;
         try {
@@ -140,6 +144,19 @@ public class RideService implements IRideService {
         System.out.println("-----------------");
 
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+    }
+
+    @Override
+    public boolean isBookableRide(Ride newRideRequest) {
+        ArrayList<Ride> rides = rideRepository.findAllByStartTimeGreaterThanEqualOrEndTimeLessThanEqual(LocalDateTime.now().minusHours(5), LocalDateTime.now().plusHours(5));
+        System.out.println(rides.size());
+        System.out.println(rides.size());
+        return true;
+    }
+
+    @Override
+    public void save(Ride newRideRequest) {
+        rideRepository.save(newRideRequest);
     }
 
 }

@@ -2,6 +2,8 @@ package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserExpandedDTO;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,12 @@ public class RideController {
     @PostMapping(consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
-        return new ResponseEntity<>(new RideDTO(1L, rideCreation.getLocations(), "", "", 123, new UserDTO(1L, ""),
-                rideCreation.getPassengers(), 5, rideCreation.getVehicleType(), rideCreation.isBabyTransport(), rideCreation.isPetTransport(), "PENDING", new RejectionDTO("zato", "11.11.2022.")),
-                HttpStatus.OK);
+        Ride newRideRequest = new Ride(rideCreation);
+        if (!rideService.isBookableRide(newRideRequest)) {
+             throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+        }
+        rideService.save(newRideRequest);
+        return new ResponseEntity<>(new RideDTO(newRideRequest), HttpStatus.OK);
     }
 
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")

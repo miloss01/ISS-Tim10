@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
@@ -18,4 +20,6 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     public Page findAllByDriver(Pageable pageable, Driver driver);
     public Page findAllByPassengersContaining(Pageable pageable, Passenger passenger);
 
+
+    ArrayList<Ride> findAllByStartTimeGreaterThanEqualOrEndTimeLessThanEqual(LocalDateTime minusHours, LocalDateTime plusHours);
 }

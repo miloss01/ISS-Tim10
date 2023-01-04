@@ -37,4 +37,7 @@ public interface IRideService {
     ResponseEntity<RideDTO> endRide(Integer id);
     ResponseEntity<RideDTO> cancelRideWithExplanation(Integer id, ReasonDTO reason);
 
-    }
+    boolean isBookableRide(Ride newRideRequest);
+
+    void save(Ride newRideRequest);
+}
