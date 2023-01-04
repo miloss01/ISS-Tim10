@@ -150,10 +150,10 @@ public class RideService implements IRideService {
 
     @Override
     public Ride cancelRideWithExplanation(Ride ride, String reason) {
-        ride.setRideStatus(Ride.RIDE_STATUS.rejected);
         if (ride.getRideStatus() != Ride.RIDE_STATUS.pending) {
             throw new CustomException("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
+        ride.setRideStatus(Ride.RIDE_STATUS.rejected);
         Rejection rejection;
         Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
         if (found.isPresent()) {
