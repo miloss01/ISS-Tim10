@@ -39,6 +39,7 @@ public class WebSecurityConfiguration {
             .authorizeRequests()
             .antMatchers("/*").permitAll()
             .antMatchers("/h2-console/**").permitAll()
+            .antMatchers("/socket/**").permitAll()
             .antMatchers("/api/user/login").permitAll()
             .antMatchers("/api/user/resetPassword").permitAll()
             .antMatchers("/api/unregisteredUser").permitAll()

@@ -18,6 +18,8 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     public Page<Ride> findAll(Pageable pageable);
     public Page findAllByDriver(Pageable pageable, Driver driver);
     public Page findAllByPassengersContaining(Pageable pageable, Passenger passenger);
+    public Optional<Ride> findByDriverAndRideStatus(Driver driver, Ride.RIDE_STATUS rideStatus);
+    public Optional<Ride> findByPassengersContainingAndRideStatus(Passenger passenger, Ride.RIDE_STATUS rideStatus);
 
 
     //ArrayList<Ride> findAllByStartTimeGreaterThanEqualOrEndTimeLessThanEqual(LocalDateTime minusHours, LocalDateTime plusHours);

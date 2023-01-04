@@ -72,24 +72,6 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public ResponseEntity<RideDTO> addRide(RideCreationDTO rideCreation) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<RideDTO> getRideByDriverId(Integer driverId) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<RideDTO> getRideById(Integer id) {
-        Ride ride = rideRepository.getById(Long.valueOf(id));
-        RideDTO rideDTO = new RideDTO(ride);
-        return new ResponseEntity<>(rideDTO, HttpStatus.OK);
-
-    }
-
-    @Override
     public Ride getRideById(Long id) {
 
         Optional<Ride> ride = rideRepository.findById(id);
@@ -114,6 +96,30 @@ public class RideService implements IRideService {
     }
 
     @Override
+    public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status) {
+
+        Optional<Ride> ride = rideRepository.findByDriverAndRideStatus(driver, status);
+
+        if (!ride.isPresent())
+            throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
+
+        return ride.get();
+
+    }
+
+    @Override
+    public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status) {
+
+        Optional<Ride> ride = rideRepository.findByPassengersContainingAndRideStatus(passenger, status);
+
+        if (!ride.isPresent())
+            throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
+
+        return ride.get();
+
+    }
+
+    @Override
     public ResponseEntity<RideDTO> cancelRide(Integer id) {
         return null;
     }
@@ -124,45 +130,42 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public ResponseEntity<RideDTO> acceptRide(Integer id) {
-
-        Ride ride = rideRepository.getById(Long.valueOf(id));
+    public Ride acceptRide(Ride ride) {
+        if (ride.getRideStatus() != Ride.RIDE_STATUS.pending) {
+            throw new CustomException("Cannot accept a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
+        }
         ride.setRideStatus(Ride.RIDE_STATUS.accepted);
-        rideRepository.save(ride);
-        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
-
+        return rideRepository.save(ride);
     }
 
     @Override
-    public ResponseEntity<RideDTO> endRide(Integer id) {
-        return null;
+    public Ride endRide(Ride ride) {
+
+        if (ride.getRideStatus() != Ride.RIDE_STATUS.active) {
+            throw new CustomException("Cannot end a ride that is not in status FINISHED!", HttpStatus.BAD_REQUEST);
+        }
+        ride.setRideStatus(Ride.RIDE_STATUS.finished);
+        return rideRepository.save(ride);
     }
 
     @Override
-    public ResponseEntity<RideDTO> cancelRideWithExplanation(Integer id, ReasonDTO reason) {
-
-        Optional<Ride> found = rideRepository.findById(Long.valueOf(id));
-        if (!found.isPresent())
-            throw new CustomException("Passenger does not exist!", HttpStatus.NOT_FOUND);
-        Ride ride = found.get();
+    public Ride cancelRideWithExplanation(Ride ride, String reason) {
         ride.setRideStatus(Ride.RIDE_STATUS.rejected);
+        if (ride.getRideStatus() != Ride.RIDE_STATUS.pending) {
+            throw new CustomException("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
+        }
         Rejection rejection;
-        try {
-            rejection = rejectionRepository.getById(ride.getRejection().getId());
-            rejection = new Rejection(rejection.getId(), ride, reason.getReason(), ride.getDriver(), LocalDateTime.now()); //TODO kako ovo
-
-        }catch (Exception exception) {
-            rejection = new Rejection(0L, ride, reason.getReason(), ride.getDriver(), LocalDateTime.now()); //TODO kako ovo
+        Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
+        if (found.isPresent()) {
+            rejection = found.get();
+            rejection.setReason(reason);
+            rejection.setRejectionTime(LocalDateTime.now());
+        }else {
+            rejection = new Rejection(0L, ride, reason, ride.getDriver(), LocalDateTime.now());
         }
         rejectionRepository.save(rejection);
-        ride.setRejection(rejection); //TODO kako ovo
-        rideRepository.save(ride);
-
-        rejection = rejectionRepository.getById(ride.getRejection().getId());
-        System.out.println(rejection.getId());
-        System.out.println("-----------------");
-
-        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+        ride.setRejection(rejection);
+        return rideRepository.save(ride);
     }
 
     @Override
@@ -284,6 +287,24 @@ public class RideService implements IRideService {
         routes.add(route);
         newRideRequest.setRoutes(routes);
         rideRepository.save(newRideRequest);
+    }
+
+    @Override
+    public Ride withdrawRide(Ride ride) {
+        if (ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.active) {
+            throw new CustomException("Cannot cancel a ride that is not in status PENDING or STARTED!", HttpStatus.BAD_REQUEST);
+        }
+        ride.setRideStatus(Ride.RIDE_STATUS.rejected);
+        return rideRepository.save(ride);
+    }
+
+    @Override
+    public Ride startRide(Ride ride) {
+        if (ride.getRideStatus() == Ride.RIDE_STATUS.accepted) {
+            throw new CustomException("Cannot start a ride that is not in status ACCEPTED!", HttpStatus.BAD_REQUEST);
+        }
+        ride.setRideStatus(Ride.RIDE_STATUS.active);
+        return rideRepository.save(ride);
     }
 
 }
