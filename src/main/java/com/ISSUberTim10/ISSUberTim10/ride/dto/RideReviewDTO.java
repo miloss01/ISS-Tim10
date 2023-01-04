@@ -7,14 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class RideReviewDTO {
 
+    @Valid
     private VehicleReviewResponseDTO vehicleReview;
 
+    @Valid
     private DriverReviewResponseDTO driverReview;
 
 }

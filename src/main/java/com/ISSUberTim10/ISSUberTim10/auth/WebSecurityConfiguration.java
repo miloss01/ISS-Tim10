@@ -1,9 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.auth;
 
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 @Configuration
@@ -47,6 +51,16 @@ public class WebSecurityConfiguration {
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         http.headers().frameOptions().disable();
         http.cors();
+
+        http.exceptionHandling()
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getOutputStream().println("Access denied!");
+            })
+            .authenticationEntryPoint((request, response, authException) -> {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getOutputStream().println("Unauthorized!");
+            });
 
         return http.build();
     }

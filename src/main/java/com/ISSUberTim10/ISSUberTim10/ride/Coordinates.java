@@ -29,4 +29,8 @@ public class Coordinates {
         this(null, locationDTO.getLatitude(), locationDTO.getLongitude(), locationDTO.getAddress());
     }
 
+    public Coordinates(LocationDTO locationDTO, Long id) {
+        this(id, locationDTO.getLatitude(), locationDTO.getLongitude(), locationDTO.getAddress());
+    }
+
 }

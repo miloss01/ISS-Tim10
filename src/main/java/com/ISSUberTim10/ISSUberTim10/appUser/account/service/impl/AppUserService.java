@@ -7,6 +7,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUser
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.INoteService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.AppUserRepository;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,8 +62,8 @@ public class AppUserService implements IAppUserService {
     }
 
     @Override
-    public Page<AppUser> getAll(Pageable page) {
-        return appUserRepository.findAll(page);
+    public List<AppUser> getAll(Pageable page) {
+        return appUserRepository.findAll(page).getContent();
     }
 
     @Override
@@ -127,10 +129,16 @@ public class AppUserService implements IAppUserService {
 
     @Override
     public ResponseEntity<NoteDTO> sendMessage(Integer id, NoteMessageDTO messageDTO) {
+
+        Optional<AppUser> appUser = appUserRepository.findById(id.longValue());
+
+        if (!appUser.isPresent())
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
+
         Note note = new Note();
         note.setMessage(messageDTO.getMessage());
         note.setNoteDate(new Date());
-        note.setAppUser(appUserRepository.findById(id.longValue()).get());
+        note.setAppUser(appUser.get());
         NoteDTO noteDTO = new NoteDTO(noteService.save(note));
         return new ResponseEntity<>(noteDTO, HttpStatus.OK);
     }

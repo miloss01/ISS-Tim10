@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Getter
@@ -15,6 +16,7 @@ public class DriverReviewsDTO {
 
     private Integer totalCount;
 
+    @Valid
     private List<DriverReviewResponseDTO> results;
 
 }

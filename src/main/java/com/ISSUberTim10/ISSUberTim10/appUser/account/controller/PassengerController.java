@@ -11,11 +11,16 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IUserActivationService;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
+import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideResponseDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import com.postmarkapp.postmark.Postmark;
 import com.postmarkapp.postmark.client.ApiClient;
 import com.postmarkapp.postmark.client.data.model.message.Message;
@@ -26,9 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,6 +59,9 @@ public class PassengerController {
     private IUserActivationService userActivationService;
 
     @Autowired
+    private IRideService rideService;
+
+    @Autowired
     private EmailService emailService;
 
     @Value("${server.port}")
@@ -62,6 +73,12 @@ public class PassengerController {
     // Create new passenger
     @PostMapping(produces = "application/json", consumes = "application/json")
     public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
+
+        Optional<AppUser> appUser = appUserService.findByEmail(passengerRequestDTO.getEmail());
+
+        if (appUser.isPresent())
+            throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
+
         UserActivation userActivation = new UserActivation();
         userActivation.setName(passengerRequestDTO.getName());
         userActivation.setLastName(passengerRequestDTO.getSurname());
@@ -84,14 +101,28 @@ public class PassengerController {
 
     // Getting multiple passengers for the need of showing a list
     @GetMapping(produces = "application/json")
-    public ResponseEntity<AllPassengersDTO> getPassengers(@RequestParam(required = false) Integer page,
-                                                          @RequestParam(required = false) Integer size) {
+    public ResponseEntity<AllPassengersDTO> getPassengers(Pageable pageable) {
         // parameters page and size set to Integer because primitive type int doesn't allow null
 
-        List<PassengerResponseDTO> dummyPassengers = getDummyPassengersResponseDTO();
-        AllPassengersDTO allPassengersDTO = new AllPassengersDTO(dummyPassengers.size(), dummyPassengers);
+        List<Passenger> passengers = passengerService.getAllPassengers(pageable);
 
-        return new ResponseEntity<>(allPassengersDTO, HttpStatus.OK);
+        List<PassengerResponseDTO> passengerResponseDTOs = new ArrayList<>();
+
+        for (Passenger passenger : passengers)
+            passengerResponseDTOs.add(new PassengerResponseDTO(passenger));
+
+        return new ResponseEntity<>(
+                new AllPassengersDTO(
+                        passengerResponseDTOs.size(),
+                        passengerResponseDTOs
+                ),
+                HttpStatus.OK
+        );
+
+//        List<PassengerResponseDTO> dummyPassengers = getDummyPassengersResponseDTO();
+//        AllPassengersDTO allPassengersDTO = new AllPassengersDTO(dummyPassengers.size(), dummyPassengers);
+//
+//        return new ResponseEntity<>(allPassengersDTO, HttpStatus.OK);
     }
 
 
@@ -102,12 +133,14 @@ public class PassengerController {
         Optional<UserActivation> optionalUserActivation = userActivationService.findById(((Number) activationId).longValue());
 
         if (!optionalUserActivation.isPresent())
-            return new ResponseEntity<>("No activation for user", HttpStatus.NOT_FOUND);
+            throw new CustomException("Activation with entered id does not exist!", HttpStatus.NOT_FOUND);
 
         UserActivation userActivation = optionalUserActivation.get();
 
-        if (userActivation.getDateExpiration().isBefore(LocalDateTime.now()))
-            return new ResponseEntity<>("Activation is expired", HttpStatus.BAD_REQUEST);
+        if (userActivation.getDateExpiration().isBefore(LocalDateTime.now())) {
+            userActivationService.deleteById(userActivation.getId());
+            throw new CustomException("Activation expired. Register again!", HttpStatus.BAD_REQUEST);
+        }
 
         Passenger passenger = new Passenger();
         passenger.setName(userActivation.getName());
@@ -120,17 +153,17 @@ public class PassengerController {
         passenger.setPassword(userActivation.getPassword());
 
         userActivationService.deleteById(userActivation.getId());
+        passengerService.savePassenger(passenger);
 
-        return new ResponseEntity(
-                new PassengerResponseDTO(passengerService.savePassenger(passenger)),
-                HttpStatus.OK
-        );
+        return new ResponseEntity("Successful account activation!", HttpStatus.OK);
     }
 
 
     // Returns passenger details, where the password field is always empty
 
     @GetMapping(value = "/{id}", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger'))")
+    // mozda mora da se dopusti i vozacu da moze da vidi podatke, jer mozda negde treba da se prikazu podaci o putnicima koje je vozio
     public ResponseEntity<PassengerResponseDTO> getPassenger(@PathVariable(required = true) Integer id) {
 
 //        Passenger passenger = passengerService.findOne(id);
@@ -146,6 +179,7 @@ public class PassengerController {
 
     // Update existing passenger, non required fields send only if changed
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger')")
     public ResponseEntity<PassengerResponseDTO> updatePassenger(@PathVariable(required = true) Integer id,
                                                               @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
@@ -168,13 +202,43 @@ public class PassengerController {
 
     // Returns paginated rides that can be sorted on specific field
     @GetMapping(value = "/{id}/ride", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Working time'))")
     public ResponseEntity<RideResponseDTO> getRides(@PathVariable Integer id,
-                                                    @RequestParam(required = false) Integer page,
-                                                    @RequestParam(required = false) Integer size,
-                                                    @RequestParam(required = false) String sort,
+                                                    Pageable page,
                                                     @RequestParam(required = false) String from,
                                                     @RequestParam(required = false) String to) {
-        return new ResponseEntity<>(getDummyPassengerRidesDTO(), HttpStatus.OK);
+
+        Passenger passenger = passengerService.getPassenger(id.longValue());
+
+        List<Ride> rides = rideService.getByPassenger(page, passenger);
+
+        ArrayList<RideDTO> rideDTOs = new ArrayList<>();
+
+        LocalDateTime fromDate;
+        LocalDateTime toDate;
+
+        if (from == null)
+            fromDate = LocalDateTime.of(2000, 1, 1, 1, 1);
+        else
+            fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatterWithSeconds);
+
+        if (to == null)
+            toDate = LocalDateTime.of(3000, 1, 1, 1, 1);
+        else
+            toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatterWithSeconds);
+
+        for (Ride ride : rides)
+            if (ride.getStartTime() != null &&
+                ride.getEndTime() != null &&
+                ride.getStartTime().isAfter(fromDate) &&
+                ride.getEndTime().isBefore(toDate))
+                rideDTOs.add(new RideDTO(ride));
+
+        return new ResponseEntity<>(
+                new RideResponseDTO(rideDTOs.size(), rideDTOs),
+                HttpStatus.OK
+        );
+
     }
 
     private List<PassengerResponseDTO> getDummyPassengersResponseDTO() {

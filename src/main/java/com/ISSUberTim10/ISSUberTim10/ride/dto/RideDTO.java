@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.Valid;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,11 +24,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class RideDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+    @Valid
     private ArrayList<DepartureDestinationLocationsDTO> locations;
     private String startTime;
     private String endTime;
     private int totalCost;
+    @Valid
     private UserDTO driver;
+    @Valid
     private ArrayList<UserDTO> passengers;
     private int estimatedTimeInMinutes;
     private String vehicleType;
@@ -36,6 +41,7 @@ public class RideDTO {
     @JsonInclude(JsonInclude.Include. NON_NULL)
     private String status;
 
+    @Valid
     private RejectionDTO rejection;
 
 
@@ -50,8 +56,8 @@ public class RideDTO {
         }
         this.id = ride.getId();
         this.locations = locations;
-        this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatter);
-        this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatter);
+        this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatterWithSeconds);
+        this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatterWithSeconds);
         this.totalCost = (int) ride.getPrice();
         this.driver = new UserDTO(ride.getDriver());
         this.passengers = passengers;

@@ -6,6 +6,8 @@ import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IPanicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PanicService implements IPanicService {
     @Autowired
@@ -14,5 +16,10 @@ public class PanicService implements IPanicService {
     @Override
     public void save(Panic panic) {
         panicRepository.save(panic);
+    }
+
+    @Override
+    public List<Panic> getAllPanics() {
+        return panicRepository.findAll();
     }
 }

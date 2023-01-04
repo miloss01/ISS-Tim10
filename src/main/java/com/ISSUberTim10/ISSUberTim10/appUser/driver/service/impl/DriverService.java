@@ -5,7 +5,9 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.DriverRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.ChangeRequest;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Document;
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,19 +40,39 @@ public class DriverService implements IDriverService {
 
     @Override
     public Driver getById(Long id) {
-        return driverRepository.getById(id);
+        Optional<Driver> driver = driverRepository.findById(id);
+
+        if (!driver.isPresent())
+            throw new CustomException("Driver does not exist!", HttpStatus.NOT_FOUND);
+
+        return driver.get();
+    }
+
+    @Override
+    public Optional<Driver> getByEmail(String email) {
+        return driverRepository.findByEmail(email);
     }
 
     @Override
     public Driver setVehicle(Vehicle vehicle) {
-        Driver driver = driverRepository.getById(vehicle.getDriver().getId());
-        driver.setVehicle(vehicle);
-        return driverRepository.save(driver);
+        Optional<Driver> driver = driverRepository.findById(vehicle.getDriver().getId());
+
+        if (!driver.isPresent())
+            throw new CustomException("Driver does not exits!", HttpStatus.NOT_FOUND);
+
+        driver.get().setVehicle(vehicle);
+        return driverRepository.save(driver.get());
     }
 
     @Override
     public Driver saveDriver(Driver driver) {
         return driverRepository.save(driver);
+    }
+
+    @Override
+    public List<Driver> getAllDrivers(Pageable pageable) {
+        Page<Driver> page = driverRepository.findAll(pageable);
+        return page.getContent();
     }
 
     @Override

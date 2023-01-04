@@ -1,6 +1,6 @@
-insert into vehicle_type (name, price) values ('standard', 123.1);
-insert into vehicle_type (name, price) values ('luxury', 123.1);
-insert into vehicle_type (name, price) values ('van', 123.1);
+insert into vehicle_type (name, price) values ('standard', 10);
+insert into vehicle_type (name, price) values ('luxury', 20);
+insert into vehicle_type (name, price) values ('van', 30);
 
 
 insert into coordinates (latitude, longitude, address)
@@ -22,15 +22,18 @@ insert into app_user (active_flag, address, blocked_flag, email, last_name, name
 values (1, 'Misurinova', 1, 'mail@gmail.com', 'Milic', 'Milica', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (0, 'Bulevar Oslobodjenja', 1, 'popov@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (0, 'Bulevar Oslobodjenja', 1, 'dmina@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
+
 
 insert into passenger (id) values (1);
+insert into passenger (id) values (3);
 insert into driver (id, vehicle_id) values (2, 1);
-insert into driver (id, vehicle_id) values (3, 1);
 insert into driver (id, vehicle_id) values (4, 1);
+insert into admin (id) values (5);
 
-
-insert into admin (last_name, name, password, profile_image, username)
-values ('Mirkovic', 'Mirka', '123', 'src', 'je l ovo mejl');
+--insert into admin (last_name, name, password, profile_image, username)
+--values ('Mirkovic', 'Mirka', '123', 'src', 'je l ovo mejl');
 
 
 --insert into user_activation (name, last_name, phone, email, password, profile_image, address, date_created, date_expiration)
@@ -71,6 +74,9 @@ panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
 
 insert into passengers_rides (passenger_id, ride_id) values (1, 1);
+insert into passengers_rides (passenger_id, ride_id) values (1, 2);
+insert into passengers_rides (passenger_id, ride_id) values (1, 3);
+insert into passengers_rides (passenger_id, ride_id) values (3, 1);
 
 insert into routes_rides (ride_id, route_id) values (1, 1);
 
@@ -105,7 +111,7 @@ values ('scr', 'licna', 2);
 insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
 values ('work', 'boki@DEsi.com', 'every night', 'and', 'day', 'https://material.angular.io/assets/img/examples/shiba2.jpg', 2, 0, 'promena', 'registracija', 3, 1, 1, '2020-04-12 07:03:24', 'standard');
 insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
-values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 3, 0, 'promena', 'registracija', 3, 1, 1, '2022-04-12 07:03:24', 'standard');
+values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 4, 0, 'promena', 'registracija', 3, 1, 1, '2022-04-12 07:03:24', 'standard');
 --
 --insert into change_request (address, email, last_name, name, phone, profile_image, driver_id, approved, model, registration_plate, num_of_seats, baby_flag, pets_flag, date_created, vehicle_type)
 --values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 4, 1, 'promena', 'registracija', 3, 1, 1, '2016-04-12 07:03:24', 'standard');
