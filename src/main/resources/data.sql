@@ -80,9 +80,6 @@ insert into passengers_rides (passenger_id, ride_id) values (3, 1);
 
 insert into routes_rides (ride_id, route_id) values (1, 1);
 
-insert into passengers_favourite_rides (passenger_id, ride_id) values (1, 1);
-
-
 
 insert into review (comment, rating, passenger_id, ride_id, for_driver)
 values ('Dobar', 5, 1, 1, 2);
