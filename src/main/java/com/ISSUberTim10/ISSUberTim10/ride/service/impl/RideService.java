@@ -176,12 +176,19 @@ public class RideService implements IRideService {
         statuses.add(Ride.RIDE_STATUS.pending);
         if (isPassengerAlreadyInARide(newRideRequest, statuses)) return false;
 
-        ArrayList<Vehicle> vehicles = findAllVehiclesByType(newRideRequest.getVehicleType());
+        ArrayList<Vehicle> vehicles = findAppropriateVehicles(newRideRequest);
         if(vehicles.size()==0) return false;
         Driver availableDriver = findBestDriver(vehicles, statuses, newRideRequest);
         if (availableDriver.getId() == -1L) return false;
         fillRideRequest(newRideRequest, availableDriver);
         return true;
+    }
+
+    private ArrayList<Vehicle> findAppropriateVehicles(Ride newRideRequest){
+        ArrayList<Vehicle> vehicles = findAllVehiclesByType(newRideRequest.getVehicleType());
+        vehicles.removeIf(vehicle -> newRideRequest.isBabyFlag() && !vehicle.isBabyFlag());
+        vehicles.removeIf(vehicle -> newRideRequest.isPetsFlag() && !vehicle.isPetsFlag());
+        return vehicles;
     }
 
     private void fillRideRequest(Ride newRideRequest, Driver availableDriver) {
