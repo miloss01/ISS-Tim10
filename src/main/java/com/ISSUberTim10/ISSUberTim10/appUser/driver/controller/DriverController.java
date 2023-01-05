@@ -248,11 +248,6 @@ public class DriverController {
                 new VehicleDTO(saved),
                 HttpStatus.OK
         );
-
-//        return new ResponseEntity<>(
-//                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
-//                HttpStatus.OK
-//        );
     }
 
     @GetMapping(value = "/{id}/working-hour", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -274,18 +269,6 @@ public class DriverController {
                 new WorkingHoursDTO(workingHourDTOs.size(), workingHourDTOs),
                 HttpStatus.OK
         );
-
-//        return new ResponseEntity<WorkingHoursDTO>(
-//                new WorkingHoursDTO(
-//                        243,
-//                        new ArrayList<WorkingHourDTO>(
-//                                Arrays.asList(
-//                                        new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z")
-//                                )
-//                        )
-//                ),
-//                HttpStatus.OK
-//        );
     }
 
     @PostMapping(value = "/{id}/working-hour", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -294,27 +277,32 @@ public class DriverController {
                                                           @RequestBody WorkingHourDTO workingHourDTO) {
 
         Driver driver = driverService.getById(id.longValue());
+        WorkingTime saved = new WorkingTime();
+        WorkingTime workingTime = new WorkingTime();
+
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        if (workingHourDTO.getStart() != null) {
+            workingTime.setDriver(driver);
+            workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getStart().replace('T', ' '), formatter));
+            workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getStart().replace('T', ' '), formatter));
 
-        WorkingTime workingTime = new WorkingTime();
-        workingTime.setDriver(driver);
-        workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getStart(), formatter));
-        workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getStart(), formatter));
+            saved = workingTimeService.save(workingTime);
 
-        WorkingTime saved = workingTimeService.save(workingTime);
+        }else {
+            workingTime.setDriver(driver);
+            workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getEnd().replace('T', ' '), formatter));
+            workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getEnd().replace('T', ' '), formatter));
+
+            saved = workingTimeService.update(workingTime);
+        }
 
         WorkingHourDTO ret = new WorkingHourDTO();
         ret.setId(saved.getId().intValue());
         ret.setStart(saved.getStartTime().toString());
+        ret.setEnd(saved.getEndTime().toString());
 
         return new ResponseEntity<>(ret, HttpStatus.OK);
-
-
-//        return new ResponseEntity<>(
-//                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
-//                HttpStatus.OK
-//        );
     }
 
     @GetMapping(value = "/{id}/ride", produces = MediaType.APPLICATION_JSON_VALUE)
