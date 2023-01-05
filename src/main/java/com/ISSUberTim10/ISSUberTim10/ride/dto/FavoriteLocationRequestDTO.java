@@ -13,6 +13,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 @NoArgsConstructor
 @Getter
@@ -20,12 +23,18 @@ import java.util.List;
 @ToString
 public class FavoriteLocationRequestDTO {
 
+    @NotNull(message = "Field (favorite name) is required!")
+    @Valid
     private String favoriteName;
 
+    @NotNull(message = "Field (locations) is required!")
+    @Valid
     private List<DepartureDestinationLocationsDTO> locations;
 
     private List<UserResponseDTO> passengers;
 
+    @Pattern(regexp = "standard|luxury|van", message="Field (vehicle type) has incorrect value!")
+    @Valid
     private String vehicleType;
 
     private boolean babyTransport;

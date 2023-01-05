@@ -26,13 +26,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/review")
 @CrossOrigin(origins = "http://localhost:4200")
+@Validated
 public class ReviewController {
 
     @Autowired
@@ -55,7 +58,7 @@ public class ReviewController {
 //    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Review')")
     public ResponseEntity<VehicleReviewResponseDTO> saveVehicleReview(
             @PathVariable Integer rideId,
-            @RequestBody VehicleReviewRequestDTO vehicleReviewRequestDTO)
+            @Valid @RequestBody VehicleReviewRequestDTO vehicleReviewRequestDTO)
     {
         // Throws 404 if not found
         Ride ride = rideService.getRideById(rideId.longValue());
@@ -108,8 +111,9 @@ public class ReviewController {
 
     @PostMapping(value="/{rideId}/driver", consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('PASSENGER')")
-    public ResponseEntity<DriverReviewResponseDTO> saveDriverReview(@PathVariable Integer rideId,
-                                                                    @RequestBody DriverReviewRequestDTO driverReviewRequestDTO) {
+    public ResponseEntity<DriverReviewResponseDTO> saveDriverReview(
+            @PathVariable Integer rideId,
+            @Valid @RequestBody DriverReviewRequestDTO driverReviewRequestDTO) {
 
         // Throws 404 if not found
         Ride ride = rideService.getRideById(rideId.longValue());

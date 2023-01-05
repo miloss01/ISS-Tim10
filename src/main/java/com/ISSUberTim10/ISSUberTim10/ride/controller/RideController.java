@@ -21,14 +21,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/ride")
 @CrossOrigin(origins = "http://localhost:4200")
+@Validated
 public class RideController {
 
     @Autowired
@@ -147,7 +150,7 @@ public class RideController {
 
     @PostMapping(value = "/favorites", consumes = "application/json", produces = "application/json")
     ResponseEntity<FavoriteLocationResponseDTO> saveFavoriteLocation(
-            @RequestBody FavoriteLocationRequestDTO locationRequestDTO) {
+            @Valid @RequestBody FavoriteLocationRequestDTO locationRequestDTO) {
 
         FavoriteLocation location = new FavoriteLocation();
 
@@ -214,7 +217,6 @@ public class RideController {
         List<FavoriteLocation> locations = favoriteLocationService.getByMaker(maker.getId());
         List<FavoriteLocationResponseDTO> locationResponseDTOS = new ArrayList<>();
         for (FavoriteLocation l : locations) {
-            System.out.println(l.getFavoriteName());
             FavoriteLocationResponseDTO responseDTO = new FavoriteLocationResponseDTO();
             List<DepartureDestinationLocationsDTO> locationsDTOS = new ArrayList<>();
             for (DepartureDestination dd : l.getLocations()) {
