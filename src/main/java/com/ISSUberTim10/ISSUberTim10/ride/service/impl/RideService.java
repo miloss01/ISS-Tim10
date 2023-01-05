@@ -205,7 +205,6 @@ public class RideService implements IRideService {
         newRideRequest.setDriver(availableDriver);
         newRideRequest.setPassengers(passengers);
         newRideRequest.setRoutes(routes);
-        newRideRequest.setEstimatedTimeMinutes(15);
         newRideRequest.setRideStatus(Ride.RIDE_STATUS.pending);
         newRideRequest.setRejection(rejection);
         rejection.setRide(newRideRequest);

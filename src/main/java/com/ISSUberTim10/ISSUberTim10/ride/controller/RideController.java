@@ -42,7 +42,6 @@ public class RideController {
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
         Ride newRideRequest = new Ride(rideCreation);
-        newRideRequest.setEndTime(newRideRequest.getStartTime().plusMinutes(15));
         if (!rideService.isBookableRide(newRideRequest)) {
              throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
         }
