@@ -1,6 +1,8 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerRequestDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import lombok.*;
 
@@ -25,4 +27,18 @@ public class Passenger extends AppUser {
             joinColumns = @JoinColumn(name = "passenger_id"),
             inverseJoinColumns = @JoinColumn(name = "ride_id"))
     private Collection<Ride> favourite_rides;
+
+    public Passenger(UserDTO userResponseDTO) {
+        this.id = userResponseDTO.getId();
+        this.setEmail(userResponseDTO.getEmail());
+    }
+
+    public Passenger(PassengerRequestDTO passengerRequestDTO) {
+        this.setName(passengerRequestDTO.getName());
+        this.setLastName(passengerRequestDTO.getSurname());
+        this.setEmail(passengerRequestDTO.getEmail());
+        this.setPhone(passengerRequestDTO.getTelephoneNumber());
+        this.setProfileImage(passengerRequestDTO.getProfilePicture());
+        this.setAddress(passengerRequestDTO.getAddress());
+    }
 }

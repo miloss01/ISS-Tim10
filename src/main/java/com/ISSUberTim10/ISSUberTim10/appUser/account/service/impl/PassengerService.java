@@ -30,17 +30,6 @@ public class PassengerService implements IPassengerService {
     @Autowired
     PassengerRepository passengerRepository;
 
-    @Override //moze se obrisati, stoji u AppUserService jer treba i za passengera i za drivera
-    public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id) {
-        Optional<Passenger> found = passengerRepository.findById(id.longValue());
-        if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
-        }
-        AppUser appUser = found.get();
-        PassengerResponseDTO passengerResponse = new PassengerResponseDTO(appUser);
-        return new ResponseEntity<>(passengerResponse, HttpStatus.OK);
-    }
-
     @Override
     public Passenger getPassenger(Long id) {
 
@@ -54,40 +43,6 @@ public class PassengerService implements IPassengerService {
     }
 
     @Override
-    public ResponseEntity<PassengerResponseDTO> updatePassenger(Integer id, PassengerRequestDTO passengerRequestDTO) {
-        Optional<Passenger> found = passengerRepository.findById(id.longValue());
-        if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
-        }
-        Passenger passenger = found.get();
-        passenger.setName(passengerRequestDTO.getName());
-        passenger.setLastName(passengerRequestDTO.getSurname());
-        passenger.setProfileImage(passengerRequestDTO.getProfilePicture());
-        passenger.setPhone(passengerRequestDTO.getTelephoneNumber());
-        passenger.setEmail(passengerRequestDTO.getEmail());
-        passenger.setAddress(passengerRequestDTO.getAddress());
-        passengerRepository.save(passenger);
-        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<PassengerResponseDTO> savePassenger(PassengerRequestDTO passengerRequestDTO) {
-        Passenger passenger = new Passenger();
-        passenger.setName(passengerRequestDTO.getName());
-        passenger.setLastName(passengerRequestDTO.getSurname());
-        passenger.setPhone(passengerRequestDTO.getTelephoneNumber());
-        passenger.setEmail(passengerRequestDTO.getEmail());
-        passenger.setProfileImage(passengerRequestDTO.getProfilePicture());
-        passenger.setAddress(passengerRequestDTO.getAddress());
-        passenger.setRole(Role.PASSENGER);
-        passenger.setPassword(new BCryptPasswordEncoder().encode(passengerRequestDTO.getPassword()));
-        return new ResponseEntity(
-                new PassengerResponseDTO(passengerRepository.save(passenger)),
-                HttpStatus.OK
-        );
-    }
-
-    @Override
     public Passenger savePassenger(Passenger passenger) {
         return passengerRepository.save(passenger);
     }
@@ -96,4 +51,6 @@ public class PassengerService implements IPassengerService {
     public List<Passenger> getAllPassengers(Pageable pageable) {
         return passengerRepository.findAll(pageable).getContent();
     }
+
+
 }
