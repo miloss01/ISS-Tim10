@@ -76,92 +76,6 @@ public class DriverService implements IDriverService {
     }
 
     @Override
-    public ResponseEntity<VehicleDTO> getVehicle(Integer id) {
-        Optional<Driver> found = driverRepository.findById(Long.valueOf(id));
-        if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
-        }
-        Vehicle vehicle = found.get().getVehicle();
-        VehicleDTO vehicleDTO = new VehicleDTO(vehicle);
-        return new ResponseEntity<>(vehicleDTO, HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<VehicleDTO> saveVehicle(Integer id, VehicleDTO vehicleDTO) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<VehicleDTO> updateVehicle(Integer id, VehicleDTO vehicleDTO) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<DriverDTO> saveDriver(DriverDTO driverDTO) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<DriversDTO> getDrivers(Pageable page) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<DriverDTO> getDriver(Integer id) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<DriverDTO> updateDriver(Integer id, DriverDTO driverDTO) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<DocumentDTO>> getDocuments(Integer id) {
-        ArrayList<DocumentDTO> documentDTOS = new ArrayList<>();
-        ArrayList<Document> documents = documentRepository.findByDriverId(Long.valueOf(id));
-        for (Document document: documents) {
-            documentDTOS.add(new DocumentDTO(document));
-        }
-        return new ResponseEntity<>(documentDTOS, HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Void> deleteDocument(Integer documentId) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<DocumentDTO> updateDocument(Integer id, DocumentDTO documentDTO) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<WorkingHoursDTO> getWorkingHours(Integer id, Pageable page, String from, String to) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<WorkingHourDTO> saveWorkingHour(Integer id, WorkingHourDTO workingHourDTO) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<RideResponseDTO> getDriversRide(Integer id, Pageable page, String from, String to) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<WorkingHourDTO> getWorkingHour(Integer workingHourId) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<WorkingHourDTO> updateWorkingHour(Integer workingHourId, WorkingHourDTO workingHourDTO) {
-        return null;
-    }
-
-    @Override
     public ResponseEntity<ChangeRequestDTO> updateChangeRequest(Integer driverId, ChangeRequestDTO requestDTO) {
         Optional<Driver> foundDriver = driverRepository.findById(Long.valueOf(driverId));
         if (!foundDriver.isPresent()) {
@@ -206,6 +120,20 @@ public class DriverService implements IDriverService {
         changeRequestRepository.save(changeRequest);
         driverRepository.save(driver);
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
+    }
+
+    @Override
+    public ArrayList<Document> findDocumentsByDriverId(Long valueOf) {
+        return documentRepository.findByDriverId(valueOf);
+    }
+
+    @Override
+    public Driver findDriverById(Integer id) {
+        Optional<Driver> found = driverRepository.findById(id.longValue());
+        if (!found.isPresent()){
+            throw new CustomException("Driver does not exist", HttpStatus.NOT_FOUND);
+        }
+        return found.get();
     }
 
     private Driver updateDriverWithNewInfo(ChangeRequestDTO requestDTO, Driver driver) {

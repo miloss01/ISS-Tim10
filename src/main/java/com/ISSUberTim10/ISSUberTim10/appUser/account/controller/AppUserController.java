@@ -72,12 +72,6 @@ public class AppUserController {
     private JwtTokenUtil jwtTokenUtil;
 
 
-    @GetMapping(value = "/user2", produces = "application/json")
-    public ResponseEntity<Collection<AppUser>> getAll() {
-        Collection<AppUser> users = appUserService.getAll();
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AllUsersDTO> getAll(Pageable page) {
 
@@ -117,15 +111,6 @@ public class AppUserController {
         return new ResponseEntity<>(new UserResponseDTO(appUser), HttpStatus.OK);
     }
 
-    @PostMapping()
-    public void createAll() {
-        appUserService.createAll();
-    }
-
-    @DeleteMapping()
-    public void deleteAll() {
-        appUserService.deleteAll();
-    }
 
     @GetMapping(value = "/{id}/ride", produces = "application/json")
     public ResponseEntity<RideResponseDTO> getUsersRides(@PathVariable Integer id,
@@ -251,12 +236,11 @@ public class AppUserController {
 //    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Message')")
     public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Integer id) {
 
-        Optional<AppUser> appUser = appUserService.findById(id.longValue());
+        AppUser appUser = appUserService.findById(id.longValue());
 
-        if (!appUser.isPresent())
-            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
 
-        List<Message> messages = messageService.getMessagesBySenderOrReceiver(appUser.get(), appUser.get());
+
+        List<Message> messages = messageService.getMessagesBySenderOrReceiver(appUser, appUser);
 
         ArrayList<MessageReceivedDTO> messageReceivedDTOs = new ArrayList<>();
 
@@ -278,14 +262,11 @@ public class AppUserController {
     public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Integer id,
                                                                @Valid @RequestBody MessageSentDTO messageSent) {
 
-        Optional<AppUser> sender = appUserService.findById(id.longValue());
-        Optional<AppUser> receiver = appUserService.findById(messageSent.getReceiverId());
+        AppUser sender = appUserService.findById(id.longValue());
+        AppUser receiver = appUserService.findById(messageSent.getReceiverId());
         Ride ride = rideService.getRideById(messageSent.getRideId());
 
-        if (!sender.isPresent() || !receiver.isPresent())
-            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
-
-        Message message = new Message(null, sender.get(), receiver.get(), messageSent.getMessage(), LocalDateTime.now(), Message.MESSAGE_TYPE.valueOf(messageSent.getType().toLowerCase()), messageSent.getRideId());
+        Message message = new Message(null, sender, receiver, messageSent.getMessage(), LocalDateTime.now(), Message.MESSAGE_TYPE.valueOf(messageSent.getType().toLowerCase()), messageSent.getRideId());
 
         Message saved = messageService.save(message);
 
@@ -319,7 +300,13 @@ public class AppUserController {
     @PutMapping(value = "/changeActiveFlag/{id}", consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
     public ResponseEntity<IsActiveDTO> changeActiveFlag(@PathVariable Integer id, @RequestBody IsActiveDTO isActiveDTO) {
-        return appUserService.changeActiveFlag(id, isActiveDTO);
+        AppUser appUser = appUserService.findById(id.longValue());
+        appUser.setActiveFlag(isActiveDTO.isActive());
+        if (appUser.isBlockedFlag()) {
+            appUser.setActiveFlag(false);
+        }
+        appUserService.save(appUser);
+        return new ResponseEntity<>(isActiveDTO, HttpStatus.OK);
     }
 
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)

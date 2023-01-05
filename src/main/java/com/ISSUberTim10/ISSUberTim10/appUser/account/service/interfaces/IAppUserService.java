@@ -27,7 +27,7 @@ public interface IAppUserService {
 
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id);
     public Optional<AppUser> findByEmail(String email);
-    public Optional<AppUser> findById(Long id);
+    public AppUser findById(Long id);
 
     public ResponseEntity<String> blockUser(@PathVariable Integer id);
 
@@ -42,9 +42,9 @@ public interface IAppUserService {
     ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page);
 
 
-    ResponseEntity<IsActiveDTO> changeActiveFlag(Integer id, IsActiveDTO isActiveDTO);
     public AppUser save(AppUser appUser);
 
     Optional<AppUser> getByEmail(String email);
+
 
 }
