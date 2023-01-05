@@ -14,13 +14,13 @@ registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 1, 1);
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
-(1, 'neka tojota nesto', 5, 1, '007-sg', 1, 3);
-insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
-registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 1, 2);
-insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
-registration_plate, current_coordinates_id, vehicle_type_id) values
-(1, 'citroen', 5, 1, '007-ssadg', 2, 1);
+--insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+--registration_plate, current_coordinates_id, vehicle_type_id) values
+--(1, 'neka tojota nesto', 5, 1, '007-sg', 1, 2);
+--insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+--registration_plate, current_coordinates_id, vehicle_type_id) values
+--(1, 'citroen', 5, 1, '007-ssadg', 2, 1);
 
 
 
@@ -39,7 +39,7 @@ values (1, 'Bulevar Oslobodjenja', 1, 'dmina@gmail.com', 'Popov', 'Sandra', '$2a
 insert into passenger (id) values (1);
 insert into passenger (id) values (3);
 insert into driver (id, vehicle_id) values (2, 1);
-insert into driver (id, vehicle_id) values (4, 4);
+insert into driver (id, vehicle_id) values (4, 2);
 insert into admin (id) values (5);
 
 --insert into admin (last_name, name, password, profile_image, username)
