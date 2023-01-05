@@ -27,6 +27,7 @@ public class ChangeRequest {
 
     private String email;
 
+    @Lob
     private String profileImage;
 
     private String address;

@@ -4,9 +4,9 @@ insert into vehicle_type (name, price) values ('van', 30);
 
 
 insert into coordinates (latitude, longitude, address)
-values (45.2501342, 19.8480507, 'Strazilovska 19, Novi Sad');
+values (45.2366791, 19.8160032, 'Mornarska 2, Novi Sad');
 insert into coordinates (latitude, longitude, address)
-values (45.2523302, 19.7586626, 'Fruskogorska 5, Novi Sad');
+values (45.2471018, 19.8328788, 'Gogoljeva 32, Novi Sad');
 
 
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
