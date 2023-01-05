@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride;
 
+import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,4 +36,8 @@ public class Route {
     @ManyToMany(mappedBy = "routes")
     private Collection<Ride> rides;
 
+    public Route(DepartureDestinationLocationsDTO routeDto) {
+        this.departureCoordinates = new Coordinates(routeDto.getDeparture());
+        this.destinationCoordinates = new Coordinates(routeDto.getDestination());
+    }
 }

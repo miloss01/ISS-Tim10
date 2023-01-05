@@ -1,11 +1,19 @@
 package com.ISSUberTim10.ISSUberTim10.ride;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.VehicleType;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.RideCreationDTO;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @NoArgsConstructor
@@ -69,6 +77,29 @@ public class Ride {
     @OneToOne(mappedBy = "ride", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Rejection rejection;
+
+    public Ride(RideCreationDTO rideCreation) {
+        ArrayList<Passenger> passengers = new ArrayList<>();
+        for (UserDTO userResponseDTO: rideCreation.getPassengers()) {
+            passengers.add(new Passenger(userResponseDTO));
+        }
+        ArrayList<Route> routes = new ArrayList<>();
+        for(DepartureDestinationLocationsDTO routeDto: rideCreation.getLocations()){
+            routes.add(new Route(routeDto));
+        }
+        this.passengers = passengers;
+        this.routes = routes;
+        this.startTime = LocalDateTime.parse(rideCreation.getStartTime().replace('T', ' '), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.petsFlag = rideCreation.isPetTransport();
+        this.babyFlag = rideCreation.isBabyTransport();
+        Driver dummy = new Driver();
+        Vehicle dummyVehicle = new Vehicle();
+        dummyVehicle.setVehicleType(new VehicleType(0L, Vehicle.VEHICLE_TYPE.valueOf(rideCreation.getVehicleType()), 0));
+        dummy.setVehicle(dummyVehicle);
+        this.driver = dummy;
+        this.estimatedTimeMinutes = rideCreation.getEstimatedTimeMinutes();
+        this.endTime = this.getStartTime().plusMinutes(this.estimatedTimeMinutes);
+    }
 
 //    @Enumerated
 //    @Column(name = "vehicle_type")

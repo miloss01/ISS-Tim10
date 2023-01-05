@@ -1,6 +1,7 @@
 package com.ISSUberTim10.ISSUberTim10.ride.dto;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserExpandedDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.Panic;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,4 +27,11 @@ public class PanicExpandedDTO {
     @Size(max = 500, message = "Field (reason) cannot be longer than 500 characters!")
     private String reason;
 
+    public PanicExpandedDTO(Panic panic) {
+        this.id = Math.toIntExact(panic.getId());
+        this.user = new UserExpandedDTO(panic.getAppUser());
+        this.ride = new RideDTO(panic.getRide());
+        this.time =panic.getPanicTime().toString();
+        this.reason = panic.getReason();
+    }
 }

@@ -168,4 +168,9 @@ public class AppUserService implements IAppUserService {
         return appUserRepository.save(appUser);
     }
 
+    @Override
+    public Optional<AppUser> getByEmail(String email) {
+        return appUserRepository.findByEmail(email);
+    }
+
 }
