@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

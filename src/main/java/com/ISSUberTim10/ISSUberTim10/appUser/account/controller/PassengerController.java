@@ -183,20 +183,16 @@ public class PassengerController {
     public ResponseEntity<PassengerResponseDTO> updatePassenger(@PathVariable(required = true) Integer id,
                                                               @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
-        //        Passenger passenger = passengerService.findOne(id);
-        Passenger passenger = new Passenger();
+        Passenger passenger = passengerService.getPassenger(id.longValue());
         passenger.setName(passengerRequestDTO.getName());
         passenger.setLastName(passengerRequestDTO.getSurname());
         passenger.setProfileImage(passengerRequestDTO.getProfilePicture());
         passenger.setPhone(passengerRequestDTO.getTelephoneNumber());
         passenger.setEmail(passengerRequestDTO.getEmail());
         passenger.setAddress(passengerRequestDTO.getAddress());
-        passenger.setPassword(passengerRequestDTO.getPassword());
-        passenger.setId(500L); // Dummy ID
-        //        passengerService.save(passenger);
+        passenger = passengerService.savePassenger(passenger);
 
-//        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
-        return passengerService.updatePassenger(id, passengerRequestDTO);
+        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
     }
 
 
