@@ -31,6 +31,8 @@ public interface IRideService {
     public Ride getRideById(Long id);
     public List<Ride> getByDriver(Pageable pageable, Driver driver);
     public List<Ride> getByPassenger(Pageable pageable, Passenger passenger);
+    public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status);
+    public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status);
     ResponseEntity<RideDTO> cancelRide(Integer id);
     ResponseEntity<PanicExpandedDTO> addPanic(Integer id, ReasonDTO panic);
     ResponseEntity<RideDTO> acceptRide(Integer id);

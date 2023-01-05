@@ -13,6 +13,8 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IVehicleT
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.ride.DepartureDestination;
 import com.ISSUberTim10.ISSUberTim10.ride.Location;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
@@ -36,12 +38,13 @@ public class RideController {
 
     @Autowired
     IRideService rideService;
+    @Autowired
+    IDriverService driverService;
+    @Autowired
+    IPassengerService passengerService;
 
     @Autowired
     IFavoriteLocationService favoriteLocationService;
-
-    @Autowired
-    IPassengerService passengerService;
 
     @Autowired
     IAppUserService appUserService;
@@ -64,23 +67,38 @@ public class RideController {
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId){
-        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-        ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
-        passengers.add(new UserDTO(1L, "sandra@gmail"));
-        return new ResponseEntity<>(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
-                passengers, 5, "STANDARD", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
+
+        Driver driver = driverService.getById(driverId.longValue());
+
+        Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.active);
+
+        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+
+//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+//        ArrayList<UserDTO> passengers = new ArrayList<>();
+//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
+//        passengers.add(new UserDTO(1L, "sandra@gmail"));
+//        return new ResponseEntity<>(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
+//                passengers, 5, "STANDARD", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
     }
 
     @GetMapping(value = "/passenger/{passengerId}/active", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #passengerId, 'Ride')")
     ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
-        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-        ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
-        passengers.add(new UserDTO(1L, ""));
-        return new ResponseEntity<>(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
+
+        Passenger passenger = passengerService.getPassenger(passengerId.longValue());
+
+        Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.active);
+
+        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+
+
+//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+//        ArrayList<UserDTO> passengers = new ArrayList<>();
+//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Detelinara", 10.0, 10.0), new LocationDTO("Liman1", 10.0, 10.0)));
+//        passengers.add(new UserDTO(1L, ""));
+//        return new ResponseEntity<>(new RideDTO(1L, locations, "", "", 123, new UserDTO(1L, ""),
+//                passengers, 5, "", true, true, "PENDING", new RejectionDTO("zato", "11.11.2022.")), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
