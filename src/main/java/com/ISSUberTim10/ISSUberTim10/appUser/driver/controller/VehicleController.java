@@ -26,7 +26,7 @@ public class VehicleController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @PutMapping(value = "/{id}/location", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize(value = "hasRole('DRIVER')")
+//    @PreAuthorize(value = "hasRole('DRIVER')")
     public ResponseEntity<Void> updateVehicle(@PathVariable Integer id,
                                               @Valid @RequestBody LocationDTO currentLocationDTO) {
 

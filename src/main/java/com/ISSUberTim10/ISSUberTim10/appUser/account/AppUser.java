@@ -34,6 +34,7 @@ public abstract class AppUser {
 
     private String password;
 
+    @Lob
     private String profileImage;
 
     private String address;
