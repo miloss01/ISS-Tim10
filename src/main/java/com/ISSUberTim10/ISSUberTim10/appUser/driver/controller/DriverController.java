@@ -310,7 +310,7 @@ public class DriverController {
         WorkingTime workingTime = new WorkingTime();
         workingTime.setDriver(driver);
         workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getStart(), formatter));
-        workingTime.setEndTime(null);
+        workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getStart(), formatter));
 
         WorkingTime saved = workingTimeService.save(workingTime);
 

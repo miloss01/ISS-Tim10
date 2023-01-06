@@ -97,6 +97,8 @@ public class Ride {
         dummyVehicle.setVehicleType(new VehicleType(0L, Vehicle.VEHICLE_TYPE.valueOf(rideCreation.getVehicleType()), 0));
         dummy.setVehicle(dummyVehicle);
         this.driver = dummy;
+        this.estimatedTimeMinutes = rideCreation.getEstimatedTimeMinutes();
+        this.endTime = this.getStartTime().plusMinutes(this.estimatedTimeMinutes);
     }
 
 //    @Enumerated

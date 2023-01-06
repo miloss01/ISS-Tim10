@@ -26,6 +26,7 @@ public class RideCreationDTO {
     private boolean babyTransport;
     @NotNull(message = "Field (petTransport) is required!")
     private boolean petTransport;
+    private int estimatedTimeMinutes;
 
     public RideCreationDTO() {
         this.locations = new ArrayList<>();

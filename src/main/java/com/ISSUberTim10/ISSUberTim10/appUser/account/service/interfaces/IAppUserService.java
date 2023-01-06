@@ -46,4 +46,5 @@ public interface IAppUserService {
     public AppUser save(AppUser appUser);
 
     Optional<AppUser> getByEmail(String email);
+
 }
