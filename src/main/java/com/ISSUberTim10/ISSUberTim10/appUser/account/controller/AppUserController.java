@@ -102,11 +102,7 @@ public class AppUserController {
 
     @GetMapping(value="/email", produces = "application/json")
     public ResponseEntity<UserResponseDTO> getById(@RequestParam String email) {
-        Optional<AppUser> found = appUserService.getByEmail(email);
-        if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        AppUser appUser = found.get();
+        AppUser appUser = appUserService.findByEmail(email);
         appUser.setId(0L);
         return new ResponseEntity<>(new UserResponseDTO(appUser), HttpStatus.OK);
     }
@@ -197,7 +193,7 @@ public class AppUserController {
         sc.setAuthentication(auth);
 
         String role = sc.getAuthentication().getAuthorities().toString();
-        AppUser user = appUserService.findByEmail(loginDTO.getEmail()).get();
+        AppUser user = appUserService.findByEmail(loginDTO.getEmail());
 
         String token = jwtTokenUtil.generateToken(
             loginDTO.getEmail(),
@@ -313,10 +309,7 @@ public class AppUserController {
     public ResponseEntity<Void> requestCode(@RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
         System.out.println("u post");
 
-        Optional<AppUser> appUser = appUserService.findByEmail(passwordResetCodeDTO.getEmail());
-
-        if (!appUser.isPresent())
-            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
+        AppUser appUser = appUserService.findByEmail(passwordResetCodeDTO.getEmail());
 
         String resetCode = "neki kod";
 
@@ -336,10 +329,7 @@ public class AppUserController {
     @PutMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> applyCode(@RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
 
-        Optional<AppUser> appUser = appUserService.findByEmail(passwordResetCodeDTO.getEmail());
-
-        if (!appUser.isPresent())
-            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
+        AppUser appUser = appUserService.findByEmail(passwordResetCodeDTO.getEmail());
 
         Optional<PasswordResetCode> code = passwordResetCodeService.findByEmail(passwordResetCodeDTO.getEmail());
 
@@ -354,8 +344,8 @@ public class AppUserController {
             throw new CustomException("Code is expired!", HttpStatus.BAD_REQUEST);
         }
 
-        appUser.get().setPassword(new BCryptPasswordEncoder().encode(passwordResetCodeDTO.getNewPassword()));
-        appUserService.save(appUser.get());
+        appUser.setPassword(new BCryptPasswordEncoder().encode(passwordResetCodeDTO.getNewPassword()));
+        appUserService.save(appUser);
 
         passwordResetCodeService.deleteById(code.get().getId());
 

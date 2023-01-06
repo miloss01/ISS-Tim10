@@ -55,7 +55,7 @@ public class DriverController {
 //    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<DriverDTO> saveDriver(@RequestBody DriverDTO driverDTO) {
 
-        Optional<AppUser> user = appUserService.findByEmail(driverDTO.getEmail());
+        Optional<AppUser> user = appUserService.findByEmailOpt(driverDTO.getEmail());
 
         if (user.isPresent())
             throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
@@ -401,14 +401,9 @@ public class DriverController {
 
         workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getEnd(), formatter));
 
-        WorkingTime saved = workingTimeService.save(workingTime);
+        WorkingTime saved = workingTimeService.saveUpdated(workingTime);
 
         return new ResponseEntity<>(new WorkingHourDTO(saved), HttpStatus.OK);
-
-//        return new ResponseEntity<>(
-//                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
-//                HttpStatus.OK
-//        );
     }
 
     @GetMapping(value = "/change-requests", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -78,8 +78,12 @@ public class AppUserService implements IAppUserService {
     }
 
     @Override
-    public Optional<AppUser> findByEmail(String email) {
-        return appUserRepository.findByEmail(email);
+    public AppUser findByEmail(String email) {
+        Optional<AppUser> found = appUserRepository.findByEmail(email);
+        if (!found.isPresent()) {
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
+        }
+        return found.get();
     }
 
     @Override
@@ -160,7 +164,7 @@ public class AppUserService implements IAppUserService {
     }
 
     @Override
-    public Optional<AppUser> getByEmail(String email) {
+    public Optional<AppUser> findByEmailOpt(String email) {
         return appUserRepository.findByEmail(email);
     }
 

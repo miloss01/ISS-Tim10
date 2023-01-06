@@ -9,6 +9,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.WorkingTime;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleTypeRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.WorkingTimeRepository;
+import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.ride.*;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
@@ -297,7 +298,7 @@ public class RideService implements IRideService {
 
     @Override
     public Ride withdrawRide(Ride ride) {
-        if (ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.active) {
+        if (!(ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.active)) {
             throw new CustomException("Cannot cancel a ride that is not in status PENDING or STARTED!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.rejected);
@@ -306,7 +307,7 @@ public class RideService implements IRideService {
 
     @Override
     public Ride startRide(Ride ride) {
-        if (ride.getRideStatus() == Ride.RIDE_STATUS.accepted) {
+        if (ride.getRideStatus() != Ride.RIDE_STATUS.accepted) {
             throw new CustomException("Cannot start a ride that is not in status ACCEPTED!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.active);

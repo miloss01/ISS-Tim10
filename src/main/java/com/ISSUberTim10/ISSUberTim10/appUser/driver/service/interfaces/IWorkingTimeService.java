@@ -16,4 +16,6 @@ public interface IWorkingTimeService {
     public List<WorkingTime> getByDriver(Pageable pageable, Driver driver, String from, String to);
 
     WorkingTime update(WorkingTime workingTime);
+
+    WorkingTime saveUpdated(WorkingTime workingTime);
 }

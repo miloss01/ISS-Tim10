@@ -26,7 +26,7 @@ public interface IAppUserService {
     List<AppUser> getAll(Pageable page);
 
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id);
-    public Optional<AppUser> findByEmail(String email);
+    public AppUser findByEmail(String email);
     public AppUser findById(Long id);
 
     public ResponseEntity<String> blockUser(@PathVariable Integer id);
@@ -44,7 +44,6 @@ public interface IAppUserService {
 
     public AppUser save(AppUser appUser);
 
-    Optional<AppUser> getByEmail(String email);
 
-
+    Optional<AppUser> findByEmailOpt(String email);
 }

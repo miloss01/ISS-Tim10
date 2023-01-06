@@ -20,7 +20,16 @@ public class VehicleService implements IVehicleService {
 
     @Override
     public Vehicle saveVehicle(Vehicle vehicle) {
+        checkIfVehicleAssigned(vehicle);
         return vehicleRepository.save(vehicle);
+    }
+
+    private void checkIfVehicleAssigned(Vehicle vehicle) {
+        try {
+            vehicle.getDriver().getId();
+        }catch (NullPointerException ex) {
+            throw new CustomException("Vehicle is not assigned to the specific driver!", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

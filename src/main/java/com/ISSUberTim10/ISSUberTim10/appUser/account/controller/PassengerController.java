@@ -74,7 +74,7 @@ public class PassengerController {
     @PostMapping(produces = "application/json", consumes = "application/json")
     public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
 
-        Optional<AppUser> appUser = appUserService.findByEmail(passengerRequestDTO.getEmail());
+        Optional<AppUser> appUser = appUserService.findByEmailOpt(passengerRequestDTO.getEmail());
 
         if (appUser.isPresent())
             throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
