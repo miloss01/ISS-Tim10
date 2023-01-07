@@ -99,7 +99,8 @@ public class RideService implements IRideService {
     public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status) {
 
         Optional<Ride> ride = rideRepository.findByDriverAndRideStatus(driver, status);
-
+        System.out.println(status.toString());
+        System.out.println(driver.getId());
         if (!ride.isPresent())
             throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
 
@@ -135,6 +136,7 @@ public class RideService implements IRideService {
             throw new CustomException("Cannot accept a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.accepted);
+        System.out.println("Accepeted ride for driver: " + ride.getDriver().getId() + " s" + ride.getRideStatus().toString());
         return rideRepository.save(ride);
     }
 
@@ -174,13 +176,20 @@ public class RideService implements IRideService {
         statuses.add(Ride.RIDE_STATUS.active);
         statuses.add(Ride.RIDE_STATUS.accepted);
         statuses.add(Ride.RIDE_STATUS.pending);
-        if (isPassengerAlreadyInARide(newRideRequest, statuses)) return false;
+        if (isPassengerAlreadyInARide(newRideRequest, statuses)) {System.out.println("Falied - passenger already in ride"); return false;}
 
         ArrayList<Vehicle> vehicles = findAppropriateVehicles(newRideRequest);
-        if(vehicles.size()==0) return false;
+        if(vehicles.size()==0) {
+            System.out.println("Falied - no vehicles");
+            return false;
+        }
         Driver availableDriver = findBestDriver(vehicles, statuses, newRideRequest);
-        if (availableDriver.getId() == -1L) return false;
+        if (availableDriver.getId() == -1L) {
+            System.out.println("Falied - no drivers");
+            return false;
+        }
         fillRideRequest(newRideRequest, availableDriver);
+        System.out.println("Found driver with id: " + availableDriver.getId());
         return true;
     }
 
@@ -282,7 +291,7 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public void save(Ride newRideRequest) {
+    public Ride save(Ride newRideRequest) {
         ArrayList<Route> routes = (ArrayList<Route>) newRideRequest.getRoutes();
         Coordinates departure= coordinatesRepository.save(routes.get(0).getDepartureCoordinates());
         Coordinates destination= coordinatesRepository.save(routes.get(0).getDestinationCoordinates());
@@ -292,7 +301,7 @@ public class RideService implements IRideService {
         routes = new ArrayList<>();
         routes.add(route);
         newRideRequest.setRoutes(routes);
-        rideRepository.save(newRideRequest);
+        return rideRepository.save(newRideRequest);
     }
 
     @Override

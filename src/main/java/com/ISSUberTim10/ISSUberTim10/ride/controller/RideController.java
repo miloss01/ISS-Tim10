@@ -15,6 +15,7 @@ import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,15 +39,25 @@ public class RideController {
     @Autowired
     IPanicService panicService;
 
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
     @PostMapping(consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
         Ride newRideRequest = new Ride(rideCreation);
         if (!rideService.isBookableRide(newRideRequest)) {
-             throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
         }
-        rideService.save(newRideRequest);
-        return new ResponseEntity<>(new RideDTO(newRideRequest), HttpStatus.OK);
+        Ride saved = rideService.save(newRideRequest);
+        System.out.println(newRideRequest.getRideStatus().toString());
+        RideDTO rideDTO = new RideDTO(saved);
+        this.simpMessagingTemplate.convertAndSend("/ride-notification-driver/" + saved.getDriver().getId(),
+                new NotificationDTO("From " +
+                        rideDTO.getLocations().get(0).getDeparture().getAddress() +
+                        " to " + rideDTO.getLocations().get(0).getDestination().getAddress(),
+                        saved.getId().intValue()));
+        return new ResponseEntity<>(rideDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
@@ -56,6 +67,28 @@ public class RideController {
         Driver driver = driverService.getById(driverId.longValue());
 
         Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.active);
+
+        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/driver/{driverId}/accepted", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    ResponseEntity<RideDTO> getAcceptedRideByDriverId(@PathVariable Integer driverId){
+
+        Driver driver = driverService.getById(driverId.longValue());
+
+        Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.accepted);
+
+        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/driver/{driverId}/pending", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    ResponseEntity<RideDTO> getPendingRideByDriverId(@PathVariable Integer driverId){
+
+        Driver driver = driverService.getById(driverId.longValue());
+
+        Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.pending);
 
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }

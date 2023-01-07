@@ -34,7 +34,7 @@ public interface IRideService {
 
     boolean isBookableRide(Ride newRideRequest);
 
-    void save(Ride newRideRequest);
+    Ride save(Ride newRideRequest);
 
     Ride withdrawRide(Ride ride);
 
