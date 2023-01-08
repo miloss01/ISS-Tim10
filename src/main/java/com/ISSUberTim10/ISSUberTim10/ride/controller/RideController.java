@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/ride")
@@ -55,9 +56,16 @@ public class RideController {
 
         Driver driver = driverService.getById(driverId.longValue());
 
-        Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.active);
+        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+        statuses.add(Ride.RIDE_STATUS.pending);
+        statuses.add(Ride.RIDE_STATUS.active);
 
-        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+        ArrayList<Ride> rides = rideService.getByDriverAndStatus(driver, statuses);
+
+        if (rides.size() > 1)
+            throw new CustomException("Multiple rides in active and/or pending status", HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(new RideDTO(rides.get(0)), HttpStatus.OK);
     }
 
     @GetMapping(value = "/passenger/{passengerId}/active", produces = "application/json")
@@ -66,7 +74,11 @@ public class RideController {
 
         Passenger passenger = passengerService.getPassenger(passengerId.longValue());
 
-        Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.active);
+        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+//        statuses.add(Ride.RIDE_STATUS.accepted);
+        statuses.add(Ride.RIDE_STATUS.active);
+
+        Ride ride = rideService.getByPassengerAndStatus(passenger, statuses);
 
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }

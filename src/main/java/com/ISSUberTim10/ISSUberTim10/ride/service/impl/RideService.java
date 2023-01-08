@@ -96,24 +96,24 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status) {
+    public ArrayList<Ride> getByDriverAndStatus(Driver driver, ArrayList<Ride.RIDE_STATUS> statuses) {
 
-        Optional<Ride> ride = rideRepository.findByDriverAndRideStatus(driver, status);
+        ArrayList<Ride> rides = rideRepository.findAllByRideStatusInAndDriver(statuses, driver);
 
-        if (!ride.isPresent())
-            throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
+        if (rides.size() == 0)
+            throw new CustomException(statuses.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
 
-        return ride.get();
+        return rides;
 
     }
 
     @Override
-    public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status) {
+    public Ride getByPassengerAndStatus(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses) {
 
-        Optional<Ride> ride = rideRepository.findByPassengersContainingAndRideStatus(passenger, status);
+        Optional<Ride> ride = rideRepository.findByPassengersContainingAndRideStatusIn(passenger, statuses);
 
         if (!ride.isPresent())
-            throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
+            throw new CustomException(statuses.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
 
         return ride.get();
 
