@@ -20,7 +20,9 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/vehicle-location",
-                "/ride-notification");
+                "/ride-notification-driver-request",
+                "/ride-notification-passenger",
+                "/ride-notification-driver-withdrawal");
     }
 
 }

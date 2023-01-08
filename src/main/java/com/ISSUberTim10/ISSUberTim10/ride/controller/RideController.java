@@ -46,17 +46,25 @@ public class RideController {
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
         Ride newRideRequest = new Ride(rideCreation);
+
+        // throws 404 if passenger already in active ride
+        // returns no content if no available vehicles/drivers
         if (!rideService.isBookableRide(newRideRequest)) {
-            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
+
         Ride saved = rideService.save(newRideRequest);
         System.out.println(newRideRequest.getRideStatus().toString());
         RideDTO rideDTO = new RideDTO(saved);
-        this.simpMessagingTemplate.convertAndSend("/ride-notification-driver/" + saved.getDriver().getId(),
+        this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-request/" + saved.getDriver().getId(),
                 new NotificationDTO("From " +
                         rideDTO.getLocations().get(0).getDeparture().getAddress() +
                         " to " + rideDTO.getLocations().get(0).getDestination().getAddress(),
                         saved.getId().intValue()));
+        for (Passenger p : saved.getPassengers()) {
+            this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
+                    new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue()));
+        }
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
     }
 
@@ -104,6 +112,29 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/passenger/{passengerId}/accepted", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    ResponseEntity<RideDTO> getAcceptedRideByPassengerId(@PathVariable Integer passengerId){
+
+        Passenger passenger = passengerService.getPassenger(passengerId.longValue());
+
+        Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.accepted);
+
+        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/passenger/{passengerId}/pending", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    ResponseEntity<RideDTO> getPendingRideByPassengerId(@PathVariable Integer passengerId) {
+
+        Passenger passenger = passengerService.getPassenger(passengerId.longValue());
+
+        Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.pending);
+
+        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+
+    }
+
     @GetMapping(value = "/{id}", produces = "application/json")
     ResponseEntity<RideDTO> getRideById(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
@@ -114,6 +145,8 @@ public class RideController {
     ResponseEntity<RideDTO> cancelRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.withdrawRide(ride);
+        this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-withdrawal/" + ride.getDriver().getId(),
+                new NotificationDTO("Passenger has backed out and cancelled the ride.", ride.getId().intValue()));
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
 }
 
@@ -131,6 +164,10 @@ public class RideController {
     ResponseEntity<RideDTO> startRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.startRide(ride);
+        for (Passenger p : ride.getPassengers()) {
+            this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
+                    new NotificationDTO("Ride has started!", ride.getId().intValue()));
+        }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
@@ -138,6 +175,11 @@ public class RideController {
     ResponseEntity<RideDTO> acceptRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.acceptRide(ride);
+        for (Passenger p : ride.getPassengers()) {
+            this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
+                    new NotificationDTO("Driver has accepted your ride request! You'll be riding with " +
+                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue()));
+        }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
@@ -145,6 +187,10 @@ public class RideController {
     ResponseEntity<RideDTO> endRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.endRide(ride);
+        for (Passenger p : ride.getPassengers()) {
+            this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
+                    new NotificationDTO("Ride has ended.", ride.getId().intValue()));
+        }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
@@ -152,6 +198,10 @@ public class RideController {
     ResponseEntity<RideDTO> cancelRideWithExplanation(@PathVariable Integer id, @RequestBody ReasonDTO reason){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.cancelRideWithExplanation(ride, reason.getReason());
+        for (Passenger p : ride.getPassengers()) {
+            this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
+                    new NotificationDTO("Driver has backed out and cancelled the ride.", ride.getId().intValue()));
+        }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 }

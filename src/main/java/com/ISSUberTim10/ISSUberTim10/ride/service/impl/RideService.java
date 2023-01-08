@@ -152,18 +152,18 @@ public class RideService implements IRideService {
 
     @Override
     public Ride cancelRideWithExplanation(Ride ride, String reason) {
-        if (ride.getRideStatus() != Ride.RIDE_STATUS.pending) {
+        if (ride.getRideStatus() != Ride.RIDE_STATUS.pending || ride.getRideStatus() != Ride.RIDE_STATUS.accepted) {
             throw new CustomException("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.rejected);
-        Rejection rejection;
-        Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
-        if (found.isPresent()) {
-            rejection = found.get();
-            rejection.setReason(reason);
-            rejection.setRejectionTime(LocalDateTime.now());
-        }else {
-            rejection = new Rejection(0L, ride, reason, ride.getDriver(), LocalDateTime.now());
+        Rejection rejection = new Rejection(0L, ride, reason, ride.getDriver(), LocalDateTime.now());
+        if (ride.getRejection() != null) {
+            Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
+            if (found.isPresent()) {
+                rejection = found.get();
+                rejection.setReason(reason);
+                rejection.setRejectionTime(LocalDateTime.now());
+            }
         }
         rejectionRepository.save(rejection);
         ride.setRejection(rejection);
@@ -176,16 +176,18 @@ public class RideService implements IRideService {
         statuses.add(Ride.RIDE_STATUS.active);
         statuses.add(Ride.RIDE_STATUS.accepted);
         statuses.add(Ride.RIDE_STATUS.pending);
-        if (isPassengerAlreadyInARide(newRideRequest, statuses)) {System.out.println("Falied - passenger already in ride"); return false;}
+        if (isPassengerAlreadyInARide(newRideRequest, statuses)) {
+            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+        }
 
         ArrayList<Vehicle> vehicles = findAppropriateVehicles(newRideRequest);
         if(vehicles.size()==0) {
-            System.out.println("Falied - no vehicles");
+            System.out.println("Failed - no vehicles");
             return false;
         }
         Driver availableDriver = findBestDriver(vehicles, statuses, newRideRequest);
         if (availableDriver.getId() == -1L) {
-            System.out.println("Falied - no drivers");
+            System.out.println("Failed - no drivers");
             return false;
         }
         fillRideRequest(newRideRequest, availableDriver);
@@ -315,7 +317,7 @@ public class RideService implements IRideService {
 
     @Override
     public Ride startRide(Ride ride) {
-        if (ride.getRideStatus() == Ride.RIDE_STATUS.accepted) {
+        if (ride.getRideStatus() != Ride.RIDE_STATUS.accepted) {
             throw new CustomException("Cannot start a ride that is not in status ACCEPTED!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.active);
