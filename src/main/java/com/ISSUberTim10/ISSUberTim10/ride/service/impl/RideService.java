@@ -121,16 +121,6 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public ResponseEntity<RideDTO> cancelRide(Integer id) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<PanicExpandedDTO> addPanic(Integer id, ReasonDTO panic) {
-        return null;
-    }
-
-    @Override
     public Ride acceptRide(Ride ride) {
         if (ride.getRideStatus() != Ride.RIDE_STATUS.pending) {
             throw new CustomException("Cannot accept a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
@@ -224,7 +214,7 @@ public class RideService implements IRideService {
         long closestTime = 1000000000;
         for (Vehicle vehicle : vehicles) {
             ArrayList<Ride> rides = rideRepository.findAllByRideStatusInAndDriver(statuses, vehicle.getDriver());
-            if (vehicle.getDriver().isActiveFlag() && isDriverCapable(vehicle.getDriver())) {
+            if (vehicle.getDriver().isActiveFlag() && isDriverCapable(vehicle.getDriver()) && !vehicle.getDriver().isBlockedFlag()) {
                 if (canBookThen(rides, newRideRequest)) return vehicle.getDriver();
                 for (Ride ride : rides) {
                     long minutesBetween = Math.abs(ChronoUnit.MINUTES.between(ride.getEndTime(), newRideRequest.getStartTime()));
