@@ -34,7 +34,8 @@ public class PassengerRequestDTO {
     @Size(max = 100, message = "Field (address) cannot be longer than 100 characters!")
     private String address;
 
-    @JsonInclude(JsonInclude.Include. NON_NULL)
-    @Size(min = 3, message = "Field (password) is required!")
+    //    @JsonInclude(JsonInclude.Include. NON_NULL)
+//    @Size(min = 3, message = "Field (password) is required!")
+    @NotBlank(message = "Field (password) is required!")
     private String password;
 }

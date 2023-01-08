@@ -184,7 +184,7 @@ public class PassengerController {
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger')")
     public ResponseEntity<PassengerResponseDTO> updatePassenger(@PathVariable(required = true) Integer id,
-                                                                @Valid @RequestBody PassengerRequestDTO passengerRequestDTO) {
+                                                                @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
         Passenger passenger = passengerService.getPassenger(id.longValue());
         passenger.setName(passengerRequestDTO.getName());
