@@ -33,10 +33,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -181,7 +184,7 @@ public class PassengerController {
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger')")
     public ResponseEntity<PassengerResponseDTO> updatePassenger(@PathVariable(required = true) Integer id,
-                                                              @RequestBody PassengerRequestDTO passengerRequestDTO) {
+                                                                @Valid @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
         Passenger passenger = passengerService.getPassenger(id.longValue());
         passenger.setName(passengerRequestDTO.getName());
