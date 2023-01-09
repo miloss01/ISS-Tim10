@@ -74,7 +74,7 @@ public class RideController {
 
         Driver driver = driverService.getById(driverId.longValue());
 
-        Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.active);
+        Ride ride = rideService.getActiveDriverRide(driver);
 
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
@@ -85,7 +85,7 @@ public class RideController {
 
         Driver driver = driverService.getById(driverId.longValue());
 
-        Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.accepted);
+        Ride ride = rideService.getDriverEarliestAcceptedRide(driver);
 
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }

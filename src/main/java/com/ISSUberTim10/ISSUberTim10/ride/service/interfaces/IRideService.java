@@ -25,6 +25,7 @@ public interface IRideService {
     public List<Ride> getByDriver(Pageable pageable, Driver driver);
     public List<Ride> getByPassenger(Pageable pageable, Passenger passenger);
     public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status);
+    public Ride getActiveDriverRide(Driver driver);
     public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status);
     ResponseEntity<RideDTO> cancelRide(Integer id);
     ResponseEntity<PanicExpandedDTO> addPanic(Integer id, ReasonDTO panic);
@@ -39,4 +40,6 @@ public interface IRideService {
     Ride withdrawRide(Ride ride);
 
     Ride startRide(Ride ride);
+
+    Ride getDriverEarliestAcceptedRide(Driver driver);
 }

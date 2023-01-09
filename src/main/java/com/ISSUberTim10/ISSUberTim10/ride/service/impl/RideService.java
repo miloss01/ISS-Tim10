@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -98,15 +99,50 @@ public class RideService implements IRideService {
     @Override
     public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status) {
 
-        Optional<Ride> ride = rideRepository.findByDriverAndRideStatus(driver, status);
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, status);
         System.out.println(status.toString());
         System.out.println(driver.getId());
-        if (!ride.isPresent())
+        if (rides.isPresent() && rides.get().size() == 0)
             throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
 
-        return ride.get();
+        return rides.get().get(0);
 
     }
+
+    @Override
+    public Ride getActiveDriverRide(Driver driver) {
+
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
+        if (rides.isPresent() && rides.get().size() == 0)
+            throw new CustomException("Active ride does not exist!", HttpStatus.NOT_FOUND);
+
+        return rides.get().get(0);
+
+    }
+
+    @Override
+    public Ride getDriverEarliestAcceptedRide(Driver driver) {
+
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted);
+        if (rides.isPresent() && rides.get().size() == 0)
+            throw new CustomException("Accepted ride does not exist!", HttpStatus.NOT_FOUND);
+
+
+        Ride earliestRide = rides.get().get(0);
+        LocalDateTime comparingTimeStart = LocalDateTime.now();
+        long closestTime = 1000000000;
+        for (Ride ride : rides.get()) {
+            long minutesBetween = Math.abs(ChronoUnit.MINUTES.between(comparingTimeStart, ride.getStartTime()));
+            if (minutesBetween < closestTime) {
+                closestTime = minutesBetween;
+                earliestRide = ride;
+            }
+        }
+        return earliestRide;
+
+    }
+
+
 
     @Override
     public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status) {
