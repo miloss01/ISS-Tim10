@@ -152,22 +152,23 @@ public class RideService implements IRideService {
 
     @Override
     public Ride cancelRideWithExplanation(Ride ride, String reason) {
-        if (ride.getRideStatus() != Ride.RIDE_STATUS.pending || ride.getRideStatus() != Ride.RIDE_STATUS.accepted) {
+        if (ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.accepted) {
+            ride.setRideStatus(Ride.RIDE_STATUS.rejected);
+            Rejection rejection = new Rejection(0L, ride, reason, ride.getDriver(), LocalDateTime.now());
+            if (ride.getRejection() != null) {
+                Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
+                if (found.isPresent()) {
+                    rejection = found.get();
+                    rejection.setReason(reason);
+                    rejection.setRejectionTime(LocalDateTime.now());
+                }
+            }
+            rejectionRepository.save(rejection);
+            ride.setRejection(rejection);
+            return rideRepository.save(ride);
+        } else {
             throw new CustomException("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
-        ride.setRideStatus(Ride.RIDE_STATUS.rejected);
-        Rejection rejection = new Rejection(0L, ride, reason, ride.getDriver(), LocalDateTime.now());
-        if (ride.getRejection() != null) {
-            Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
-            if (found.isPresent()) {
-                rejection = found.get();
-                rejection.setReason(reason);
-                rejection.setRejectionTime(LocalDateTime.now());
-            }
-        }
-        rejectionRepository.save(rejection);
-        ride.setRejection(rejection);
-        return rideRepository.save(ride);
     }
 
     @Override
@@ -308,11 +309,13 @@ public class RideService implements IRideService {
 
     @Override
     public Ride withdrawRide(Ride ride) {
-        if (ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.active) {
+        if (ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.accepted) {
+            ride.setRideStatus(Ride.RIDE_STATUS.rejected);
+            return rideRepository.save(ride);
+        } else {
+            // U swaggeru pise STARTED ali u nasoj poslovnoj logici je ACCEPTED
             throw new CustomException("Cannot cancel a ride that is not in status PENDING or STARTED!", HttpStatus.BAD_REQUEST);
         }
-        ride.setRideStatus(Ride.RIDE_STATUS.rejected);
-        return rideRepository.save(ride);
     }
 
     @Override
