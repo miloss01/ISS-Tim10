@@ -14,7 +14,7 @@ registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 1, 1);
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
-(1, 'neka tojota nesto', 5, 1, '007-sg', 1, 2);
+(1, 'neka tojota nesto', 5, 1, '007-sg', 2, 2);
 --insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 --registration_plate, current_coordinates_id, vehicle_type_id) values
 --(1, 'neka tojota nesto', 5, 1, '007-sg', 1, 2);

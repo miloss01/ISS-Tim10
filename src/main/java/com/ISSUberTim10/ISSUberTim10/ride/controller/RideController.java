@@ -46,11 +46,14 @@ public class RideController {
     @PostMapping(consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
+        System.out.println("Usao u zakazivanje");
         Ride newRideRequest = new Ride(rideCreation);
         if (!rideService.isBookableRide(newRideRequest)) {
-             throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+            System.out.println("nije zakazao");
+            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
         }
         rideService.save(newRideRequest);
+        System.out.println("yakazao");
         return new ResponseEntity<>(new RideDTO(newRideRequest), HttpStatus.OK);
     }
 

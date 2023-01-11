@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -45,8 +46,9 @@ public class VehicleService implements IVehicleService {
     }
 
     @Override
-    public ResponseEntity<Void> updateVehicle(Integer id, LocationDTO currentLocationDTO) {
-        return null;
+    public ArrayList<Vehicle> getAllVehicles() {
+        return (ArrayList<Vehicle>) vehicleRepository.findAll();
     }
+
 
 }

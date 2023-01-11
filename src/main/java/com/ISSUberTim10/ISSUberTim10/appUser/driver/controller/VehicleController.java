@@ -1,6 +1,8 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.driver.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.VehicleForMapDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.VehicleForMapResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IVehicleService;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping(value = "api/vehicle")
@@ -40,6 +43,20 @@ public class VehicleController {
         this.simpMessagingTemplate.convertAndSend("/vehicle-location", currentLocationDTO);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
+
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @PreAuthorize(value = "hasRole('PASSENGER')")
+    public ResponseEntity<VehicleForMapResponseDTO> getVehicles() {
+
+        ArrayList<Vehicle> vehicles = vehicleService.getAllVehicles();
+        ArrayList<VehicleForMapDTO> vehicleDTOS = new ArrayList<>();
+        for(Vehicle vehicle: vehicles) {
+            vehicleDTOS.add(new VehicleForMapDTO(vehicle));
+        }
+        System.out.println(vehicleDTOS.get(0).isActive());
+        return new ResponseEntity<>(new VehicleForMapResponseDTO(vehicleDTOS.size(), vehicleDTOS), HttpStatus.OK);
 
     }
 

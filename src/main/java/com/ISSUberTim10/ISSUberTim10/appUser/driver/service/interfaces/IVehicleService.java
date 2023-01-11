@@ -9,10 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 
 public interface IVehicleService {
     public Vehicle saveVehicle(Vehicle vehicle);
     public Vehicle getById(Long id);
-    public ResponseEntity<Void> updateVehicle(Integer id, LocationDTO currentLocationDTO);
-
+    ArrayList<Vehicle> getAllVehicles();
 }
