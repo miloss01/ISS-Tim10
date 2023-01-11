@@ -25,10 +25,15 @@ public interface IRideService {
     public Ride getRideById(Long id);
     public List<Ride> getByDriver(Pageable pageable, Driver driver);
     public List<Ride> getByPassenger(Pageable pageable, Passenger passenger);
-    public ArrayList<Ride> getByDriverAndStatus(Driver driver, ArrayList<Ride.RIDE_STATUS> statuses);
-    public Ride getByPassengerAndStatus(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses);
-    ResponseEntity<RideDTO> cancelRide(Integer id);
-    ResponseEntity<PanicExpandedDTO> addPanic(Integer id, ReasonDTO panic);
+
+//    public ArrayList<Ride> getByDriverAndStatus(Driver driver, ArrayList<Ride.RIDE_STATUS> statuses);
+//    public Ride getByPassengerAndStatus(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses);
+//    ResponseEntity<RideDTO> cancelRide(Integer id);
+//    ResponseEntity<PanicExpandedDTO> addPanic(Integer id, ReasonDTO panic);
+
+    public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status);
+    public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status);
+
     Ride acceptRide(Ride id);
     Ride endRide(Ride id);
     Ride cancelRideWithExplanation(Ride id, String reason);

@@ -3,6 +3,8 @@ package com.ISSUberTim10.ISSUberTim10.ride.controller;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.auth.AuthService;
+import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
@@ -16,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -42,11 +47,14 @@ public class RideController {
     @PostMapping(consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
+        System.out.println("Usao u zakazivanje");
         Ride newRideRequest = new Ride(rideCreation);
         if (!rideService.isBookableRide(newRideRequest)) {
-             throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+            System.out.println("nije zakazao");
+            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
         }
         rideService.save(newRideRequest);
+        System.out.println("yakazao");
         return new ResponseEntity<>(new RideDTO(newRideRequest), HttpStatus.OK);
     }
 
@@ -99,7 +107,10 @@ public class RideController {
     @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json")
     ResponseEntity<PanicExpandedDTO> addPanic(@PathVariable Integer id, @RequestBody ReasonDTO panicReason){
         Ride ride = rideService.getRideById(id.longValue());
-        AppUser user = new Passenger(); //TODO razmisli malo ne moras sve milosa da pitas
+        // Extract user who activated panic from JWT
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        AppUser user = appUserService.findByEmail(userDetails.getUsername());
         Panic panic = new Panic(0L, user, ride, LocalDateTime.now(), panicReason.getReason());
         panic = panicService.save(panic);
 
