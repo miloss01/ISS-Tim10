@@ -13,4 +13,6 @@ public class NotificationDTO {
 
     private Integer rideId;
 
+    private String reason;
+
 }

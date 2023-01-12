@@ -38,6 +38,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/ride")
@@ -94,12 +95,13 @@ public class RideController {
                 new NotificationDTO("From " +
                         rideDTO.getLocations().get(0).getDeparture().getAddress() +
                         " to " + rideDTO.getLocations().get(0).getDestination().getAddress(),
-                        saved.getId().intValue()));
+                        saved.getId().intValue(), ""));
         for (Passenger p : saved.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue()));
+                    new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue(), ""));
         }
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
+
     }
 
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
@@ -107,6 +109,11 @@ public class RideController {
     ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId){
 
         Driver driver = driverService.getById(driverId.longValue());
+
+
+        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+        statuses.add(Ride.RIDE_STATUS.pending);
+        statuses.add(Ride.RIDE_STATUS.active);
 
         Ride ride = rideService.getActiveDriverRide(driver);
 
@@ -132,6 +139,12 @@ public class RideController {
 
         Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.pending);
 
+
+//        ArrayList<Ride> rides = rideService.getByDriverAndStatus(driver, statuses);
+
+//        if (rides.size() > 1)
+//            throw new CustomException("Multiple rides in active and/or pending status", HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
@@ -140,6 +153,10 @@ public class RideController {
     ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
 
         Passenger passenger = passengerService.getPassenger(passengerId.longValue());
+
+//        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+//        statuses.add(Ride.RIDE_STATUS.accepted);
+//        statuses.add(Ride.RIDE_STATUS.active);
 
         Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.active);
 
@@ -182,7 +199,7 @@ public class RideController {
         RideDTO rideDTO = new RideDTO(ride);
         this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-withdrawal/" + ride.getDriver().getId(),
                 new NotificationDTO("Ride was supposed to start at " + rideDTO.getStartTime() +
-                        " at location " + rideDTO.getLocations().get(0).getDeparture().getAddress() + ".", ride.getId().intValue()));
+                        " at location " + rideDTO.getLocations().get(0).getDeparture().getAddress() + ".", ride.getId().intValue(), ""));
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 }
@@ -206,7 +223,7 @@ public class RideController {
         ride = rideService.startRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has started!", ride.getId().intValue()));
+                    new NotificationDTO("Ride has started!", ride.getId().intValue(), ""));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -219,7 +236,7 @@ public class RideController {
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has accepted your ride request! You'll be riding with " +
-                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue()));
+                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue(), ""));
         }
         notificationSchedule.addToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -231,7 +248,7 @@ public class RideController {
         ride = rideService.endRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has ended.", ride.getId().intValue()));
+                    new NotificationDTO("Ride has ended.", ride.getId().intValue(), ""));
         }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
@@ -242,7 +259,7 @@ public class RideController {
         ride = rideService.cancelRideWithExplanation(ride, reason.getReason());
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue()));
+                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue(), ""));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
