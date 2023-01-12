@@ -7,15 +7,20 @@ import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
+import com.ISSUberTim10.ISSUberTim10.ride.NotificationSchedule;
 import com.ISSUberTim10.ISSUberTim10.ride.Panic;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IPanicService;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +29,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/ride")
 @CrossOrigin(origins = "http://localhost:4200")
+@EnableScheduling
 public class RideController {
 
     @Autowired
@@ -40,7 +46,14 @@ public class RideController {
     IPanicService panicService;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private ScheduledAnnotationBeanPostProcessor postProcessor;
+
+    @Autowired
+    NotificationSchedule notificationSchedule;
+
 
     @PostMapping(consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER')")
@@ -145,9 +158,12 @@ public class RideController {
     ResponseEntity<RideDTO> cancelRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.withdrawRide(ride);
+        RideDTO rideDTO = new RideDTO(ride);
         this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-withdrawal/" + ride.getDriver().getId(),
-                new NotificationDTO("Passenger has backed out and cancelled the ride.", ride.getId().intValue()));
-        return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+                new NotificationDTO("Ride was supposed to start at " + rideDTO.getStartTime() +
+                        " at location " + rideDTO.getLocations().get(0).getDeparture().getAddress() + ".", ride.getId().intValue()));
+        notificationSchedule.removeToBeReminded(ride);
+        return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 }
 
     @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json")
@@ -168,6 +184,7 @@ public class RideController {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Ride has started!", ride.getId().intValue()));
         }
+        notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
@@ -180,6 +197,7 @@ public class RideController {
                     new NotificationDTO("Driver has accepted your ride request! You'll be riding with " +
                             ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue()));
         }
+        notificationSchedule.addToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
@@ -200,8 +218,10 @@ public class RideController {
         ride = rideService.cancelRideWithExplanation(ride, reason.getReason());
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has backed out and cancelled the ride.", ride.getId().intValue()));
+                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue()));
         }
+        notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
+
 }
