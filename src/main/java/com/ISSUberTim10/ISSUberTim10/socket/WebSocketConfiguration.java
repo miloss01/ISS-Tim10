@@ -13,7 +13,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/socket")
-                .setAllowedOrigins("http://localhost:4200")
+                .setAllowedOrigins("*")
                 .withSockJS();
     }
 
@@ -22,9 +22,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry.enableSimpleBroker("/vehicle-location",
                 "/ride-notification-driver-request",
                 "/ride-notification-passenger",
-                "/ride-notification-driver-withdrawal",
-                "/passenger/1/start-ride",
-                "/passenger/1/end-ride");
+                "/ride-notification-driver-withdrawal");
     }
 
 }

@@ -68,7 +68,7 @@ public class ReviewController {
        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
-        Passenger passenger = (Passenger) appUserService.findByEmail(username).get();
+        Passenger passenger = (Passenger) appUserService.findByEmail(username);
 
         Review review = new Review();
         review.setRating(vehicleReviewRequestDTO.getRating());
@@ -122,7 +122,7 @@ public class ReviewController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
-        Passenger passenger = (Passenger) appUserService.findByEmail(username).get();
+        Passenger passenger = (Passenger) appUserService.findByEmail(username);
 
         Review review = new Review();
         review.setRating(driverReviewRequestDTO.getRating());
