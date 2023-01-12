@@ -32,6 +32,7 @@ public interface IRideService {
 //    ResponseEntity<PanicExpandedDTO> addPanic(Integer id, ReasonDTO panic);
 
     public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status);
+    public Ride getActiveDriverRide(Driver driver);
     public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status);
 
     Ride acceptRide(Ride id);
@@ -40,9 +41,11 @@ public interface IRideService {
 
     boolean isBookableRide(Ride newRideRequest);
 
-    void save(Ride newRideRequest);
+    Ride save(Ride newRideRequest);
 
     Ride withdrawRide(Ride ride);
 
     Ride startRide(Ride ride);
+
+    Ride getDriverEarliestAcceptedRide(Driver driver);
 }

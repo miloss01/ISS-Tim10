@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -97,24 +98,60 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public ArrayList<Ride> getByDriverAndStatus(Driver driver, ArrayList<Ride.RIDE_STATUS> statuses) {
+    public Ride getByDriverAndStatus(Driver driver, Ride.RIDE_STATUS status) {
 
-        ArrayList<Ride> rides = rideRepository.findAllByRideStatusInAndDriver(statuses, driver);
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, status);
+        System.out.println(status.toString());
+        System.out.println(driver.getId());
+        if (rides.isPresent() && rides.get().size() == 0)
+            throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
 
-        if (rides.size() == 0)
-            throw new CustomException(statuses.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
-
-        return rides;
+        return rides.get().get(0);
 
     }
 
     @Override
-    public Ride getByPassengerAndStatus(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses) {
+    public Ride getActiveDriverRide(Driver driver) {
 
-        Optional<Ride> ride = rideRepository.findByPassengersContainingAndRideStatusIn(passenger, statuses);
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
+        if (rides.isPresent() && rides.get().size() == 0)
+            throw new CustomException("Active ride does not exist!", HttpStatus.NOT_FOUND);
+
+        return rides.get().get(0);
+
+    }
+
+    @Override
+    public Ride getDriverEarliestAcceptedRide(Driver driver) {
+
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted);
+        if (rides.isPresent() && rides.get().size() == 0)
+            throw new CustomException("Accepted ride does not exist!", HttpStatus.NOT_FOUND);
+
+
+        Ride earliestRide = rides.get().get(0);
+        LocalDateTime comparingTimeStart = LocalDateTime.now();
+        long closestTime = 1000000000;
+        for (Ride ride : rides.get()) {
+            long minutesBetween = Math.abs(ChronoUnit.MINUTES.between(comparingTimeStart, ride.getStartTime()));
+            if (minutesBetween < closestTime) {
+                closestTime = minutesBetween;
+                earliestRide = ride;
+            }
+        }
+        return earliestRide;
+
+    }
+
+
+
+    @Override
+    public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status) {
+
+        Optional<Ride> ride = rideRepository.findByPassengersContainingAndRideStatus(passenger, status);
 
         if (!ride.isPresent())
-            throw new CustomException(statuses.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
+            throw new CustomException(status.toString() + " ride does not exist!", HttpStatus.NOT_FOUND);
 
         return ride.get();
 
@@ -126,6 +163,7 @@ public class RideService implements IRideService {
             throw new CustomException("Cannot accept a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.accepted);
+        System.out.println("Accepeted ride for driver: " + ride.getDriver().getId() + " s" + ride.getRideStatus().toString());
         return rideRepository.save(ride);
     }
 
@@ -141,22 +179,23 @@ public class RideService implements IRideService {
 
     @Override
     public Ride cancelRideWithExplanation(Ride ride, String reason) {
-        if (ride.getRideStatus() != Ride.RIDE_STATUS.pending) {
+        if (ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.accepted) {
+            ride.setRideStatus(Ride.RIDE_STATUS.rejected);
+            Rejection rejection = new Rejection(0L, ride, reason, ride.getDriver(), LocalDateTime.now());
+            if (ride.getRejection() != null) {
+                Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
+                if (found.isPresent()) {
+                    rejection = found.get();
+                    rejection.setReason(reason);
+                    rejection.setRejectionTime(LocalDateTime.now());
+                }
+            }
+            rejectionRepository.save(rejection);
+            ride.setRejection(rejection);
+            return rideRepository.save(ride);
+        } else {
             throw new CustomException("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
-        ride.setRideStatus(Ride.RIDE_STATUS.rejected);
-        Rejection rejection;
-        Optional<Rejection> found = rejectionRepository.findById(ride.getRejection().getId());
-        if (found.isPresent()) {
-            rejection = found.get();
-            rejection.setReason(reason);
-            rejection.setRejectionTime(LocalDateTime.now());
-        }else {
-            rejection = new Rejection(0L, ride, reason, ride.getDriver(), LocalDateTime.now());
-        }
-        rejectionRepository.save(rejection);
-        ride.setRejection(rejection);
-        return rideRepository.save(ride);
     }
 
     @Override
@@ -165,13 +204,22 @@ public class RideService implements IRideService {
         statuses.add(Ride.RIDE_STATUS.active);
         statuses.add(Ride.RIDE_STATUS.accepted);
         statuses.add(Ride.RIDE_STATUS.pending);
-        if (isPassengerAlreadyInARide(newRideRequest, statuses)) return false;
+        if (isPassengerAlreadyInARide(newRideRequest, statuses)) {
+            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+        }
 
         ArrayList<Vehicle> vehicles = findAppropriateVehicles(newRideRequest);
-        if(vehicles.size()==0) return false;
+        if(vehicles.size()==0) {
+            System.out.println("Failed - no vehicles");
+            return false;
+        }
         Driver availableDriver = findBestDriver(vehicles, statuses, newRideRequest);
-        if (availableDriver.getId() == -1L) return false;
+        if (availableDriver.getId() == -1L) {
+            System.out.println("Failed - no drivers");
+            return false;
+        }
         fillRideRequest(newRideRequest, availableDriver);
+        System.out.println("Found driver with id: " + availableDriver.getId());
         return true;
     }
 
@@ -273,7 +321,7 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public void save(Ride newRideRequest) {
+    public Ride save(Ride newRideRequest) {
         ArrayList<Route> routes = (ArrayList<Route>) newRideRequest.getRoutes();
         Coordinates departure= coordinatesRepository.save(routes.get(0).getDepartureCoordinates());
         Coordinates destination= coordinatesRepository.save(routes.get(0).getDestinationCoordinates());
@@ -283,16 +331,18 @@ public class RideService implements IRideService {
         routes = new ArrayList<>();
         routes.add(route);
         newRideRequest.setRoutes(routes);
-        rideRepository.save(newRideRequest);
+        return rideRepository.save(newRideRequest);
     }
 
     @Override
     public Ride withdrawRide(Ride ride) {
-        if (!(ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.active)) {
+        if (ride.getRideStatus() == Ride.RIDE_STATUS.pending || ride.getRideStatus() == Ride.RIDE_STATUS.accepted) {
+            ride.setRideStatus(Ride.RIDE_STATUS.rejected);
+            return rideRepository.save(ride);
+        } else {
+            // U swaggeru pise STARTED ali u nasoj poslovnoj logici je ACCEPTED
             throw new CustomException("Cannot cancel a ride that is not in status PENDING or STARTED!", HttpStatus.BAD_REQUEST);
         }
-        ride.setRideStatus(Ride.RIDE_STATUS.rejected);
-        return rideRepository.save(ride);
     }
 
     @Override

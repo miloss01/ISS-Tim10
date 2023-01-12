@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride.dto;
 
+import com.ISSUberTim10.ISSUberTim10.ride.DepartureDestination;
 import com.ISSUberTim10.ISSUberTim10.ride.Route;
 import lombok.*;
 
@@ -24,4 +25,10 @@ public class DepartureDestinationLocationsDTO {
         this.departure = new LocationDTO(route.getDepartureCoordinates());
         this.destination = new LocationDTO(route.getDestinationCoordinates());
     }
+
+    public DepartureDestinationLocationsDTO(DepartureDestination dd) {
+        this.departure = new LocationDTO(dd.getDeparture());
+        this.destination = new LocationDTO(dd.getDestination());
+    }
+
 }
