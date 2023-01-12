@@ -4,6 +4,9 @@ import com.ISSUberTim10.ISSUberTim10.ride.FavoriteLocation;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.auth.AuthService;
+import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IFavoriteLocationService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
@@ -28,6 +31,7 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -74,6 +78,7 @@ public class RideController {
     @PostMapping(consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
+        System.out.println("Usao u zakazivanje");
         Ride newRideRequest = new Ride(rideCreation);
 
         // throws 404 if passenger already in active ride
@@ -185,7 +190,10 @@ public class RideController {
     @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json")
     ResponseEntity<PanicExpandedDTO> addPanic(@PathVariable Integer id, @RequestBody ReasonDTO panicReason){
         Ride ride = rideService.getRideById(id.longValue());
-        AppUser user = new Passenger(); //TODO razmisli malo ne moras sve milosa da pitas
+        // Extract user who activated panic from JWT
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        AppUser user = appUserService.findByEmail(userDetails.getUsername());
         Panic panic = new Panic(0L, user, ride, LocalDateTime.now(), panicReason.getReason());
         panic = panicService.save(panic);
 
@@ -250,7 +258,7 @@ public class RideController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
-        Passenger maker = (Passenger) appUserService.findByEmail(username).get();
+        Passenger maker = (Passenger) appUserService.findByEmail(username);
 
         List<DepartureDestination> locations = new ArrayList<>();
         for (DepartureDestinationLocationsDTO locationDTO : locationRequestDTO.getLocations()) {
@@ -303,7 +311,7 @@ public class RideController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
-        Passenger maker = (Passenger) appUserService.findByEmail(username).get();
+        Passenger maker = (Passenger) appUserService.findByEmail(username);
 
         // Transform real objects into DTOs
         List<FavoriteLocation> locations = favoriteLocationService.getByMaker(maker.getId());

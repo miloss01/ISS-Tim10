@@ -4,6 +4,8 @@ import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 
 import static javax.persistence.InheritanceType.JOINED;
 
@@ -34,6 +36,7 @@ public abstract class AppUser {
 
     private String password;
 
+    @Lob
     private String profileImage;
 
     private String address;

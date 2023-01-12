@@ -78,13 +78,21 @@ public class AppUserService implements IAppUserService {
     }
 
     @Override
-    public Optional<AppUser> findByEmail(String email) {
-        return appUserRepository.findByEmail(email);
+    public AppUser findByEmail(String email) {
+        Optional<AppUser> found = appUserRepository.findByEmail(email);
+        if (!found.isPresent()) {
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
+        }
+        return found.get();
     }
 
     @Override
-    public Optional<AppUser> findById(Long id) {
-        return appUserRepository.findById(id);
+    public AppUser findById(Long id) {
+        Optional<AppUser> found = appUserRepository.findById(id);
+        if (!found.isPresent()) {
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
+        }
+        return found.get();
     }
 
     @Override
@@ -148,20 +156,7 @@ public class AppUserService implements IAppUserService {
         return noteService.getAll(id);
     }
 
-    @Override
-    public ResponseEntity<IsActiveDTO> changeActiveFlag(Integer id, IsActiveDTO isActiveDTO) {
-        Optional<AppUser> found = appUserRepository.findById(id.longValue());
-        if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        AppUser appUser = found.get();
-        appUser.setActiveFlag(isActiveDTO.isActive());
-        if (appUser.isBlockedFlag()) {
-            appUser.setActiveFlag(false);
-        }
-        appUserRepository.save(appUser);
-        return new ResponseEntity<>(isActiveDTO, HttpStatus.OK);
-    }
+
 
     @Override
     public AppUser save(AppUser appUser) {
@@ -169,8 +164,9 @@ public class AppUserService implements IAppUserService {
     }
 
     @Override
-    public Optional<AppUser> getByEmail(String email) {
+    public Optional<AppUser> findByEmailOpt(String email) {
         return appUserRepository.findByEmail(email);
     }
+
 
 }

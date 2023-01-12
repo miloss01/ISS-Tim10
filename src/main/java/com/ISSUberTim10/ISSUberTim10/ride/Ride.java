@@ -80,8 +80,12 @@ public class Ride {
 
     public Ride(RideCreationDTO rideCreation) {
         ArrayList<Passenger> passengers = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
         for (UserDTO userResponseDTO: rideCreation.getPassengers()) {
-            passengers.add(new Passenger(userResponseDTO));
+            if (!names.contains(userResponseDTO.getEmail())) {
+                names.add(userResponseDTO.getEmail());
+                passengers.add(new Passenger(userResponseDTO));
+            }
         }
         ArrayList<Route> routes = new ArrayList<>();
         for(DepartureDestinationLocationsDTO routeDto: rideCreation.getLocations()){

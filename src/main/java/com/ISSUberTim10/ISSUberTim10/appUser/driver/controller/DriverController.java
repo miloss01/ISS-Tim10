@@ -2,21 +2,16 @@ package com.ISSUberTim10.ISSUberTim10.appUser.driver.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.*;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleService;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.VehicleTypeService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.*;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
-import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.impl.DriverService;
 
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,7 +55,7 @@ public class DriverController {
 //    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<DriverDTO> saveDriver(@RequestBody DriverDTO driverDTO) {
 
-        Optional<AppUser> user = appUserService.findByEmail(driverDTO.getEmail());
+        Optional<AppUser> user = appUserService.findByEmailOpt(driverDTO.getEmail());
 
         if (user.isPresent())
             throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
@@ -159,15 +151,13 @@ public class DriverController {
     @GetMapping(value = "/{id}/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Document'))")
     public ResponseEntity<List<DocumentDTO>> getDocuments(@PathVariable Integer id) {
-//        return new ResponseEntity<>(
-//                new ArrayList<DocumentDTO>(
-//                        Arrays.asList(
-//                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10),
-//                                new DocumentDTO(123, "Vozačka dozvola", "U3dhZ2dlciByb2Nrcw=", 10)
-//                        )
-//                ),
-//                HttpStatus.OK);
-        return driverService.getDocuments(id);
+
+        ArrayList<DocumentDTO> documentDTOS = new ArrayList<>();
+        ArrayList<Document> documents = driverService.findDocumentsByDriverId(Long.valueOf(id));
+        for (Document document: documents) {
+            documentDTOS.add(new DocumentDTO(document));
+        }
+        return new ResponseEntity<>(documentDTOS, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/document/{document-id}")
@@ -201,11 +191,11 @@ public class DriverController {
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
 //    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Vehicle'))")
     public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Integer id) {
-//        return new ResponseEntity<>(
-//                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, false, true),
-//                HttpStatus.OK
-//        );
-        return driverService.getVehicle(id);
+
+        Driver driver = driverService.findDriverById(id);
+        Vehicle vehicle = driver.getVehicle();
+        VehicleDTO vehicleDTO = new VehicleDTO(vehicle);
+        return new ResponseEntity<>(vehicleDTO, HttpStatus.OK);
     }
 
     @PostMapping(value = "/{id}/vehicle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -258,11 +248,6 @@ public class DriverController {
                 new VehicleDTO(saved),
                 HttpStatus.OK
         );
-
-//        return new ResponseEntity<>(
-//                new VehicleDTO(123, 123, "STANDARDNO", "VW Golf 2", "NS 123-AB", new LocationDTO("Bulevar oslobodjenja 46", 45.267136, 19.833549), 4, true, true),
-//                HttpStatus.OK
-//        );
     }
 
     @GetMapping(value = "/{id}/working-hour", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -284,18 +269,6 @@ public class DriverController {
                 new WorkingHoursDTO(workingHourDTOs.size(), workingHourDTOs),
                 HttpStatus.OK
         );
-
-//        return new ResponseEntity<WorkingHoursDTO>(
-//                new WorkingHoursDTO(
-//                        243,
-//                        new ArrayList<WorkingHourDTO>(
-//                                Arrays.asList(
-//                                        new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z")
-//                                )
-//                        )
-//                ),
-//                HttpStatus.OK
-//        );
     }
 
     @PostMapping(value = "/{id}/working-hour", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -304,27 +277,32 @@ public class DriverController {
                                                           @RequestBody WorkingHourDTO workingHourDTO) {
 
         Driver driver = driverService.getById(id.longValue());
+        WorkingTime saved = new WorkingTime();
+        WorkingTime workingTime = new WorkingTime();
+
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        if (workingHourDTO.getStart() != null) {
+            workingTime.setDriver(driver);
+            workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getStart().replace('T', ' '), formatter));
+            workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getStart().replace('T', ' '), formatter));
 
-        WorkingTime workingTime = new WorkingTime();
-        workingTime.setDriver(driver);
-        workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getStart(), formatter));
-        workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getStart(), formatter));
+            saved = workingTimeService.save(workingTime);
 
-        WorkingTime saved = workingTimeService.save(workingTime);
+        }else {
+            workingTime.setDriver(driver);
+            workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getEnd().replace('T', ' '), formatter));
+            workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getEnd().replace('T', ' '), formatter));
+
+            saved = workingTimeService.update(workingTime);
+        }
 
         WorkingHourDTO ret = new WorkingHourDTO();
         ret.setId(saved.getId().intValue());
         ret.setStart(saved.getStartTime().toString());
+        ret.setEnd(saved.getEndTime().toString());
 
         return new ResponseEntity<>(ret, HttpStatus.OK);
-
-
-//        return new ResponseEntity<>(
-//                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
-//                HttpStatus.OK
-//        );
     }
 
     @GetMapping(value = "/{id}/ride", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -423,14 +401,9 @@ public class DriverController {
 
         workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getEnd(), formatter));
 
-        WorkingTime saved = workingTimeService.save(workingTime);
+        WorkingTime saved = workingTimeService.saveUpdated(workingTime);
 
         return new ResponseEntity<>(new WorkingHourDTO(saved), HttpStatus.OK);
-
-//        return new ResponseEntity<>(
-//                new WorkingHourDTO(10, "2022-12-04T11:51:29.756Z", "2022-12-04T11:51:29.756Z"),
-//                HttpStatus.OK
-//        );
     }
 
     @GetMapping(value = "/change-requests", produces = MediaType.APPLICATION_JSON_VALUE)

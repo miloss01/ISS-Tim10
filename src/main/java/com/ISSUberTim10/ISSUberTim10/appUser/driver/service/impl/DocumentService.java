@@ -34,6 +34,16 @@ public class DocumentService implements IDocumentService {
 
     @Override
     public Document save(Document document) {
+        if (!document.getImage().startsWith("data:image")){
+            throw new CustomException("File is not an image!", HttpStatus.BAD_REQUEST);
+        }
+        double stringLength = document.getImage().length() - "data:image/pgn:base64".length();
+        double sizeInb = 4 * Math.ceil((stringLength/3)) * 0.5624896334383812;
+        double sizeInMb = (sizeInb/1024)/1024;
+        if (sizeInMb > 1048576*5){
+            //e sad matematika i char je 1b, 1 mb je 1024kb, a kb je 1024kb ynaci 1 mb je 1024*1024kb
+            throw new CustomException("File is bigger than 5mb!", HttpStatus.BAD_REQUEST);
+        }
         return documentRepository.save(document);
     }
 
