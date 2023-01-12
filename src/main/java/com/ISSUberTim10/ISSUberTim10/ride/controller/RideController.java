@@ -1,10 +1,16 @@
 package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
-import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.ride.FavoriteLocation;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
-import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IFavoriteLocationService;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IVehicleTypeService;
+import com.ISSUberTim10.ISSUberTim10.ride.DepartureDestination;
+import com.ISSUberTim10.ISSUberTim10.ride.Location;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
 import com.ISSUberTim10.ISSUberTim10.ride.NotificationSchedule;
@@ -14,22 +20,26 @@ import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IPanicService;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/ride")
 @CrossOrigin(origins = "http://localhost:4200")
 @EnableScheduling
+@Validated
 public class RideController {
 
     @Autowired
@@ -40,7 +50,13 @@ public class RideController {
     IPassengerService passengerService;
 
     @Autowired
+    IFavoriteLocationService favoriteLocationService;
+
+    @Autowired
     IAppUserService appUserService;
+
+    @Autowired
+    IVehicleTypeService vehicleTypeService;
 
     @Autowired
     IPanicService panicService;
@@ -222,6 +238,107 @@ public class RideController {
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/favorites", consumes = "application/json", produces = "application/json")
+    ResponseEntity<FavoriteLocationResponseDTO> saveFavoriteLocation(
+            @Valid @RequestBody FavoriteLocationRequestDTO locationRequestDTO) {
+
+        FavoriteLocation location = new FavoriteLocation();
+
+        // Extract real objects from Request DTO
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        Passenger maker = (Passenger) appUserService.findByEmail(username).get();
+
+        List<DepartureDestination> locations = new ArrayList<>();
+        for (DepartureDestinationLocationsDTO locationDTO : locationRequestDTO.getLocations()) {
+            DepartureDestination departureDestination = new DepartureDestination(
+                    new Location(locationDTO.getDeparture().getAddress(), locationDTO.getDeparture().getLatitude(), locationDTO.getDeparture().getLongitude()),
+                    new Location(locationDTO.getDestination().getAddress(), locationDTO.getDestination().getLatitude(), locationDTO.getDestination().getLongitude())
+            );
+            locations.add(departureDestination);
+        }
+        List<Passenger> passengers = new ArrayList<>();
+        for (UserResponseDTO userDTO : locationRequestDTO.getPassengers()) {
+            passengers.add(passengerService.getPassenger(userDTO.getId()));
+        }
+
+        location.setFavoriteName(locationRequestDTO.getFavoriteName());
+        location.setLocations(locations);
+        location.setPassengers(passengers);
+        location.setBabyTransport(locationRequestDTO.isBabyTransport());
+        location.setPetTransport(locationRequestDTO.isPetTransport());
+        location.setVehicleType(vehicleTypeService.getByName(Vehicle.VEHICLE_TYPE.valueOf(locationRequestDTO.getVehicleType())));
+        location.setMakerId(maker.getId());
+        FavoriteLocation saved = favoriteLocationService.save(location, maker.getId());
+
+
+        // Transform saved into Response DTO
+        FavoriteLocationResponseDTO responseDTO = new FavoriteLocationResponseDTO();
+        List<DepartureDestinationLocationsDTO> locationsDTOS = new ArrayList<>();
+        for (DepartureDestination dd : saved.getLocations()) {
+            locationsDTOS.add(new DepartureDestinationLocationsDTO(dd));
+        }
+        List<UserResponseDTO> passengersDTOS = new ArrayList<>();
+        for (Passenger p : saved.getPassengers()) {
+            passengersDTOS.add(new UserResponseDTO(p));
+        }
+        responseDTO.setId(saved.getId());
+        responseDTO.setFavoriteName(saved.getFavoriteName());
+        responseDTO.setLocations(locationsDTOS);
+        responseDTO.setPassengers(passengersDTOS);
+        responseDTO.setBabyTransport(saved.isBabyTransport());
+        responseDTO.setPetTransport(saved.isPetTransport());
+        responseDTO.setVehicleType(saved.getVehicleType().getName().toString());
+
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/favorites", produces = "application/json")
+    ResponseEntity<List<FavoriteLocationResponseDTO>> getFavoriteLocations() {
+
+        // Extract passenger from JWT to get their locations
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        Passenger maker = (Passenger) appUserService.findByEmail(username).get();
+
+        // Transform real objects into DTOs
+        List<FavoriteLocation> locations = favoriteLocationService.getByMaker(maker.getId());
+        List<FavoriteLocationResponseDTO> locationResponseDTOS = new ArrayList<>();
+        for (FavoriteLocation l : locations) {
+            FavoriteLocationResponseDTO responseDTO = new FavoriteLocationResponseDTO();
+            List<DepartureDestinationLocationsDTO> locationsDTOS = new ArrayList<>();
+            for (DepartureDestination dd : l.getLocations()) {
+                locationsDTOS.add(new DepartureDestinationLocationsDTO(dd));
+            }
+            List<UserResponseDTO> passengersDTOS = new ArrayList<>();
+            for (Passenger p : l.getPassengers()) {
+                passengersDTOS.add(new UserResponseDTO(p));
+            }
+            responseDTO.setId(l.getId());
+            responseDTO.setFavoriteName(l.getFavoriteName());
+            responseDTO.setLocations(locationsDTOS);
+            responseDTO.setPassengers(passengersDTOS);
+            responseDTO.setBabyTransport(l.isBabyTransport());
+            responseDTO.setPetTransport(l.isPetTransport());
+            responseDTO.setVehicleType(l.getVehicleType().getName().toString());
+            locationResponseDTOS.add(responseDTO);
+        }
+
+        return new ResponseEntity<>(locationResponseDTOS, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/favorites/{id}")
+    public ResponseEntity<String> deleteFavoriteLocation(@PathVariable Integer id) {
+
+        // Throws 404 if not found
+        favoriteLocationService.getById(id.longValue());
+
+        favoriteLocationService.delete(id);
+        return new ResponseEntity<>("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
     }
 
 }
