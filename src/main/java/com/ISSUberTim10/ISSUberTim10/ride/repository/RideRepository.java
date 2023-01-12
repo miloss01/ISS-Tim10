@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
@@ -18,7 +19,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     public Page<Ride> findAll(Pageable pageable);
     public Page findAllByDriver(Pageable pageable, Driver driver);
     public Page findAllByPassengersContaining(Pageable pageable, Passenger passenger);
-    public Optional<Ride> findByDriverAndRideStatus(Driver driver, Ride.RIDE_STATUS rideStatus);
+    public Optional<List<Ride>> findByDriverAndRideStatus(Driver driver, Ride.RIDE_STATUS rideStatus);
     public Optional<Ride> findByPassengersContainingAndRideStatus(Passenger passenger, Ride.RIDE_STATUS rideStatus);
 
 
