@@ -89,10 +89,10 @@ public class RideController {
                 new NotificationDTO("From " +
                         rideDTO.getLocations().get(0).getDeparture().getAddress() +
                         " to " + rideDTO.getLocations().get(0).getDestination().getAddress(),
-                        saved.getId().intValue()));
+                        saved.getId().intValue(), ""));
         for (Passenger p : saved.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue()));
+                    new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue(), ""));
         }
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
     }
@@ -177,7 +177,7 @@ public class RideController {
         RideDTO rideDTO = new RideDTO(ride);
         this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-withdrawal/" + ride.getDriver().getId(),
                 new NotificationDTO("Ride was supposed to start at " + rideDTO.getStartTime() +
-                        " at location " + rideDTO.getLocations().get(0).getDeparture().getAddress() + ".", ride.getId().intValue()));
+                        " at location " + rideDTO.getLocations().get(0).getDeparture().getAddress() + ".", ride.getId().intValue(), ""));
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 }
@@ -198,7 +198,7 @@ public class RideController {
         ride = rideService.startRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has started!", ride.getId().intValue()));
+                    new NotificationDTO("Ride has started!", ride.getId().intValue(), ""));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -211,7 +211,7 @@ public class RideController {
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has accepted your ride request! You'll be riding with " +
-                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue()));
+                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue(), ""));
         }
         notificationSchedule.addToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -223,7 +223,7 @@ public class RideController {
         ride = rideService.endRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has ended.", ride.getId().intValue()));
+                    new NotificationDTO("Ride has ended.", ride.getId().intValue(), ""));
         }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
@@ -234,7 +234,7 @@ public class RideController {
         ride = rideService.cancelRideWithExplanation(ride, reason.getReason());
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue()));
+                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue(), ""));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);

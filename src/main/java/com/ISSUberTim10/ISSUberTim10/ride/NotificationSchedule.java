@@ -61,7 +61,7 @@ public class NotificationSchedule {
             System.out.println("Fixed rate notification at: " + LocalDateTime.now().format(StringFormatting.dateTimeFormatter) + " for ride at " + ride.getStartTime().format(StringFormatting.dateTimeFormatter));
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Reminder: You have a ride booked at "
-                            + ride.getStartTime().format(StringFormatting.dateTimeFormatter), ride.getId().intValue()));
+                            + ride.getStartTime().format(StringFormatting.dateTimeFormatter), ride.getId().intValue(), ""));
         }
     }
 
