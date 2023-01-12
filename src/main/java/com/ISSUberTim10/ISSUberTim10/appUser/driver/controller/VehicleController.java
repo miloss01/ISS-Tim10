@@ -53,9 +53,14 @@ public class VehicleController {
         ArrayList<Vehicle> vehicles = vehicleService.getAllVehicles();
         ArrayList<VehicleForMapDTO> vehicleDTOS = new ArrayList<>();
         for(Vehicle vehicle: vehicles) {
-            vehicleDTOS.add(new VehicleForMapDTO(vehicle));
+            VehicleForMapDTO vehicleForMapDTO = new VehicleForMapDTO(vehicle);
+            if (vehicleService.IsVehicleInActiveRide(vehicle.getDriver())){
+                System.out.println("Usao");
+                vehicleForMapDTO.setActive(false);
+            }
+            vehicleDTOS.add(vehicleForMapDTO);
         }
-        System.out.println(vehicleDTOS.get(0).isActive());
+
         return new ResponseEntity<>(new VehicleForMapResponseDTO(vehicleDTOS.size(), vehicleDTOS), HttpStatus.OK);
 
     }
