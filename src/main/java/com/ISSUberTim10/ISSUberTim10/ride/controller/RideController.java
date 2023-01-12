@@ -223,7 +223,7 @@ public class RideController {
         ride = rideService.startRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has started!", ride.getId().intValue(), ""));
+                    new NotificationDTO("Ride has started!", ride.getId().intValue(), "START_RIDE"));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -236,7 +236,7 @@ public class RideController {
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has accepted your ride request! You'll be riding with " +
-                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue(), ""));
+                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue(), "ACCEPT_RIDE"));
         }
         notificationSchedule.addToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
