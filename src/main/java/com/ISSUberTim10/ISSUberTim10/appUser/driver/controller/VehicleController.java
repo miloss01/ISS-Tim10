@@ -55,7 +55,6 @@ public class VehicleController {
         for(Vehicle vehicle: vehicles) {
             VehicleForMapDTO vehicleForMapDTO = new VehicleForMapDTO(vehicle);
             if (vehicleService.IsVehicleInActiveRide(vehicle.getDriver())){
-                System.out.println("Usao");
                 vehicleForMapDTO.setActive(false);
             }
             vehicleDTOS.add(vehicleForMapDTO);
