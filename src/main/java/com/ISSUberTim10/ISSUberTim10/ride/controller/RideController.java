@@ -96,6 +96,10 @@ public class RideController {
                         rideDTO.getLocations().get(0).getDeparture().getAddress() +
                         " to " + rideDTO.getLocations().get(0).getDestination().getAddress(),
                         saved.getId().intValue(), ""));
+
+        // valjda ce da radi, javi vozacu da ima novu pending voznju na mobilnim
+        this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-request-mob/" + saved.getDriver().getId(), rideDTO);
+
         for (Passenger p : saved.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue(), ""));
