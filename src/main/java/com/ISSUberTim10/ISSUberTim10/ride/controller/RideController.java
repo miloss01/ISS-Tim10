@@ -4,6 +4,9 @@ import com.ISSUberTim10.ISSUberTim10.ride.FavoriteLocation;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.auth.AuthService;
+import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IFavoriteLocationService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
@@ -28,12 +31,14 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/ride")
@@ -74,6 +79,7 @@ public class RideController {
     @PostMapping(consumes = "application/json", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
+        System.out.println("Usao u zakazivanje");
         Ride newRideRequest = new Ride(rideCreation);
 
         // throws 404 if passenger already in active ride
@@ -90,11 +96,14 @@ public class RideController {
                         rideDTO.getLocations().get(0).getDeparture().getAddress() +
                         " to " + rideDTO.getLocations().get(0).getDestination().getAddress(),
                         saved.getId().intValue(), ""));
+        // valjda ce da radi, javi vozacu da ima novu pending voznju na mobilnim
+        this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-request-mob/" + saved.getDriver().getId(), rideDTO);
         for (Passenger p : saved.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue(), ""));
         }
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
+
     }
 
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
@@ -102,6 +111,11 @@ public class RideController {
     ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId){
 
         Driver driver = driverService.getById(driverId.longValue());
+
+
+        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+        statuses.add(Ride.RIDE_STATUS.pending);
+        statuses.add(Ride.RIDE_STATUS.active);
 
         Ride ride = rideService.getActiveDriverRide(driver);
 
@@ -127,6 +141,12 @@ public class RideController {
 
         Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.pending);
 
+
+//        ArrayList<Ride> rides = rideService.getByDriverAndStatus(driver, statuses);
+
+//        if (rides.size() > 1)
+//            throw new CustomException("Multiple rides in active and/or pending status", HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
@@ -135,6 +155,10 @@ public class RideController {
     ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
 
         Passenger passenger = passengerService.getPassenger(passengerId.longValue());
+
+//        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+//        statuses.add(Ride.RIDE_STATUS.accepted);
+//        statuses.add(Ride.RIDE_STATUS.active);
 
         Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.active);
 
@@ -148,6 +172,7 @@ public class RideController {
         Passenger passenger = passengerService.getPassenger(passengerId.longValue());
 
         Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.accepted);
+
 
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
@@ -185,7 +210,10 @@ public class RideController {
     @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json")
     ResponseEntity<PanicExpandedDTO> addPanic(@PathVariable Integer id, @RequestBody ReasonDTO panicReason){
         Ride ride = rideService.getRideById(id.longValue());
-        AppUser user = new Passenger(); //TODO razmisli malo ne moras sve milosa da pitas
+        // Extract user who activated panic from JWT
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        AppUser user = appUserService.findByEmail(userDetails.getUsername());
         Panic panic = new Panic(0L, user, ride, LocalDateTime.now(), panicReason.getReason());
         panic = panicService.save(panic);
 
@@ -198,7 +226,7 @@ public class RideController {
         ride = rideService.startRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has started!", ride.getId().intValue(), ""));
+                    new NotificationDTO("Ride has started!", ride.getId().intValue(), "START_RIDE"));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -211,7 +239,8 @@ public class RideController {
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has accepted your ride request! You'll be riding with " +
-                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue(), ""));
+                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue(), "ACCEPT_RIDE"));
+            this.simpMessagingTemplate.convertAndSend("/vehicle-time/" + p.getId(), ride.getEstimatedTimeMinutes());
         }
         notificationSchedule.addToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -234,7 +263,7 @@ public class RideController {
         ride = rideService.cancelRideWithExplanation(ride, reason.getReason());
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue(), ""));
+                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue(), "DRIVER_CANCEL"));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
@@ -250,7 +279,7 @@ public class RideController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
-        Passenger maker = (Passenger) appUserService.findByEmail(username).get();
+        Passenger maker = (Passenger) appUserService.findByEmail(username);
 
         List<DepartureDestination> locations = new ArrayList<>();
         for (DepartureDestinationLocationsDTO locationDTO : locationRequestDTO.getLocations()) {
@@ -303,7 +332,7 @@ public class RideController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
-        Passenger maker = (Passenger) appUserService.findByEmail(username).get();
+        Passenger maker = (Passenger) appUserService.findByEmail(username);
 
         // Transform real objects into DTOs
         List<FavoriteLocation> locations = favoriteLocationService.getByMaker(maker.getId());

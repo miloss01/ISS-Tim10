@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +25,60 @@ public class WorkingTimeService implements IWorkingTimeService {
     private WorkingTimeRepository workingTimeRepository;
 
     @Override
-    public WorkingTime save(WorkingTime workingTime) {
+    public WorkingTime update(WorkingTime workingTime) {
+        Optional<WorkingTime> found = workingTimeRepository.findFirstByDriverOrderByStartTimeStartTimeDesc(workingTime.getDriver());
+        if(!found.isPresent()) throw new CustomException("Working time does not exist!", HttpStatus.NOT_FOUND);
+        checkIfVehicleRegistered(workingTime);
+        checkIfShiftNotOngoing(workingTime);
+        WorkingTime workingTim = found.get();
+        workingTim.setEndTime(workingTime.getEndTime());
+        return workingTimeRepository.save(workingTim);
+    }
+
+    @Override
+    public WorkingTime saveUpdated(WorkingTime workingTime) {
+        checkIfVehicleRegistered(workingTime);
+        checkIfShiftNotOngoing(workingTime);
         return workingTimeRepository.save(workingTime);
+    }
+
+    private void checkIfShiftNotOngoing(WorkingTime workingTime) {
+        if (!workingTime.getDriver().isActiveFlag()){
+            throw new CustomException("No shift is ongoing!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public WorkingTime save(WorkingTime workingTime) {
+        checkWorkingHours(workingTime);
+        checkIfVehicleRegistered(workingTime);
+        checkIfShiftOngoing(workingTime);
+        return workingTimeRepository.save(workingTime);
+    }
+
+    private void checkIfShiftOngoing(WorkingTime workingTime) {
+        if (workingTime.getDriver().isActiveFlag()){
+            throw new CustomException("Shifth already ongoing!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private static void checkIfVehicleRegistered(WorkingTime workingTime) {
+        try {
+            workingTime.getDriver().getVehicle().getVehicleType();
+        }catch (NullPointerException ex) {
+            throw new CustomException("Cannot start shift because the vehicle is not defined!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void checkWorkingHours(WorkingTime workingTime) {
+        long totalMinutes = 0;
+        ArrayList<WorkingTime> workingTimes = workingTimeRepository.findByDriverAndStartTimeGreaterThanEqual(workingTime.getDriver(), LocalDateTime.now().minusDays(1));
+        for (WorkingTime pastTime:workingTimes) {
+            totalMinutes += ChronoUnit.MINUTES.between(pastTime.getStartTime(), pastTime.getEndTime());
+        }
+        if (totalMinutes > 8*60) {
+            throw new CustomException("Cannot start shift because you exceeded the 8 hours limit in last 24 hours!", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

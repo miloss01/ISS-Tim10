@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -21,6 +22,7 @@ public class UserExpandedDTO {
     private String name;
     @Size(max = 100, message = "Field (surname) cannot be longer than 100 characters!")
     private String surname;
+    @Pattern(regexp="^data:image.*$",message="Field (profilePicture) must be an image")
     private String profilePicture;
     @Size(max = 18, message = "Field (telephoneNumber) cannot be longer than 18 characters!")
     private String telephoneNumber;

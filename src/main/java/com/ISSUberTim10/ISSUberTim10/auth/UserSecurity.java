@@ -20,7 +20,7 @@ public class UserSecurity {
 
         String email = authentication.getName();
 
-        Optional<AppUser> appUser = appUserService.findByEmail(email);
+        Optional<AppUser> appUser = appUserService.findByEmailOpt(email);
 
         if (!appUser.isPresent())
             throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
