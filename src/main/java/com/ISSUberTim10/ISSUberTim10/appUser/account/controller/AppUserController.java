@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -70,6 +71,9 @@ public class AppUserController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
 
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -258,13 +262,17 @@ public class AppUserController {
     public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Integer id,
                                                                @Valid @RequestBody MessageSentDTO messageSent) {
 
-        AppUser sender = appUserService.findById(id.longValue());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        AppUser sender = appUserService.findByEmail(authentication.getName());
         AppUser receiver = appUserService.findById(messageSent.getReceiverId());
         Ride ride = rideService.getRideById(messageSent.getRideId());
 
         Message message = new Message(null, sender, receiver, messageSent.getMessage(), LocalDateTime.now(), Message.MESSAGE_TYPE.valueOf(messageSent.getType().toLowerCase()), messageSent.getRideId());
 
         Message saved = messageService.save(message);
+
+        this.simpMessagingTemplate.convertAndSend("/ride-notification-message/" + receiver.getId(), messageSent);
 
         return new ResponseEntity<>(
                 new MessageReceivedDTO(saved.getId(), saved.getTimeSent().toString(), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId()),

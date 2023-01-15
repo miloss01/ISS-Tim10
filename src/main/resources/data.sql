@@ -62,7 +62,7 @@ values (2.3, 1, 1, 2);
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'active', 2);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2026-08-11 07:15:24', 15, 1, 0, 100.0, 'finished', 2);
