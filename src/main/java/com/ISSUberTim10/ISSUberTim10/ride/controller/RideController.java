@@ -252,7 +252,7 @@ public class RideController {
         ride = rideService.endRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has ended.", ride.getId().intValue(), ""));
+                    new NotificationDTO("Ride has ended.", ride.getId().intValue(), "END_RIDE"));
         }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
