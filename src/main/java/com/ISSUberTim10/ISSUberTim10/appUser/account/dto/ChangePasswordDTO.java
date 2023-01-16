@@ -15,7 +15,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 public class ChangePasswordDTO {
 
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[A-Z])(?!.*[^a-zA-Z0-9@#$^+=])(.{8,15})$", message = "Password format is not valid!")
+//    @Pattern(regexp = "^(?=.*\\d)(?=.*[A-Z])(?!.*[^a-zA-Z0-9@#$^+=])(.{8,15})$", message = "Password format is not valid!")
     @NotBlank(message = "Field (newPassword) is required!")
     private String newPassword;
 //    @Pattern(regexp = "^(?=.*\\d)(?=.*[A-Z])(?!.*[^a-zA-Z0-9@#$^+=])(.{8,15})$", message = "Password format is not valid!")

@@ -24,6 +24,11 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>(ex.message, ex.httpStatus);
     }
 
+    @ExceptionHandler(value = { CustomExceptionWithMessage.class })
+    protected ResponseEntity<ErrorMessage> handleCustomExceptionWithMessage(CustomExceptionWithMessage ex) {
+        return new ResponseEntity<>(new ErrorMessage(ex.message), ex.httpStatus);
+    }
+
     @ExceptionHandler(value = { ConstraintViolationException.class })
     protected ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException ex) {
 
@@ -63,9 +68,9 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(value = { AuthenticationException.class })
-    protected ResponseEntity<String> authenticationException(AuthenticationException ex) {
+    protected ResponseEntity<ErrorMessage> authenticationException(AuthenticationException ex) {
         System.out.println(ex);
-        return new ResponseEntity<>("Wrong username or password!", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage("Wrong username or password!"), HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -1,19 +1,18 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.Role;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.Message;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.PasswordResetCode;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IMessageService;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.INoteService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPasswordResetCodeService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.auth.UserSecurity;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
@@ -57,6 +56,9 @@ public class AppUserController {
 
     @Autowired
     IRideService rideService;
+
+    @Autowired
+    INoteService noteService;
 
     @Autowired
     IPasswordResetCodeService passwordResetCodeService;
@@ -295,9 +297,21 @@ public class AppUserController {
 
     @GetMapping(value = "/{id}/note", produces = "application/json")
     @PreAuthorize(value = "hasRole('ADMIN')")
-    public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id,
-                                                    @RequestParam(required = false) Pageable page){
-        return appUserService.getNotes(id, null);
+    public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id, Pageable page){
+//        return appUserService.getNotes(id, null);
+        AppUser appUser = appUserService.findById(id.longValue());
+        List<Note> notes = noteService.getAll(page, appUser);
+
+        ArrayList<NoteDTO> noteDTOs = new ArrayList<>();
+
+        for (Note note : notes)
+            noteDTOs.add(new NoteDTO(note));
+
+        NoteResponseDTO noteResponseDTO = new NoteResponseDTO();
+        noteResponseDTO.setResults(noteDTOs);
+        noteResponseDTO.setTotalCount(noteDTOs.size());
+
+        return new ResponseEntity<>(noteResponseDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/isBlocked", produces = "application/json")
@@ -370,10 +384,8 @@ public class AppUserController {
 
         AppUser appUser = appUserService.findById(id.longValue());
 
-        String codedOld = (new BCryptPasswordEncoder()).encode(changePasswordDTO.getOldPassword());
-
-        if (!appUser.getPassword().equals(codedOld))
-            throw new CustomException("Current password is not matching!", HttpStatus.BAD_REQUEST);
+        if (!(new BCryptPasswordEncoder()).matches(changePasswordDTO.getOldPassword(), appUser.getPassword()))
+            throw new CustomExceptionWithMessage("Current password is not matching!", HttpStatus.BAD_REQUEST);
 
         String codedNew = (new BCryptPasswordEncoder()).encode(changePasswordDTO.getNewPassword());
         appUser.setPassword(codedNew);
