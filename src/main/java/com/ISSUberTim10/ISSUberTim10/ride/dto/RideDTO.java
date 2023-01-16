@@ -37,6 +37,8 @@ public class RideDTO {
     private String vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
+    @JsonInclude(JsonInclude.Include. NON_NULL)
+    private String scheduleTime;
 
     @JsonInclude(JsonInclude.Include. NON_NULL)
     private String status;
@@ -57,6 +59,7 @@ public class RideDTO {
         this.id = ride.getId();
         this.locations = locations;
         this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatterWithSeconds);
+        this.scheduleTime = ride.getStartTime().format(StringFormatting.dateTimeFormatterWithSeconds);
         this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatterWithSeconds);
         this.totalCost = (int) ride.getPrice();
         this.driver = new UserDTO(ride.getDriver());

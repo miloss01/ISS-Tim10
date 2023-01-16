@@ -30,15 +30,16 @@ public class FavoriteLocationRequestDTO {
     @NotNull(message = "Field (locations) is required!")
     @Valid
     private List<DepartureDestinationLocationsDTO> locations;
-
+    @NotNull(message = "Field (passengers) is required!")
+    @Valid
     private List<UserResponseDTO> passengers;
 
     @Pattern(regexp = "standard|luxury|van", message="Field (vehicle type) has incorrect value!")
     @Valid
     private String vehicleType;
-
+    @NotNull(message = "Field (babyTransport) is required!")
     private boolean babyTransport;
-
+    @NotNull(message = "Field (petTransport) is required!")
     private boolean petTransport;
 
 }

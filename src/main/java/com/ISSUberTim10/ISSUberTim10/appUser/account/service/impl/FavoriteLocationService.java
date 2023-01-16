@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.service.impl;
 
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.FavoriteLocation;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.FavoriteLocationRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IFavoriteLocationService;
@@ -23,7 +24,7 @@ public class FavoriteLocationService implements IFavoriteLocationService {
     public FavoriteLocation save(FavoriteLocation location, long makerId) {
 
         if (getByMaker(makerId).size() >= 10) {
-            throw new CustomException("Number of favorite rides cannot exceed 10!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Number of favorite rides cannot exceed 10!", HttpStatus.BAD_REQUEST);
         }
 
         return favoriteLocationRepository.save(location);

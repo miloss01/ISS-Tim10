@@ -27,7 +27,6 @@ public class RideCreationDTO {
     @NotNull(message = "Field (petTransport) is required!")
     private boolean petTransport;
     private int estimatedTimeMinutes;
-
     public RideCreationDTO() {
         this.locations = new ArrayList<>();
         this.passengers = new ArrayList<>();

@@ -11,6 +11,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleTypeReposi
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.WorkingTimeRepository;
 import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.*;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.CoordinatesRepository;
@@ -194,7 +195,7 @@ public class RideService implements IRideService {
             ride.setRejection(rejection);
             return rideRepository.save(ride);
         } else {
-            throw new CustomException("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -205,7 +206,7 @@ public class RideService implements IRideService {
         statuses.add(Ride.RIDE_STATUS.accepted);
         statuses.add(Ride.RIDE_STATUS.pending);
         if (isPassengerAlreadyInARide(newRideRequest, statuses)) {
-            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
         }
 
         ArrayList<Vehicle> vehicles = findAppropriateVehicles(newRideRequest);
