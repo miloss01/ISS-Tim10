@@ -26,7 +26,7 @@ public class PanicController {
     private IPanicService panicService;
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize(value = "hasRole('ADMIN')")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<PanicsDTO> getPanics() {
 
         List<Panic> panics = panicService.getAllPanics();

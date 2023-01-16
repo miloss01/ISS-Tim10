@@ -13,18 +13,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @CrossOrigin
 @RestController
 @RequestMapping(value = "api/unregisteredUser")
+@Validated
 public class UnregisteredUserController {
 
     @Autowired
     private IVehicleTypeService vehicleTypeService;
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EstimatedDataResponseDTO> getEstimatedData(@RequestBody EstimatedDataRequestDTO estimatedDataRequestDTO) {
+    public ResponseEntity<EstimatedDataResponseDTO> getEstimatedData(@Valid @RequestBody EstimatedDataRequestDTO estimatedDataRequestDTO) {
         System.out.println(SecurityContextHolder.getContext().getAuthentication());
         System.out.println(estimatedDataRequestDTO);
 
