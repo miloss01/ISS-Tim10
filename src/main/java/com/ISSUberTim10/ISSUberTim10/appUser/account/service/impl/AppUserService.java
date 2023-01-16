@@ -8,6 +8,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.INoteSer
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.AppUserRepository;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -103,7 +104,7 @@ public class AppUserService implements IAppUserService {
         } else {
             AppUser appUser = found.get();
             if (appUser.isBlockedFlag() == true)
-                throw new CustomException("User already blocked!", HttpStatus.BAD_REQUEST);
+                throw new CustomExceptionWithMessage("User already blocked!", HttpStatus.BAD_REQUEST);
             appUser.setBlockedFlag(true);
             appUserRepository.save(appUser);
         }
@@ -118,7 +119,7 @@ public class AppUserService implements IAppUserService {
         } else {
             AppUser appUser = found.get();
             if (appUser.isBlockedFlag() == false)
-                throw new CustomException("User is not blocked!", HttpStatus.BAD_REQUEST);
+                throw new CustomExceptionWithMessage("User is not blocked!", HttpStatus.BAD_REQUEST);
             appUser.setBlockedFlag(false);
             appUserRepository.save(appUser);
         }
