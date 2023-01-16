@@ -272,6 +272,8 @@ public class AppUserController {
 
         Message saved = messageService.save(message);
 
+        messageSent.setMessage("From " + sender.getName() + " " + sender.getLastName() + ": \n" + messageSent.getMessage());
+
         this.simpMessagingTemplate.convertAndSend("/ride-notification-message/" + receiver.getId(), messageSent);
 
         return new ResponseEntity<>(
