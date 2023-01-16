@@ -99,9 +99,11 @@ public class AppUserService implements IAppUserService {
     public ResponseEntity<String> blockUser(Integer id) {
         Optional<AppUser> found = appUserRepository.findById(id.longValue());
         if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
         } else {
             AppUser appUser = found.get();
+            if (appUser.isBlockedFlag() == true)
+                throw new CustomException("User already blocked!", HttpStatus.BAD_REQUEST);
             appUser.setBlockedFlag(true);
             appUserRepository.save(appUser);
         }
@@ -112,9 +114,11 @@ public class AppUserService implements IAppUserService {
     public ResponseEntity<String> unblockUser(Integer id) {
         Optional<AppUser> found = appUserRepository.findById(id.longValue());
         if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be unblocked.");
+            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
         } else {
             AppUser appUser = found.get();
+            if (appUser.isBlockedFlag() == false)
+                throw new CustomException("User is not blocked!", HttpStatus.BAD_REQUEST);
             appUser.setBlockedFlag(false);
             appUserRepository.save(appUser);
         }

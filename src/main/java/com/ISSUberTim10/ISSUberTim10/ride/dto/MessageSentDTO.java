@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageSentDTO {
-    @NotNull(message = "Field (receiverId) is required!")
+//    @NotNull(message = "Field (receiverId) is required!")
     private Long receiverId;
     @NotNull(message = "Field (message) is required!")
     @Size(max = 500, message = "Field (message) cannot be longer than 500 characters!")

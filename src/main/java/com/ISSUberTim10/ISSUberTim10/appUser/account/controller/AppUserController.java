@@ -12,6 +12,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPasswor
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
+import com.ISSUberTim10.ISSUberTim10.auth.UserSecurity;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
@@ -25,12 +26,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -43,9 +46,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 @RestController
 @RequestMapping("/api/user")
+@Validated
 public class AppUserController {
 
     @Autowired
@@ -77,6 +81,7 @@ public class AppUserController {
 
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<AllUsersDTO> getAll(Pageable page) {
 
         List<AppUser> users = appUserService.getAll(page);
@@ -113,81 +118,78 @@ public class AppUserController {
 
 
     @GetMapping(value = "/{id}/ride", produces = "application/json")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<RideResponseDTO> getUsersRides(@PathVariable Integer id,
                                                          Pageable page,
                                                          @RequestParam(required = false) String from,
                                                          @RequestParam(required = false) String to) {
-//        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
-//        List<Ride> rides;
-//        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-//        rides = resultPage.getContent();
-//        for (Ride ride : rides) {
-//            ridesDTO.add(new RideDTO(ride));
-//            System.out.println(ride.getId());
-//        }
-//        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
-
-//        Optional<AppUser> appUser = appUserService.findById(id.longValue());
-//
-//        if (!appUser.isPresent())
-//            throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
-//
-//        List<Ride> rides;
-//
-//        if (appUser.get().getRole() == Role.DRIVER)
-//            rides = rideService.getByDriver(page, (Driver) appUser.get());
-//        else if (appUser.get().getRole() == Role.PASSENGER)
-//            rides = rideService.getByPassenger(page, (Passenger) appUser.get());
-//        else
-//            rides = new ArrayList<>();
-//
-//        ArrayList<RideDTO> rideDTOs = new ArrayList<>();
-//
-//        LocalDateTime fromDate;
-//        LocalDateTime toDate;
-//
-//        if (from == null)
-//            fromDate = LocalDateTime.of(2000, 1, 1, 1, 1);
-//        else
-//            fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatterWithSeconds);
-//
-//        if (to == null)
-//            toDate = LocalDateTime.of(3000, 1, 1, 1, 1);
-//        else
-//            toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatterWithSeconds);
-//
-//        for (Ride ride : rides)
-//            if (ride.getStartTime() != null &&
-//                ride.getEndTime() != null &&
-//                ride.getStartTime().isAfter(fromDate) &&
-//                ride.getEndTime().isBefore(toDate))
-//                rideDTOs.add(new RideDTO(ride));
-//
-//        return new ResponseEntity<>(
-//                new RideResponseDTO(rideDTOs.size(), rideDTOs),
-//                HttpStatus.OK
-//        );
-
-
-
+        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
+        List<Ride> rides;
         ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-        ArrayList<UserDTO> passengers = new ArrayList<>();
-        passengers.add(new UserDTO(2L, "pepe"));
-        passengers.add(new UserDTO(2L, "guug"));
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
-        passengers.add(new UserDTO(1L, "eheh"));
-        ridesDTO.add(new RideDTO(1L, locations, "12.10.2022. 11:17", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-        return new ResponseEntity<>(new RideResponseDTO(ridesDTO.size(), ridesDTO), HttpStatus.OK);
+        rides = resultPage.getContent();
+        for (Ride ride : rides) {
+            ridesDTO.add(new RideDTO(ride));
+            System.out.println(ride.getId());
+        }
+        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
+
+        AppUser appUser = appUserService.findById(id.longValue());
+
+
+        if (appUser.getRole() == Role.DRIVER)
+            rides = rideService.getByDriver(page, (Driver) appUser);
+        else if (appUser.getRole() == Role.PASSENGER)
+            rides = rideService.getByPassenger(page, (Passenger) appUser);
+        else
+            rides = new ArrayList<>();
+
+        ArrayList<RideDTO> rideDTOs = new ArrayList<>();
+
+        LocalDateTime fromDate;
+        LocalDateTime toDate;
+
+        if (from == null)
+            fromDate = LocalDateTime.of(2000, 1, 1, 1, 1);
+        else
+            fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatterWithSeconds);
+
+        if (to == null)
+            toDate = LocalDateTime.of(3000, 1, 1, 1, 1);
+        else
+            toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatterWithSeconds);
+
+        for (Ride ride : rides)
+            if (ride.getStartTime() != null &&
+                ride.getEndTime() != null &&
+                ride.getStartTime().isAfter(fromDate) &&
+                ride.getEndTime().isBefore(toDate))
+                rideDTOs.add(new RideDTO(ride));
+
+        return new ResponseEntity<>(
+                new RideResponseDTO(rideDTOs.size(), rideDTOs),
+                HttpStatus.OK
+        );
+
+
+
+//        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
+//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+//        ArrayList<UserDTO> passengers = new ArrayList<>();
+//        passengers.add(new UserDTO(2L, "pepe"));
+//        passengers.add(new UserDTO(2L, "guug"));
+//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
+//        passengers.add(new UserDTO(1L, "eheh"));
+//        ridesDTO.add(new RideDTO(1L, locations, "12.10.2022. 11:17", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
+//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
+//        return new ResponseEntity<>(new RideResponseDTO(ridesDTO.size(), ridesDTO), HttpStatus.OK);
     }
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<TokenResponseDTO> login(@Valid @RequestBody LoginDTO loginDTO){
 
         UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
 
@@ -212,28 +214,28 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/{id}/block")
-//    @PreAuthorize(value = "hasRole('ADMIN')")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<String> blockUser(@PathVariable Integer id) {
-        try {
+//        try {
             return appUserService.blockUser(id);
-        } catch (Exception responseStatusException) {
-            return new ResponseEntity<>(responseStatusException.getMessage(), HttpStatus.NOT_FOUND);
-        }
+//        } catch (Exception responseStatusException) {
+//            return new ResponseEntity<>(responseStatusException.getMessage(), HttpStatus.NOT_FOUND);
+//        }
         //return new ResponseEntity<>("User successfully blocked", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(value = "/{id}/unblock")
-//    @PreAuthorize(value = "hasRole('ADMIN')")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<String> unblockUser(@PathVariable Integer id) {
-        try {
+//        try {
             return appUserService.unblockUser(id);
-        } catch (Exception responseStatusException) {
-            return new ResponseEntity<>(responseStatusException.getMessage(), HttpStatus.NOT_FOUND);
-        }
+//        } catch (Exception responseStatusException) {
+//            return new ResponseEntity<>(responseStatusException.getMessage(), HttpStatus.NOT_FOUND);
+//        }
     }
 
     @GetMapping(value = "/{id}/message", produces = "application/json")
-//    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Message')")
+    @PreAuthorize(value = "hasRole('ADMIN') or @userSecurity.hasUserId(authentication, #id, 'Message')")
     public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Integer id) {
 
         AppUser appUser = appUserService.findById(id.longValue());
@@ -262,10 +264,12 @@ public class AppUserController {
     public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Integer id,
                                                                @Valid @RequestBody MessageSentDTO messageSent) {
 
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         AppUser sender = appUserService.findByEmail(authentication.getName());
-        AppUser receiver = appUserService.findById(messageSent.getReceiverId());
+//        AppUser receiver = appUserService.findById(messageSent.getReceiverId());
+        AppUser receiver = appUserService.findById(id.longValue());
         Ride ride = rideService.getRideById(messageSent.getRideId());
 
         Message message = new Message(null, sender, receiver, messageSent.getMessage(), LocalDateTime.now(), Message.MESSAGE_TYPE.valueOf(messageSent.getType().toLowerCase()), messageSent.getRideId());
@@ -282,15 +286,15 @@ public class AppUserController {
     }
 
     @PostMapping(value = "/{id}/note", consumes = "application/json", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('ADMIN')")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<NoteDTO> sendNote(@PathVariable Integer id,
-                                            @RequestBody NoteMessageDTO messageDTO) {
+                                            @Valid @RequestBody NoteMessageDTO messageDTO) {
 
         return appUserService.sendMessage(id, messageDTO);
     }
 
     @GetMapping(value = "/{id}/note", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('ADMIN')")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<NoteResponseDTO> getNotes(@PathVariable Integer id,
                                                     @RequestParam(required = false) Pageable page){
         return appUserService.getNotes(id, null);
@@ -302,7 +306,7 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/changeActiveFlag/{id}", consumes = "application/json", produces = "application/json")
-//    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
+    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
     public ResponseEntity<IsActiveDTO> changeActiveFlag(@PathVariable Integer id, @RequestBody IsActiveDTO isActiveDTO) {
         AppUser appUser = appUserService.findById(id.longValue());
         appUser.setActiveFlag(isActiveDTO.isActive());
@@ -314,7 +318,7 @@ public class AppUserController {
     }
 
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> requestCode(@RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
+    public ResponseEntity<Void> requestCode(@Valid @RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
         System.out.println("u post");
 
         AppUser appUser = appUserService.findByEmail(passwordResetCodeDTO.getEmail());
@@ -335,7 +339,7 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> applyCode(@RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
+    public ResponseEntity<Void> applyCode(@Valid @RequestBody PasswordResetCodeDTO passwordResetCodeDTO) {
 
         AppUser appUser = appUserService.findByEmail(passwordResetCodeDTO.getEmail());
 
@@ -356,6 +360,24 @@ public class AppUserController {
         appUserService.save(appUser);
 
         passwordResetCodeService.deleteById(code.get().getId());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
+
+    @PutMapping(value = "/{id}/changePassword", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> changePassword(@PathVariable Integer id, @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
+
+        AppUser appUser = appUserService.findById(id.longValue());
+
+        String codedOld = (new BCryptPasswordEncoder()).encode(changePasswordDTO.getOldPassword());
+
+        if (!appUser.getPassword().equals(codedOld))
+            throw new CustomException("Current password is not matching!", HttpStatus.BAD_REQUEST);
+
+        String codedNew = (new BCryptPasswordEncoder()).encode(changePasswordDTO.getNewPassword());
+        appUser.setPassword(codedNew);
+        appUserService.save(appUser);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
