@@ -4,6 +4,7 @@ import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,8 +20,8 @@ import java.time.format.DateTimeParseException;
 public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(value = { CustomException.class })
-    protected ResponseEntity<ErrorMessage> handleCustomException(CustomException ex) {
-        return new ResponseEntity<>(new ErrorMessage(ex.message), ex.httpStatus);
+    protected ResponseEntity<String> handleCustomException(CustomException ex) {
+        return new ResponseEntity<>(ex.message, ex.httpStatus);
     }
 
     @ExceptionHandler(value = { ConstraintViolationException.class })
@@ -59,6 +60,12 @@ public class ExceptionHandlerAdvice {
     protected ResponseEntity<String> handleDateTimeParseException(DateTimeParseException ex) {
         System.out.println(ex);
         return new ResponseEntity<>("Wrong date format!", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = { AuthenticationException.class })
+    protected ResponseEntity<String> authenticationException(AuthenticationException ex) {
+        System.out.println(ex);
+        return new ResponseEntity<>("Wrong username or password!", HttpStatus.BAD_REQUEST);
     }
 
 }
