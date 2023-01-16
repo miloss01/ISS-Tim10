@@ -4,6 +4,7 @@ import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -60,5 +61,11 @@ public class ExceptionHandlerAdvice {
         System.out.println(ex);
         return new ResponseEntity<>("Wrong date format!", HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = { UsernameNotFoundException.class })
+    protected ResponseEntity<String> handleMethodArgumentNotValidException(UsernameNotFoundException ex) {
+        return new ResponseEntity<>("User not found with given username", HttpStatus.BAD_REQUEST);
+    }
+
 
 }

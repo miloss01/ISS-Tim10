@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.appUser.account.service.impl;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Note;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.*;
@@ -70,9 +71,10 @@ public class AppUserService implements IAppUserService {
     public ResponseEntity<PassengerResponseDTO> getPassenger(Integer id) {
         Optional<AppUser> found = appUserRepository.findById(id.longValue());
         if (!found.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found to be blocked.");
+            throw new CustomException("Passenger does not exist!", HttpStatus.NOT_FOUND);
         }
         AppUser appUser = found.get();
+        if (appUser.getRole() != Role.PASSENGER) throw new CustomException("Passenger does not exist!", HttpStatus.NOT_FOUND);
         PassengerResponseDTO passengerResponse = new PassengerResponseDTO(appUser);
         return new ResponseEntity<>(passengerResponse, HttpStatus.OK);
     }

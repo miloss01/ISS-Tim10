@@ -77,7 +77,7 @@ public class RideController {
 
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('DRIVER')")
+//    @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
         System.out.println("Usao u zakazivanje");
         Ride newRideRequest = new Ride(rideCreation);
@@ -156,9 +156,6 @@ public class RideController {
 
         Passenger passenger = passengerService.getPassenger(passengerId.longValue());
 
-//        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
-//        statuses.add(Ride.RIDE_STATUS.accepted);
-//        statuses.add(Ride.RIDE_STATUS.active);
 
         Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.active);
 
@@ -172,7 +169,6 @@ public class RideController {
         Passenger passenger = passengerService.getPassenger(passengerId.longValue());
 
         Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.accepted);
-
 
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
@@ -270,6 +266,7 @@ public class RideController {
     }
 
     @PostMapping(value = "/favorites", consumes = "application/json", produces = "application/json")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<FavoriteLocationResponseDTO> saveFavoriteLocation(
             @Valid @RequestBody FavoriteLocationRequestDTO locationRequestDTO) {
 
@@ -303,7 +300,6 @@ public class RideController {
         location.setMakerId(maker.getId());
         FavoriteLocation saved = favoriteLocationService.save(location, maker.getId());
 
-
         // Transform saved into Response DTO
         FavoriteLocationResponseDTO responseDTO = new FavoriteLocationResponseDTO();
         List<DepartureDestinationLocationsDTO> locationsDTOS = new ArrayList<>();
@@ -326,6 +322,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/favorites", produces = "application/json")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<List<FavoriteLocationResponseDTO>> getFavoriteLocations() {
 
         // Extract passenger from JWT to get their locations
@@ -361,6 +358,7 @@ public class RideController {
     }
 
     @DeleteMapping(value = "/favorites/{id}")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
     public ResponseEntity<String> deleteFavoriteLocation(@PathVariable Integer id) {
 
         // Throws 404 if not found

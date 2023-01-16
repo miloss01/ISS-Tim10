@@ -14,8 +14,10 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 @NoArgsConstructor
 @Getter
@@ -24,13 +26,15 @@ import java.util.List;
 public class FavoriteLocationRequestDTO {
 
     @NotNull(message = "Field (favorite name) is required!")
-    @Valid
+    @NotEmpty(message = "Field (favorite name) is required!")
+    @Size(max = 40, message = "Field (favorite name) cannot be longer than 100 characters!")
     private String favoriteName;
 
     @NotNull(message = "Field (locations) is required!")
     @Valid
     private List<DepartureDestinationLocationsDTO> locations;
 
+    @Valid
     private List<UserResponseDTO> passengers;
 
     @Pattern(regexp = "standard|luxury|van", message="Field (vehicle type) has incorrect value!")
