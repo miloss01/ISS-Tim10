@@ -77,7 +77,7 @@ public class RideController {
 
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('DRIVER')")
+    @PreAuthorize(value = "hasRole('DRIVER') or hasRole('PASSENGER')")
     ResponseEntity<RideDTO> addRide(@Valid @RequestBody RideCreationDTO rideCreation){
         System.out.println("Usao u zakazivanje");
         Ride newRideRequest = new Ride(rideCreation);
