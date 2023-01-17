@@ -161,7 +161,7 @@ public class PassengerController {
 
     // Returns passenger details, where the password field is always empty
     @GetMapping(value = "/{id}", produces = "application/json")
-    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger') or (hasRole('DRIVER')))")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger') or (hasRole('DRIVER')))")
     public ResponseEntity<PassengerResponseDTO> getPassenger(@PathVariable(required = true) Integer id) {
         return appUserService.getPassenger(id);
     }

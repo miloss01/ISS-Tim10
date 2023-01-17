@@ -43,7 +43,7 @@ public class Ride {
 
 //    passengers - Mapiranje
 //    private ArrayList<Passenger> passengersList;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "passengers_rides",
             joinColumns = @JoinColumn(name = "ride_id"),
             inverseJoinColumns = @JoinColumn(name = "passenger_id")
