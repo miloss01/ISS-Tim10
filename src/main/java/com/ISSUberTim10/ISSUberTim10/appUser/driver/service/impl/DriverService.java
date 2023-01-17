@@ -131,7 +131,7 @@ public class DriverService implements IDriverService {
     public Driver findDriverById(Integer id) {
         Optional<Driver> found = driverRepository.findById(id.longValue());
         if (!found.isPresent()){
-            throw new CustomException("Driver does not exist", HttpStatus.NOT_FOUND);
+            throw new CustomException("Driver does not exist!", HttpStatus.NOT_FOUND);
         }
         return found.get();
     }

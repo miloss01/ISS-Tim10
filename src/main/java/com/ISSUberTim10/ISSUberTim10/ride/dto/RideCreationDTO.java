@@ -18,7 +18,7 @@ public class RideCreationDTO {
     @NotNull(message = "Field (passengers) is required!")
     @Valid
     private ArrayList<UserDTO> passengers;
-    private String startTime;
+    private String scheduleTime;
     @NotBlank(message = "Field (vehicleType) is required!")
     @Size(max = 50, message = "Field (vehicleType) cannot be longer than 50 characters!")
     private String vehicleType;
@@ -26,7 +26,6 @@ public class RideCreationDTO {
     private boolean babyTransport;
     @NotNull(message = "Field (petTransport) is required!")
     private boolean petTransport;
-    private int estimatedTimeMinutes;
 
     public RideCreationDTO() {
         this.locations = new ArrayList<>();

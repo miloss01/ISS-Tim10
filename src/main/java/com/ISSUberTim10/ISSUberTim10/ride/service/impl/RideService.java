@@ -316,6 +316,7 @@ public class RideService implements IRideService {
         for (Passenger passengerIncluded: newRideRequest.getPassengers()){
             if (passengerIncluded.getId() != 0L) passenger.setId(passengerIncluded.getId());
         }
+        passengerRepository.save(passenger);
         Optional<Ride> found = rideRepository.findByPassengersContainingAndRideStatusIn(passenger, statuses);
         return found.isPresent();
     }

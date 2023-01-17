@@ -58,7 +58,7 @@ public class WorkingTimeService implements IWorkingTimeService {
 
     private void checkIfShiftOngoing(WorkingTime workingTime) {
         if (workingTime.getDriver().isActiveFlag()){
-            throw new CustomException("Shifth already ongoing!", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Shift already ongoing!", HttpStatus.BAD_REQUEST);
         }
     }
 

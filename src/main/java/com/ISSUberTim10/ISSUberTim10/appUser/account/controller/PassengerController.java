@@ -50,6 +50,7 @@ import java.util.Optional;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "api/passenger")
+@Validated
 public class PassengerController {
 
     @Autowired
@@ -75,12 +76,13 @@ public class PassengerController {
 
     // Create new passenger
     @PostMapping(produces = "application/json", consumes = "application/json")
-    public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
+    public ResponseEntity<PassengerResponseDTO> savePassenger(@Valid @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
         Optional<AppUser> appUser = appUserService.findByEmailOpt(passengerRequestDTO.getEmail());
 
-        if (appUser.isPresent())
+        if (appUser.isPresent()) {
             throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
+        }
 
         UserActivation userActivation = new UserActivation();
         userActivation.setName(passengerRequestDTO.getName());
@@ -169,7 +171,7 @@ public class PassengerController {
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger')")
     public ResponseEntity<PassengerResponseDTO> updatePassenger(@PathVariable(required = true) Integer id,
-                                                                @RequestBody PassengerRequestDTO passengerRequestDTO) {
+                                                                @Valid @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
         Passenger passenger = passengerService.getPassenger(id.longValue());
         passenger.setName(passengerRequestDTO.getName());
@@ -186,7 +188,7 @@ public class PassengerController {
 
     // Returns paginated rides that can be sorted on specific field
     @GetMapping(value = "/{id}/ride", produces = "application/json")
-    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Working time'))")
+    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger'))")
     public ResponseEntity<RideResponseDTO> getRides(@PathVariable Integer id,
                                                     Pageable page,
                                                     @RequestParam(required = false) String from,
