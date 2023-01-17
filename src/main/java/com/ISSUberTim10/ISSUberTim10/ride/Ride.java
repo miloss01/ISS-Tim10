@@ -50,8 +50,6 @@ public class Ride {
     )
     private Collection<Passenger> passengers;
 
-//    route - Mapiranje TODO
-//    private Route route;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "routes_rides",
             joinColumns = @JoinColumn(name = "ride_id"),
@@ -94,7 +92,7 @@ public class Ride {
         this.passengers = passengers;
         this.routes = routes;
         try {
-            this.startTime = LocalDateTime.parse(rideCreation.getScheduleTime().replace('T', ' '), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            this.startTime = LocalDateTime.parse(rideCreation.getStartTime().replace('T', ' '), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         } catch (Exception ex) {this.startTime = LocalDateTime.now();}
         this.petsFlag = rideCreation.isPetTransport();
         this.babyFlag = rideCreation.isBabyTransport();

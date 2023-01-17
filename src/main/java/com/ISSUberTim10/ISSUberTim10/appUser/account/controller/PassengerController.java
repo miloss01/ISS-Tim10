@@ -14,6 +14,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IUserAct
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
@@ -81,7 +82,7 @@ public class PassengerController {
         Optional<AppUser> appUser = appUserService.findByEmailOpt(passengerRequestDTO.getEmail());
 
         if (appUser.isPresent()) {
-            throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("User with that email already exists!", HttpStatus.BAD_REQUEST);
         }
 
         UserActivation userActivation = new UserActivation();
