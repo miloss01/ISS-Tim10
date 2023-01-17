@@ -14,6 +14,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IUserAct
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.auth.EmailService;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
@@ -50,6 +51,7 @@ import java.util.Optional;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "api/passenger")
+@Validated
 public class PassengerController {
 
     @Autowired
@@ -75,12 +77,13 @@ public class PassengerController {
 
     // Create new passenger
     @PostMapping(produces = "application/json", consumes = "application/json")
-    public ResponseEntity<PassengerResponseDTO> savePassenger(@RequestBody PassengerRequestDTO passengerRequestDTO) {
+    public ResponseEntity<PassengerResponseDTO> savePassenger(@Valid @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
         Optional<AppUser> appUser = appUserService.findByEmailOpt(passengerRequestDTO.getEmail());
 
-        if (appUser.isPresent())
-            throw new CustomException("User with that email already exists!", HttpStatus.BAD_REQUEST);
+        if (appUser.isPresent()) {
+            throw new CustomExceptionWithMessage("User with that email already exists!", HttpStatus.BAD_REQUEST);
+        }
 
         UserActivation userActivation = new UserActivation();
         userActivation.setName(passengerRequestDTO.getName());
@@ -104,8 +107,8 @@ public class PassengerController {
 
     // Getting multiple passengers for the need of showing a list
     @GetMapping(produces = "application/json")
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<AllPassengersDTO> getPassengers(Pageable pageable) {
-        // parameters page and size set to Integer because primitive type int doesn't allow null
 
         List<Passenger> passengers = passengerService.getAllPassengers(pageable);
 
@@ -121,11 +124,6 @@ public class PassengerController {
                 ),
                 HttpStatus.OK
         );
-
-//        List<PassengerResponseDTO> dummyPassengers = getDummyPassengersResponseDTO();
-//        AllPassengersDTO allPassengersDTO = new AllPassengersDTO(dummyPassengers.size(), dummyPassengers);
-//
-//        return new ResponseEntity<>(allPassengersDTO, HttpStatus.OK);
     }
 
 
@@ -163,28 +161,18 @@ public class PassengerController {
 
 
     // Returns passenger details, where the password field is always empty
-
     @GetMapping(value = "/{id}", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger'))")
-    // mozda mora da se dopusti i vozacu da moze da vidi podatke, jer mozda negde treba da se prikazu podaci o putnicima koje je vozio
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger') or (hasRole('DRIVER')))")
     public ResponseEntity<PassengerResponseDTO> getPassenger(@PathVariable(required = true) Integer id) {
-
-//        Passenger passenger = passengerService.findOne(id);
-//
-//        if (passenger == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-//        return new ResponseEntity<>(new PassengerResponseDTO(200, "Name", "LastName",
-//                "https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512",
-//                "06324134", "it@email.com", "Street Ul."), HttpStatus.OK);
         return appUserService.getPassenger(id);
     }
 
 
     // Update existing passenger, non required fields send only if changed
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger')")
+    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger')")
     public ResponseEntity<PassengerResponseDTO> updatePassenger(@PathVariable(required = true) Integer id,
-                                                                @RequestBody PassengerRequestDTO passengerRequestDTO) {
+                                                                @Valid @RequestBody PassengerRequestDTO passengerRequestDTO) {
 
         Passenger passenger = passengerService.getPassenger(id.longValue());
         passenger.setName(passengerRequestDTO.getName());
@@ -201,7 +189,7 @@ public class PassengerController {
 
     // Returns paginated rides that can be sorted on specific field
     @GetMapping(value = "/{id}/ride", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Working time'))")
+    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #id, 'Passenger'))")
     public ResponseEntity<RideResponseDTO> getRides(@PathVariable Integer id,
                                                     Pageable page,
                                                     @RequestParam(required = false) String from,
@@ -238,37 +226,6 @@ public class PassengerController {
                 HttpStatus.OK
         );
 
-    }
-
-    private List<PassengerResponseDTO> getDummyPassengersResponseDTO() {
-        List<PassengerResponseDTO> dummyPassengers = new ArrayList<>();
-        for (int i = 0; i < 5; ++i) {
-            PassengerResponseDTO passengerResponseDTO= new PassengerResponseDTO(i, "Name", "LastName", "imgURL", "06324134", "it@email.com", "Street Ul.");
-            dummyPassengers.add(passengerResponseDTO);
-        }
-        return dummyPassengers;
-    }
-
-    private RideResponseDTO getDummyPassengerRidesDTO() {
-        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-        ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Takovska 15", 10.0, 10.0), new LocationDTO("Bulevar Evrope", 10.0, 10.0)));
-        passengers.add(new UserDTO(1L, ""));
-        ridesDTO.add(new RideDTO(1L, locations, "14.01.2022. 20:15", "13.01.2022. 21:15", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, null, null));
-
-        locations.remove(0);
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Andriceva 22", 10.0, 10.0), new LocationDTO("Bulevar Oslobodjenja 20", 10.0, 10.0)));
-        ridesDTO.add(new RideDTO(1L, locations, "14.01.2022. 22:15", "14.01.2022. 23:30", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, null, null));
-        ridesDTO.add(new RideDTO(1L, locations, "14.05.2021. 20:15", "14.05.2021. 21:15", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, null, null));
-        ridesDTO.add(new RideDTO(1L, locations, "17.10.2021. 20:15", "17.10.2021. 21:15", 123, new UserDTO(1L, ""),
-                passengers, 5, "", true, true, null, null));
-
-
-        return new RideResponseDTO(25, ridesDTO);
     }
 
 }

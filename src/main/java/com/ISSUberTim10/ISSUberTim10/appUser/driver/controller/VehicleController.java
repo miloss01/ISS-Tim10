@@ -29,7 +29,7 @@ public class VehicleController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @PutMapping(value = "/{id}/location", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize(value = "hasRole('DRIVER')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
     public ResponseEntity<Void> updateVehicle(@PathVariable Integer id,
                                               @Valid @RequestBody LocationDTO currentLocationDTO) {
 
@@ -55,7 +55,6 @@ public class VehicleController {
         for(Vehicle vehicle: vehicles) {
             VehicleForMapDTO vehicleForMapDTO = new VehicleForMapDTO(vehicle);
             if (vehicleService.IsVehicleInActiveRide(vehicle.getDriver())){
-                System.out.println("Usao");
                 vehicleForMapDTO.setActive(false);
             }
             vehicleDTOS.add(vehicleForMapDTO);

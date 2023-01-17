@@ -1,7 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
-import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
@@ -47,11 +46,10 @@ public class Ride {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "passengers_rides",
             joinColumns = @JoinColumn(name = "ride_id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id"))
+            inverseJoinColumns = @JoinColumn(name = "passenger_id")
+    )
     private Collection<Passenger> passengers;
 
-//    route - Mapiranje TODO
-//    private Route route;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "routes_rides",
             joinColumns = @JoinColumn(name = "ride_id"),
@@ -93,7 +91,9 @@ public class Ride {
         }
         this.passengers = passengers;
         this.routes = routes;
-        this.startTime = LocalDateTime.parse(rideCreation.getStartTime().replace('T', ' '), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        try {
+            this.startTime = LocalDateTime.parse(rideCreation.getStartTime().replace('T', ' '), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        } catch (Exception ex) {this.startTime = LocalDateTime.now();}
         this.petsFlag = rideCreation.isPetTransport();
         this.babyFlag = rideCreation.isBabyTransport();
         Driver dummy = new Driver();
@@ -101,7 +101,6 @@ public class Ride {
         dummyVehicle.setVehicleType(new VehicleType(0L, Vehicle.VEHICLE_TYPE.valueOf(rideCreation.getVehicleType()), 0));
         dummy.setVehicle(dummyVehicle);
         this.driver = dummy;
-        this.estimatedTimeMinutes = rideCreation.getEstimatedTimeMinutes();
         this.endTime = this.getStartTime().plusMinutes(this.estimatedTimeMinutes);
     }
 

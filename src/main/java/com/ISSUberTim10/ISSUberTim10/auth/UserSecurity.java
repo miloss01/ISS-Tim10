@@ -26,7 +26,7 @@ public class UserSecurity {
             throw new CustomException("User does not exist!", HttpStatus.NOT_FOUND);
 
         if (appUser.get().getId() != userId)
-            throw new CustomException("Access denied. " + entity + " doesn't exist!", HttpStatus.NOT_FOUND);
+            throw new CustomException(entity + " does not exist!", HttpStatus.NOT_FOUND);
 
         return true;
 

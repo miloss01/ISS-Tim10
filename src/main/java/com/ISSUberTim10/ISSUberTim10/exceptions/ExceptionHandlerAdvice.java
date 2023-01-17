@@ -3,12 +3,11 @@ package com.ISSUberTim10.ISSUberTim10.exceptions;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.FieldError;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolation;
@@ -19,7 +18,12 @@ import java.time.format.DateTimeParseException;
 public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(value = { CustomException.class })
-    protected ResponseEntity<ErrorMessage> handleCustomException(CustomException ex) {
+    protected ResponseEntity<String> handleCustomException(CustomException ex) {
+        return new ResponseEntity<>(ex.message, ex.httpStatus);
+    }
+
+    @ExceptionHandler(value = { CustomExceptionWithMessage.class })
+    protected ResponseEntity<ErrorMessage> handleCustomExceptionWithMessage(CustomExceptionWithMessage ex) {
         return new ResponseEntity<>(new ErrorMessage(ex.message), ex.httpStatus);
     }
 
@@ -59,6 +63,19 @@ public class ExceptionHandlerAdvice {
     protected ResponseEntity<String> handleDateTimeParseException(DateTimeParseException ex) {
         System.out.println(ex);
         return new ResponseEntity<>("Wrong date format!", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = { UsernameNotFoundException.class })
+    protected ResponseEntity<String> handleMethodArgumentNotValidException(UsernameNotFoundException ex) {
+        System.out.println(ex);
+        return new ResponseEntity<>("User not found with given username", HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(value = { AuthenticationException.class })
+    protected ResponseEntity<ErrorMessage> authenticationException(AuthenticationException ex) {
+        System.out.println(ex);
+        return new ResponseEntity<>(new ErrorMessage("Wrong username or password!"), HttpStatus.BAD_REQUEST);
     }
 
 }

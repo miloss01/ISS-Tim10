@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 @Getter
@@ -20,14 +21,15 @@ public class RideCreationDTO {
     private ArrayList<UserDTO> passengers;
     private String startTime;
     @NotBlank(message = "Field (vehicleType) is required!")
+    @Pattern(regexp = "standard|luxury|van", message="Field (vehicle type) has incorrect value!")
     @Size(max = 50, message = "Field (vehicleType) cannot be longer than 50 characters!")
     private String vehicleType;
     @NotNull(message = "Field (babyTransport) is required!")
     private boolean babyTransport;
     @NotNull(message = "Field (petTransport) is required!")
     private boolean petTransport;
-    private int estimatedTimeMinutes;
 
+    private int estimatedTimeMinutes;
     public RideCreationDTO() {
         this.locations = new ArrayList<>();
         this.passengers = new ArrayList<>();

@@ -38,6 +38,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/ride")
@@ -76,8 +77,8 @@ public class RideController {
 
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('DRIVER')")
-    ResponseEntity<RideDTO> addRide(@RequestBody RideCreationDTO rideCreation){
+    @PreAuthorize(value = "hasRole('DRIVER') or hasRole('PASSENGER')")
+    ResponseEntity<RideDTO> addRide(@Valid @RequestBody RideCreationDTO rideCreation){
         System.out.println("Usao u zakazivanje");
         Ride newRideRequest = new Ride(rideCreation);
 
@@ -94,19 +95,27 @@ public class RideController {
                 new NotificationDTO("From " +
                         rideDTO.getLocations().get(0).getDeparture().getAddress() +
                         " to " + rideDTO.getLocations().get(0).getDestination().getAddress(),
-                        saved.getId().intValue()));
+                        saved.getId().intValue(), ""));
+        this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-request-mob/" + saved.getDriver().getId(), rideDTO);
         for (Passenger p : saved.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue()));
+                    new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue(), ""));
         }
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
+
     }
 
     @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
-//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+   // @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId){
 
         Driver driver = driverService.getById(driverId.longValue());
+
+
+        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+        statuses.add(Ride.RIDE_STATUS.pending);
+        statuses.add(Ride.RIDE_STATUS.active);
 
         Ride ride = rideService.getActiveDriverRide(driver);
 
@@ -115,6 +124,7 @@ public class RideController {
 
     @GetMapping(value = "/driver/{driverId}/accepted", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> getAcceptedRideByDriverId(@PathVariable Integer driverId){
 
         Driver driver = driverService.getById(driverId.longValue());
@@ -126,20 +136,29 @@ public class RideController {
 
     @GetMapping(value = "/driver/{driverId}/pending", produces = "application/json")
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> getPendingRideByDriverId(@PathVariable Integer driverId){
 
         Driver driver = driverService.getById(driverId.longValue());
 
         Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.pending);
 
+
+//        ArrayList<Ride> rides = rideService.getByDriverAndStatus(driver, statuses);
+
+//        if (rides.size() > 1)
+//            throw new CustomException("Multiple rides in active and/or pending status", HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
     @GetMapping(value = "/passenger/{passengerId}/active", produces = "application/json")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
 //    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #passengerId, 'Ride')")
     ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
 
         Passenger passenger = passengerService.getPassenger(passengerId.longValue());
+
 
         Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.active);
 
@@ -176,19 +195,21 @@ public class RideController {
     }
 
     @PutMapping(value = "/{id}/withdraw", produces = "application/json")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<RideDTO> cancelRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.withdrawRide(ride);
         RideDTO rideDTO = new RideDTO(ride);
         this.simpMessagingTemplate.convertAndSend("/ride-notification-driver-withdrawal/" + ride.getDriver().getId(),
                 new NotificationDTO("Ride was supposed to start at " + rideDTO.getStartTime() +
-                        " at location " + rideDTO.getLocations().get(0).getDeparture().getAddress() + ".", ride.getId().intValue()));
+                        " at location " + rideDTO.getLocations().get(0).getDeparture().getAddress() + ".", ride.getId().intValue(), ""));
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 }
 
     @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json")
-    ResponseEntity<PanicExpandedDTO> addPanic(@PathVariable Integer id, @RequestBody ReasonDTO panicReason){
+    @PreAuthorize(value = "hasRole('PASSENGER') or hasRole('DRIVER')")
+    ResponseEntity<PanicExpandedDTO> addPanic(@PathVariable Integer id,@Valid @RequestBody ReasonDTO panicReason){
         Ride ride = rideService.getRideById(id.longValue());
         // Extract user who activated panic from JWT
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -201,54 +222,64 @@ public class RideController {
     }
 
     @PutMapping(value = "/{id}/start", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> startRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.startRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has started!", ride.getId().intValue()));
+                    new NotificationDTO("Ride has started!", ride.getId().intValue(), "START_RIDE"));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}/accept", produces = "application/json")
+    //@PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> acceptRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.acceptRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has accepted your ride request! You'll be riding with " +
-                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue()));
+                            ride.getDriver().getName() + " " + ride.getDriver().getLastName(), ride.getId().intValue(), "ACCEPT_RIDE"));
+            this.simpMessagingTemplate.convertAndSend("/vehicle-time/" + p.getId(), ride.getEstimatedTimeMinutes());
         }
         notificationSchedule.addToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}/end", produces = "application/json")
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> endRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.endRide(ride);
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Ride has ended.", ride.getId().intValue()));
+                    new NotificationDTO("Ride has ended.", ride.getId().intValue(), "END_RIDE"));
         }
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}/cancel", consumes = "application/json", produces = "application/json")
-    ResponseEntity<RideDTO> cancelRideWithExplanation(@PathVariable Integer id, @RequestBody ReasonDTO reason){
+//    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
+    @PreAuthorize(value = "hasRole('DRIVER')")
+    ResponseEntity<RideDTO> cancelRideWithExplanation(@PathVariable Integer id,@Valid @RequestBody ReasonDTO reason){
         Ride ride = rideService.getRideById(id.longValue());
         ride = rideService.cancelRideWithExplanation(ride, reason.getReason());
         for (Passenger p : ride.getPassengers()) {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
-                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue()));
+                    new NotificationDTO("Driver has backed out and cancelled the ride. He provided the following explanation: \"" + reason.getReason() + "\"", ride.getId().intValue(), "DRIVER_CANCEL"));
         }
         notificationSchedule.removeToBeReminded(ride);
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
     @PostMapping(value = "/favorites", consumes = "application/json", produces = "application/json")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<FavoriteLocationResponseDTO> saveFavoriteLocation(
             @Valid @RequestBody FavoriteLocationRequestDTO locationRequestDTO) {
 
@@ -282,7 +313,6 @@ public class RideController {
         location.setMakerId(maker.getId());
         FavoriteLocation saved = favoriteLocationService.save(location, maker.getId());
 
-
         // Transform saved into Response DTO
         FavoriteLocationResponseDTO responseDTO = new FavoriteLocationResponseDTO();
         List<DepartureDestinationLocationsDTO> locationsDTOS = new ArrayList<>();
@@ -305,6 +335,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/favorites", produces = "application/json")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<List<FavoriteLocationResponseDTO>> getFavoriteLocations() {
 
         // Extract passenger from JWT to get their locations
@@ -340,6 +371,7 @@ public class RideController {
     }
 
     @DeleteMapping(value = "/favorites/{id}")
+    @PreAuthorize(value = "hasRole('PASSENGER')")
     public ResponseEntity<String> deleteFavoriteLocation(@PathVariable Integer id) {
 
         // Throws 404 if not found

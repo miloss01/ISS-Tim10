@@ -20,11 +20,11 @@ public class LocationDTO {
     @NotNull(message = "Field (latitude) is required!")
     @Min(value = -90, message = "Field (latitude) cannot be smaller than -90!")
     @Max(value = 90, message = "Field (latitude) cannot be bigger than 90!")
-    private double latitude;
+    private Double latitude;
     @NotNull(message = "Field (longitude) is required!")
     @Min(value = -180, message = "Field (longitude) cannot be smaller than -180!")
     @Max(value = 180, message = "Field (longitude) cannot be bigger than 180!")
-    private double longitude;
+    private Double longitude;
 
     public LocationDTO(Coordinates currentCoordinates) {
         this.address = currentCoordinates.getAddress();
