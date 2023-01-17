@@ -11,6 +11,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleTypeReposi
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.WorkingTimeRepository;
 import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.*;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.CoordinatesRepository;
@@ -160,7 +161,7 @@ public class RideService implements IRideService {
     @Override
     public Ride acceptRide(Ride ride) {
         if (ride.getRideStatus() != Ride.RIDE_STATUS.pending) {
-            throw new CustomException("Cannot accept a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot accept a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.accepted);
         System.out.println("Accepeted ride for driver: " + ride.getDriver().getId() + " s" + ride.getRideStatus().toString());
@@ -171,7 +172,7 @@ public class RideService implements IRideService {
     public Ride endRide(Ride ride) {
 
         if (ride.getRideStatus() != Ride.RIDE_STATUS.active) {
-            throw new CustomException("Cannot end a ride that is not in status FINISHED!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot end a ride that is not in status ACTIVE!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.finished);
         return rideRepository.save(ride);
@@ -194,7 +195,7 @@ public class RideService implements IRideService {
             ride.setRejection(rejection);
             return rideRepository.save(ride);
         } else {
-            throw new CustomException("Cannot cancel a ride that is not in status PENDING!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot cancel a ride that is not in status PENDING or ACCEPTED!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -205,7 +206,7 @@ public class RideService implements IRideService {
         statuses.add(Ride.RIDE_STATUS.accepted);
         statuses.add(Ride.RIDE_STATUS.pending);
         if (isPassengerAlreadyInARide(newRideRequest, statuses)) {
-            throw new CustomException("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot create a ride while you have one already pending!", HttpStatus.BAD_REQUEST);
         }
 
         ArrayList<Vehicle> vehicles = findAppropriateVehicles(newRideRequest);
@@ -342,14 +343,14 @@ public class RideService implements IRideService {
             return rideRepository.save(ride);
         } else {
             // U swaggeru pise STARTED ali u nasoj poslovnoj logici je ACCEPTED
-            throw new CustomException("Cannot cancel a ride that is not in status PENDING or STARTED!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot cancel a ride that is not in status PENDING or STARTED!", HttpStatus.BAD_REQUEST);
         }
     }
 
     @Override
     public Ride startRide(Ride ride) {
         if (ride.getRideStatus() != Ride.RIDE_STATUS.accepted) {
-            throw new CustomException("Cannot start a ride that is not in status ACCEPTED!", HttpStatus.BAD_REQUEST);
+            throw new CustomExceptionWithMessage("Cannot start a ride that is not in status ACCEPTED!", HttpStatus.BAD_REQUEST);
         }
         ride.setRideStatus(Ride.RIDE_STATUS.active);
         return rideRepository.save(ride);
