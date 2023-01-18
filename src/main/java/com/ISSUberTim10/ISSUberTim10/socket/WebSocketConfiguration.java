@@ -25,7 +25,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 "/ride-notification-driver-request",
                 "/ride-notification-passenger",
                 "/ride-notification-driver-withdrawal",
-                "/ride-notification-message");
+                "/ride-notification-message",
+                "/ride-notification-panic");
     }
 
 }
