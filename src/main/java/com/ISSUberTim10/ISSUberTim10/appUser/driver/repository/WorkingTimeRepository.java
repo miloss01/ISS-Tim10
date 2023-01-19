@@ -17,6 +17,6 @@ public interface WorkingTimeRepository extends JpaRepository<WorkingTime, Long> 
 
     ArrayList<WorkingTime> findByDriverAndStartTimeGreaterThanEqual(Driver driver, LocalDateTime minusDays);
 
-    @Query(value="select * from WORKING_TIME order by start_time desc limit 1", nativeQuery = true)
-    Optional<WorkingTime> findFirstByDriverOrderByStartTimeStartTimeDesc(Driver driver);
+    @Query(value="select * from WORKING_TIME where driver_id=?1 order by start_time desc limit 1", nativeQuery = true)
+    Optional<WorkingTime> findFirstByDriverOrderByStartTimeStartTimeDesc(Long driverId);
 }
