@@ -120,7 +120,7 @@ public class AppUserController {
 
 
     @GetMapping(value = "/{id}/ride", produces = "application/json")
-    @PreAuthorize(value = "hasRole('ADMIN')")
+//    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<RideResponseDTO> getUsersRides(@PathVariable Integer id,
                                                          Pageable page,
                                                          @RequestParam(required = false) String from,

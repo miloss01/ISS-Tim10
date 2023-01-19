@@ -21,7 +21,7 @@ public class PassengerRequestDTO {
     @Size(max = 100, message = "Field (surname) cannot be longer than 100 characters!")
     private String surname;
 
-    @NotNull
+//    @NotNull
     @Pattern(regexp="^data:image.*$",message="Field (profilePicture) must be an image")
     private String profilePicture;
 

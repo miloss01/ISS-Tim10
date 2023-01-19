@@ -218,6 +218,9 @@ public class RideController {
         Panic panic = new Panic(0L, user, ride, LocalDateTime.now(), panicReason.getReason());
         panic = panicService.save(panic);
 
+        String ret = panic.getAppUser().getName() + " " + panic.getAppUser().getLastName() + " panicked during ride with " + ride.getDriver().getName() + " " + ride.getDriver().getLastName() + " as driver and stated the folowing reason: " + panic.getReason();
+        simpMessagingTemplate.convertAndSend("/ride-notification-panic", new NotificationDTO(ret, panic.getRide().getId().intValue(), "PANIC"));
+
         return new ResponseEntity<>(new PanicExpandedDTO(panic), HttpStatus.OK);
     }
 

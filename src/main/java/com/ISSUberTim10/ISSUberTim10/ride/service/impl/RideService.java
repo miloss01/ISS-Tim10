@@ -294,10 +294,11 @@ public class RideService implements IRideService {
         long totalMinutes = 0;
         ArrayList<WorkingTime> workingTimes = workingTimeRepository.findByDriverAndStartTimeGreaterThanEqual(driver, LocalDateTime.now().minusDays(1));
         for (WorkingTime workingTime:workingTimes) {
-            if (workingTime.getStartTime().isEqual(workingTime.getEndTime())){
+            if (workingTime.getEndTime() == null){
                 totalMinutes += ChronoUnit.MINUTES.between(workingTime.getStartTime(), LocalDateTime.now());
             }
-            totalMinutes += ChronoUnit.MINUTES.between(workingTime.getStartTime(), workingTime.getEndTime());
+            else
+                totalMinutes += ChronoUnit.MINUTES.between(workingTime.getStartTime(), workingTime.getEndTime());
         }
 //        System.out.println("totalMinutes--------------");
 //        System.out.println(totalMinutes);
