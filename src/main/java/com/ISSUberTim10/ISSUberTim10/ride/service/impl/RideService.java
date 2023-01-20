@@ -232,7 +232,6 @@ public class RideService implements IRideService {
     }
 
     private void fillRideRequest(Ride newRideRequest, Driver availableDriver) {
-        int distance = 10;
         Rejection rejection = new Rejection();
         rejection.setId(0L);
         rejection.setRejectionTime(LocalDateTime.now());
@@ -242,6 +241,8 @@ public class RideService implements IRideService {
             found.ifPresent(passengers::add);
         }
         ArrayList<Route> routes = (ArrayList<Route>) newRideRequest.getRoutes();
+        double distance = calculateDistance(routes.get(0).getDepartureCoordinates(), routes.get(0).getDestinationCoordinates());
+        System.out.println(distance);
         routes.get(0).setMileage(distance);
         routes.get(0).setOrderr(1);
         routes.get(0).getDepartureCoordinates().setId(0L);
@@ -255,6 +256,43 @@ public class RideService implements IRideService {
         newRideRequest.setRideStatus(Ride.RIDE_STATUS.pending);
         newRideRequest.setRejection(rejection);
         rejection.setRide(newRideRequest);
+    }
+
+    double toRadians(double coordinate)
+    {
+        // cmath library in C++
+        // defines the constant
+        // M_PI as the value of
+        // pi accurate to 1e-30
+        double one_deg = (Math.PI) / 180;
+        return (one_deg * coordinate);
+    }
+
+    private double calculateDistance(Coordinates departureCoordinates, Coordinates destinationCoordinates) {
+        double lat1 = toRadians(departureCoordinates.getLatitude());
+        double long1 = toRadians(departureCoordinates.getLongitude());
+        double lat2 = toRadians(destinationCoordinates.getLatitude());
+        double long2 = toRadians(destinationCoordinates.getLongitude());
+
+        // Haversine Formula
+        double dlong = long2 - long1;
+        double dlat = lat2 - lat1;
+
+        double ans = Math.pow(Math.sin(dlat / 2), 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                        Math.pow(Math.sin(dlong / 2), 2);
+
+        ans = 2 * Math.asin(Math.sqrt(ans));
+
+        // Radius of Earth in
+        // Kilometers, R = 6371
+        // Use R = 3956 for miles
+        double R = 6371;
+
+        // Calculate the result
+        ans = ans * R;
+
+        return ans;
     }
 
     private Driver findBestDriver(ArrayList<Vehicle> vehicles, ArrayList<Ride.RIDE_STATUS> statuses, Ride newRideRequest) {

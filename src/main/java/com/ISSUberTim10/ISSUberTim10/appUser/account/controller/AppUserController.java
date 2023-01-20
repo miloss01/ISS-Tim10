@@ -320,7 +320,7 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/changeActiveFlag/{id}", consumes = "application/json", produces = "application/json")
-    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
+    //@PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
     public ResponseEntity<IsActiveDTO> changeActiveFlag(@PathVariable Integer id, @RequestBody IsActiveDTO isActiveDTO) {
         AppUser appUser = appUserService.findById(id.longValue());
         appUser.setActiveFlag(isActiveDTO.isActive());
@@ -329,6 +329,13 @@ public class AppUserController {
         }
         appUserService.save(appUser);
         return new ResponseEntity<>(isActiveDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/activeFlag/{id}", produces = "application/json")
+    //@PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
+    public ResponseEntity<IsActiveDTO> getActiveFlag(@PathVariable Integer id) {
+        AppUser appUser = appUserService.findById(id.longValue());
+        return new ResponseEntity<>(new IsActiveDTO(appUser.isActiveFlag()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
