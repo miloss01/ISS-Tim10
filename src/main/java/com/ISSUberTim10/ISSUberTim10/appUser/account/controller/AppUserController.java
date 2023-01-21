@@ -114,7 +114,6 @@ public class AppUserController {
     @GetMapping(value="/email", produces = "application/json")
     public ResponseEntity<UserResponseDTO> getById(@RequestParam String email) {
         AppUser appUser = appUserService.findByEmail(email);
-        appUser.setId(0L);
         return new ResponseEntity<>(new UserResponseDTO(appUser), HttpStatus.OK);
     }
 

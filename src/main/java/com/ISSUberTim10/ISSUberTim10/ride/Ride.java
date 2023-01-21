@@ -87,7 +87,7 @@ public class Ride {
         }
         ArrayList<Route> routes = new ArrayList<>();
         for(DepartureDestinationLocationsDTO routeDto: rideCreation.getLocations()){
-            routes.add(new Route(routeDto));
+            routes.add(new Route(routeDto, rideCreation.getDistance()));
         }
         this.passengers = passengers;
         this.routes = routes;
@@ -103,6 +103,7 @@ public class Ride {
         this.driver = dummy;
         this.estimatedTimeMinutes = rideCreation.getEstimatedTimeMinutes();
         this.endTime = this.getStartTime().plusMinutes(this.estimatedTimeMinutes);
+        this.price = rideCreation.getPrice();
     }
 
 //    @Enumerated

@@ -36,8 +36,9 @@ public class Route {
     @ManyToMany(mappedBy = "routes")
     private Collection<Ride> rides;
 
-    public Route(DepartureDestinationLocationsDTO routeDto) {
+    public Route(DepartureDestinationLocationsDTO routeDto, Double distance) {
         this.departureCoordinates = new Coordinates(routeDto.getDeparture());
         this.destinationCoordinates = new Coordinates(routeDto.getDestination());
+        this.mileage = distance;
     }
 }
