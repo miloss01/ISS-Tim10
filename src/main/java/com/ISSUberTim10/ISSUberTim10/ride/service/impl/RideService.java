@@ -60,6 +60,11 @@ public class RideService implements IRideService {
     }
 
     @Override
+    public List<Ride> getAll(Pageable pageable) {
+        return rideRepository.findAll(pageable).getContent();
+    }
+
+    @Override
     public void createAll() {
 
     }
