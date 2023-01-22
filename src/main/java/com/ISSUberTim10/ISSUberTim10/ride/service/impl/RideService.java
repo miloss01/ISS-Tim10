@@ -60,6 +60,11 @@ public class RideService implements IRideService {
     }
 
     @Override
+    public List<Ride> getAll(Pageable pageable) {
+        return rideRepository.findAll(pageable).getContent();
+    }
+
+    @Override
     public void createAll() {
 
     }
@@ -242,13 +247,13 @@ public class RideService implements IRideService {
             found.ifPresent(passengers::add);
         }
         ArrayList<Route> routes = (ArrayList<Route>) newRideRequest.getRoutes();
-        routes.get(0).setMileage(distance);
+//        routes.get(0).setMileage(distance);
         routes.get(0).setOrderr(1);
         routes.get(0).getDepartureCoordinates().setId(0L);
         routes.get(0).getDestinationCoordinates().setId(0L);
         VehicleType vehicleType = vehicleTypeRepository.getByName(Vehicle.VEHICLE_TYPE.valueOf(newRideRequest.getVehicleType()));
         newRideRequest.setId(0L);
-        newRideRequest.setPrice(vehicleType.getPrice() + distance * 120);
+//        newRideRequest.setPrice(vehicleType.getPrice() + distance * 120);
         newRideRequest.setDriver(availableDriver);
         newRideRequest.setPassengers(passengers);
         newRideRequest.setRoutes(routes);

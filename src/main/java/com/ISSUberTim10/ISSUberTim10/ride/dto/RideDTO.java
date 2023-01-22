@@ -46,6 +46,8 @@ public class RideDTO {
     @Valid
     private RejectionDTO rejection;
 
+    @JsonInclude(JsonInclude.Include. NON_NULL)
+    private Double distance;
 
     public RideDTO(Ride ride) {
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
@@ -69,6 +71,8 @@ public class RideDTO {
         this.babyTransport = ride.isBabyTransport();
         this.petTransport = ride.isPetTransport();
         this.status = ride.getRideStatus().toString();
+        ArrayList<Route> routes = new ArrayList<>(ride.getRoutes());
+        this.distance = routes.get(0).getMileage();
         if (ride.getRejection() != null) this.rejection = new RejectionDTO(ride.getRejection());
     }
 }
