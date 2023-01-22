@@ -9,11 +9,9 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.WorkingTime;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleTypeRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.WorkingTimeRepository;
-import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.*;
-import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.CoordinatesRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RejectionRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RideRepository;
@@ -23,10 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -149,6 +146,41 @@ public class RideService implements IRideService {
 
     }
 
+    @Override
+    public ArrayList<Ride> getAllStartDateBetween(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
+        return rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+    }
+
+    @Override
+    public Report makeReportForRideNum(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
+        ArrayList<Ride> rides = rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+        //double total = 0;
+        HashMap<LocalDate, Double> values = new HashMap<>();
+        for (Ride ride: rides) {
+            LocalDate day = LocalDate.of(ride.getStartTime().getYear(), ride.getStartTime().getMonth(), ride.getStartTime().getDayOfMonth());
+            if (!values.containsKey(day)) values.put(day, 0.0);
+            values.put(day, values.get(day) + 1);
+        }
+        double total = rides.size();
+        double average = total/values.size();
+        return new Report(values, total, average);
+    }
+
+    @Override
+    public Report makeReportForDistance(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
+        ArrayList<Ride> rides = rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+        double total = 0;
+        HashMap<LocalDate, Double> values = new HashMap<>();
+        for (Ride ride: rides) {
+            Route route = ride.getRoutes().iterator().next();
+            LocalDate day = LocalDate.of(ride.getStartTime().getYear(), ride.getStartTime().getMonth(), ride.getStartTime().getDayOfMonth());
+            if (!values.containsKey(day)) values.put(day, 0.0);
+            values.put(day, values.get(day) + route.getMileage());
+            total += route.getMileage();
+        }
+        double average = total/values.size();
+        return new Report(values, total, average);
+    }
 
 
     @Override
