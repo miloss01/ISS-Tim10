@@ -54,6 +54,16 @@ insert into working_time (start_time, end_time, driver_id)
 values ('2016-04-12 07:03:24', '2016-04-12 07:03:24', 2);
 insert into working_time (start_time, end_time, driver_id)
 values ('2023-01-04 20:03:24', '2023-01-04 20:33:24', 2);
+insert into working_time (start_time, end_time, driver_id)
+values ('2022-12-04 20:03:24', '2022-12-04 20:33:24', 2);
+insert into working_time (start_time, end_time, driver_id)
+values ('2022-11-04 20:03:24', '2022-11-04 21:33:24', 2);
+insert into working_time (start_time, end_time, driver_id)
+values ('2022-10-04 20:03:24', '2022-10-04 22:33:24', 2);
+insert into working_time (start_time, end_time, driver_id)
+values ('2022-09-04 20:03:24', '2022-09-04 20:33:24', 2);
+insert into working_time (start_time, end_time, driver_id)
+values ('2022-08-04 20:03:24', '2022-08-04 20:33:24', 2);
 
 
 insert into route (mileage, orderr, departure_coordinates_id, destination_coordinates_id)

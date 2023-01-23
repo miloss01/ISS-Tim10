@@ -32,4 +32,6 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     ArrayList<Ride> findAllByRideStatusInAndDriver(ArrayList<Ride.RIDE_STATUS> statuses, Driver driver);
 
     ArrayList<Ride> findAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
+
+    ArrayList<Ride> findAllByDriver(Driver driver);
 }

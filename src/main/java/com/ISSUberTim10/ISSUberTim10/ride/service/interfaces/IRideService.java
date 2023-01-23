@@ -4,6 +4,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.ride.Report;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.StatisticsDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -53,4 +54,10 @@ public interface IRideService {
     Report makeReportForRideNum(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
 
     Report makeReportForDistance(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
+
+    StatisticsDTO makeStatisticsForMonth(Driver driver);
+
+    StatisticsDTO makeStatisticsForYear(Driver driver);
+
+    StatisticsDTO makeStatisticsForDay(Driver driver);
 }

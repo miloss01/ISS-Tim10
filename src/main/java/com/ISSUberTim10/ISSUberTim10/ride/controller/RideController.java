@@ -444,4 +444,37 @@ public class RideController {
         );
     }
 
+    @GetMapping(value = "/statistic-month/{driverId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StatisticsDTO> getMonthStatistics(@PathVariable Integer driverId) {
+
+        Driver driver = driverService.getById(Long.valueOf(driverId));
+        StatisticsDTO statistics = rideService.makeStatisticsForMonth(driver);
+        return new ResponseEntity<>(
+                statistics,
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping(value = "/statistic-year/{driverId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StatisticsDTO> getYearStatistics(@PathVariable Integer driverId) {
+
+        Driver driver = driverService.getById(Long.valueOf(driverId));
+        StatisticsDTO statistics = rideService.makeStatisticsForYear(driver);
+        return new ResponseEntity<>(
+                statistics,
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping(value = "/statistic-day/{driverId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StatisticsDTO> getDayStatistics(@PathVariable Integer driverId) {
+
+        Driver driver = driverService.getById(Long.valueOf(driverId));
+        StatisticsDTO statistics = rideService.makeStatisticsForDay(driver);
+        return new ResponseEntity<>(
+                statistics,
+                HttpStatus.OK
+        );
+    }
+
     }
