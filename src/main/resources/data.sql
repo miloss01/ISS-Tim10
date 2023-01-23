@@ -131,7 +131,9 @@ values ('liquid_smooth.mp3', '2016-04-12 07:03:24', 1);
 
 
 insert into message (text, message_type, time_sent, receiver_id, sender_id, ride_id)
-values ('lolita hey', 'support', '2016-04-12 07:03:24', 1, 2, 0);
+values ('lolita hey', 'support', '2016-04-12 07:03:24', 1, 5, 0);
+insert into message (text, message_type, time_sent, receiver_id, sender_id, ride_id)
+values ('lolita heyyy', 'support', '2016-03-12 07:03:24', 5, 1, 0);
 
 
 insert into document (image, title, driver_id)

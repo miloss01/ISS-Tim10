@@ -13,11 +13,11 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 public class PassengerRequestDTO {
 
-    @NotNull
+    @NotBlank(message = "Field (name) must not be empty!")
     @Size(max = 100, message = "Field (name) cannot be longer than 100 characters!")
     private String name;
 
-    @NotNull
+    @NotBlank(message = "Field (surname) must not be empty!")
     @Size(max = 100, message = "Field (surname) cannot be longer than 100 characters!")
     private String surname;
 
@@ -25,16 +25,16 @@ public class PassengerRequestDTO {
     @Pattern(regexp="^data:image.*$",message="Field (profilePicture) must be an image")
     private String profilePicture;
 
-    @NotNull
+    @NotBlank(message = "Field (telephoneNumber) must not be empty!")
     @Size(max = 18, message = "Field (telephoneNumber) cannot be longer than 18 characters!")
     private String telephoneNumber;
 
-    @NotNull
+    @NotBlank(message = "Field (email) must not be empty!")
     @Email(message = "Field (email) does not have valid format.")
     @Size(max = 100, message = "Field (email) cannot be longer than 100 characters!")
     private String email;
 
-    @NotNull
+    @NotBlank(message = "Field (address) must not be empty!")
     @Size(max = 100, message = "Field (address) cannot be longer than 100 characters!")
     private String address;
 
