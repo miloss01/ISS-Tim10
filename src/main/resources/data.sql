@@ -7,7 +7,10 @@ insert into coordinates (latitude, longitude, address)
 values (45.2366791, 19.8160032, 'Mornarska 2, Novi Sad');
 insert into coordinates (latitude, longitude, address)
 values (45.2471018, 19.8328788, 'Gogoljeva 32, Novi Sad');
-
+insert into coordinates (latitude, longitude, address)
+values (45.2653955, 19.8062107, 'Veselina Masleše 126, Novi Sad');
+insert into coordinates (latitude, longitude, address)
+values (45.271017, 19.8459003, 'Put šajkaškog odreda, Novi Sad');
 
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
@@ -58,14 +61,18 @@ values ('2023-01-04 20:03:24', '2023-01-04 20:33:24', 2);
 
 insert into route (mileage, orderr, departure_coordinates_id, destination_coordinates_id)
 values (2.3, 1, 1, 2);
+insert into route (mileage, orderr, departure_coordinates_id, destination_coordinates_id)
+values (4, 1, 3, 4);
+insert into route (mileage, orderr, departure_coordinates_id, destination_coordinates_id)
+values (5, 1, 1, 3);
 
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
+(0, '2026-04-12 06:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-08-11 07:15:24', 15, 1, 0, 100.0, 'finished', 2);
+(0, '2026-04-12 05:03:24', '2026-08-11 07:15:24', 15, 1, 0, 100.0, 'finished', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
@@ -91,10 +98,13 @@ insert into passengers_rides (passenger_id, ride_id) values (1, 3);
 insert into passengers_rides (passenger_id, ride_id) values (3, 2);
 
 insert into routes_rides (ride_id, route_id) values (1, 1);
+insert into routes_rides (ride_id, route_id) values (2, 2);
+insert into routes_rides (ride_id, route_id) values (3, 3);
+
 
 
 insert into review (comment, rating, passenger_id, ride_id, for_driver)
-values ('Dobar', 5, 1, 1, 2);
+values ('Dobar', 5, 1,  1, 2);
 
 
 insert into rejection (reason, rejection_time, app_user_id, ride_id)

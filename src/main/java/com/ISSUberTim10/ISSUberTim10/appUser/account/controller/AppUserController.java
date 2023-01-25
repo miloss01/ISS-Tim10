@@ -114,30 +114,29 @@ public class AppUserController {
     @GetMapping(value="/email", produces = "application/json")
     public ResponseEntity<UserResponseDTO> getById(@RequestParam String email) {
         AppUser appUser = appUserService.findByEmail(email);
-        appUser.setId(0L);
         return new ResponseEntity<>(new UserResponseDTO(appUser), HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/{id}/ride", produces = "application/json")
-    @PreAuthorize(value = "hasRole('ADMIN')")
+//    @PreAuthorize(value = "hasRole('ADMIN')")
     public ResponseEntity<RideResponseDTO> getUsersRides(@PathVariable Integer id,
                                                          Pageable page,
                                                          @RequestParam(required = false) String from,
                                                          @RequestParam(required = false) String to) {
-        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
-        List<Ride> rides;
-        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-        rides = resultPage.getContent();
-        for (Ride ride : rides) {
-            ridesDTO.add(new RideDTO(ride));
-            System.out.println(ride.getId());
-        }
-        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
+//        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
+//        List<Ride> rides;
+//        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
+//        rides = resultPage.getContent();
+//        for (Ride ride : rides) {
+//            ridesDTO.add(new RideDTO(ride));
+//            System.out.println(ride.getId());
+//        }
+//        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
 
         AppUser appUser = appUserService.findById(id.longValue());
 
-
+        List<Ride> rides;
         if (appUser.getRole() == Role.DRIVER)
             rides = rideService.getByDriver(page, (Driver) appUser);
         else if (appUser.getRole() == Role.PASSENGER)
@@ -171,23 +170,6 @@ public class AppUserController {
                 new RideResponseDTO(rideDTOs.size(), rideDTOs),
                 HttpStatus.OK
         );
-
-
-
-//        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-//        ArrayList<UserDTO> passengers = new ArrayList<>();
-//        passengers.add(new UserDTO(2L, "pepe"));
-//        passengers.add(new UserDTO(2L, "guug"));
-//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
-//        passengers.add(new UserDTO(1L, "eheh"));
-//        ridesDTO.add(new RideDTO(1L, locations, "12.10.2022. 11:17", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        return new ResponseEntity<>(new RideResponseDTO(ridesDTO.size(), ridesDTO), HttpStatus.OK);
     }
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
@@ -248,8 +230,10 @@ public class AppUserController {
 
         ArrayList<MessageReceivedDTO> messageReceivedDTOs = new ArrayList<>();
 
-        for (Message message : messages)
-            messageReceivedDTOs.add(new MessageReceivedDTO(message.getId(), message.getTimeSent().toString(), message.getSender().getId(), message.getReceiver().getId(), message.getText(), message.getMessageType().toString(), message.getRideId()));
+        for (Message message : messages){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+            messageReceivedDTOs.add(new MessageReceivedDTO(message.getId(), message.getTimeSent().format(formatter), message.getSender().getId(), message.getReceiver().getId(), message.getText(), message.getMessageType().toString(), message.getRideId()));
+        }
 
         return new ResponseEntity<>(
                 new MessageResponseDTO(messageReceivedDTOs.size(), messageReceivedDTOs),
@@ -272,7 +256,7 @@ public class AppUserController {
         AppUser sender = appUserService.findByEmail(authentication.getName());
 //        AppUser receiver = appUserService.findById(messageSent.getReceiverId());
         AppUser receiver = appUserService.findById(id.longValue());
-        Ride ride = rideService.getRideById(messageSent.getRideId());
+//        Ride ride = rideService.getRideById(messageSent.getRideId());
 
         Message message = new Message(null, sender, receiver, messageSent.getMessage(), LocalDateTime.now(), Message.MESSAGE_TYPE.valueOf(messageSent.getType().toLowerCase()), messageSent.getRideId());
 
@@ -280,8 +264,9 @@ public class AppUserController {
 
         this.simpMessagingTemplate.convertAndSend("/ride-notification-message/" + receiver.getId(), messageSent);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return new ResponseEntity<>(
-                new MessageReceivedDTO(saved.getId(), saved.getTimeSent().toString(), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId()),
+                new MessageReceivedDTO(saved.getId(), saved.getTimeSent().format(formatter), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId()),
                 HttpStatus.OK);
 
 //        return new ResponseEntity<>(new MessageReceivedDTO(10L, "11.11.2022.", 1L, messageSent.getReceiverId(), messageSent.getMessage(), messageSent.getType(), messageSent.getRideId()), HttpStatus.OK);

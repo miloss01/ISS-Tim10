@@ -95,7 +95,9 @@ public class RideService implements IRideService {
 
     @Override
     public List<Ride> getByPassenger(Pageable pageable, Passenger passenger) {
-        return rideRepository.findAllByPassengersContaining(pageable, passenger).getContent();
+        Optional<List<Ride>> rides = rideRepository.findByPassengersId(pageable, passenger.getId());
+        if (rides.isPresent()) return rides.get();
+        return new ArrayList<>();
     }
 
     @Override

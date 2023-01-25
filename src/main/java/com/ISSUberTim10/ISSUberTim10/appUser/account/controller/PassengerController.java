@@ -221,6 +221,12 @@ public class PassengerController {
                 ride.getEndTime().isBefore(toDate))
                 rideDTOs.add(new RideDTO(ride));
 
+        rideDTOs.sort((ride1, ride2) -> {
+            LocalDateTime t1 = LocalDateTime.parse(ride1.getStartTime(), StringFormatting.dateTimeFormatterWithSeconds);
+            LocalDateTime t2 = LocalDateTime.parse(ride2.getStartTime(), StringFormatting.dateTimeFormatterWithSeconds);
+            return t1.isBefore(t2) ? 1 : -1;
+        });
+
         return new ResponseEntity<>(
                 new RideResponseDTO(rideDTOs.size(), rideDTOs),
                 HttpStatus.OK
