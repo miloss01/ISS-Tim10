@@ -263,9 +263,11 @@ public class AppUserController {
 
         this.simpMessagingTemplate.convertAndSend("/ride-notification-message/" + receiver.getId(), messageSent);
 
-        return new ResponseEntity<>(
-                new MessageReceivedDTO(saved.getId(), saved.getTimeSent().toString(), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId()),
-                HttpStatus.OK);
+        MessageReceivedDTO dto = new MessageReceivedDTO(saved.getId(), saved.getTimeSent().toString(), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId());
+
+        this.simpMessagingTemplate.convertAndSend("/chat/" + receiver.getId() + "/" + sender.getId(), dto);
+
+        return new ResponseEntity<>( dto, HttpStatus.OK);
 
 //        return new ResponseEntity<>(new MessageReceivedDTO(10L, "11.11.2022.", 1L, messageSent.getReceiverId(), messageSent.getMessage(), messageSent.getType(), messageSent.getRideId()), HttpStatus.OK);
     }
