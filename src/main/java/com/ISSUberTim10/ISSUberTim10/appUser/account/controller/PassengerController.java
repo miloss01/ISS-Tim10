@@ -2,6 +2,7 @@ package com.ISSUberTim10.ISSUberTim10.appUser.account.controller;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.Role;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Message;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.UserActivation;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.AllPassengersDTO;
@@ -9,6 +10,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerRequestDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.PassengerResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IMessageService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IUserActivationService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
@@ -24,7 +26,6 @@ import com.ISSUberTim10.ISSUberTim10.ride.dto.RideResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import com.postmarkapp.postmark.Postmark;
 import com.postmarkapp.postmark.client.ApiClient;
-import com.postmarkapp.postmark.client.data.model.message.Message;
 import com.postmarkapp.postmark.client.data.model.message.MessageResponse;
 import com.postmarkapp.postmark.client.exception.PostmarkException;
 import org.apache.catalina.User;
@@ -68,6 +69,9 @@ public class PassengerController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    IMessageService messageService;
 
     @Value("${server.port}")
     private String port;
@@ -154,7 +158,18 @@ public class PassengerController {
         passenger.setPassword(userActivation.getPassword());
 
         userActivationService.deleteById(userActivation.getId());
-        passengerService.savePassenger(passenger);
+        Passenger passenger1 = passengerService.savePassenger(passenger);
+
+        // Send welcoming message from support
+        try {
+            AppUser receiver = appUserService.findById(passenger1.getId());
+            AppUser sender = appUserService.getAdmin();
+            Message message = new com.ISSUberTim10.ISSUberTim10.appUser.account.Message(null,
+                    sender, receiver, "Hey! Support here, contact us about anything!",
+                    LocalDateTime.now(), Message.MESSAGE_TYPE.support, 0);
+            messageService.save(message);
+        } catch (Exception ignored) {
+        }
 
         return new ResponseEntity("Successful account activation!", HttpStatus.OK);
     }

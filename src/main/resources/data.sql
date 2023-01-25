@@ -36,7 +36,7 @@ values (1, 'Misurinova', 0, 'mail@gmail.com', 'Milic', 'Milica', '$2a$10$IXA3XB8
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'popov@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
-values (1, 'Bulevar Oslobodjenja', 1, 'dmina@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
+values (1, 'Bulevar Oslobodjenja', 1, 'dmina@gmail.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdZ9dExjxM5bzlQbdh_gLIt2cWMOzQmil8TA&usqp=CAU', 2);
 
 
 insert into passenger (id) values (1);
@@ -120,7 +120,19 @@ values ('liquid_smooth.mp3', '2016-04-12 07:03:24', 1);
 
 
 insert into message (text, message_type, time_sent, receiver_id, sender_id, ride_id)
-values ('lolita hey', 'support', '2016-04-12 07:03:24', 1, 2, 0);
+values ('lolita hey', 'ride', '2016-04-12 07:03:24', 1, 2, 0);
+
+insert into message (text, message_type, time_sent, receiver_id, sender_id, ride_id)
+values ('Hey! Support here, contact us about anything!', 'support', '2016-04-12 07:03:24', 1, 5, 0);
+
+insert into message (text, message_type, time_sent, receiver_id, sender_id, ride_id)
+values ('Hey! Support here, contact us about anything!', 'support', '2016-04-12 07:03:24', 2, 5, 0);
+
+insert into message (text, message_type, time_sent, receiver_id, sender_id, ride_id)
+values ('Hey! Support here, contact us about anything!', 'support', '2016-04-12 07:03:24', 3, 5, 0);
+
+insert into message (text, message_type, time_sent, receiver_id, sender_id, ride_id)
+values ('Hey! Support here, contact us about anything!', 'support', '2016-04-12 07:03:24', 4, 5, 0);
 
 
 insert into document (image, title, driver_id)

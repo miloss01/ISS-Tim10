@@ -231,8 +231,7 @@ public class AppUserController {
         ArrayList<MessageReceivedDTO> messageReceivedDTOs = new ArrayList<>();
 
         for (Message message : messages){
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-            messageReceivedDTOs.add(new MessageReceivedDTO(message.getId(), message.getTimeSent().format(formatter), message.getSender().getId(), message.getReceiver().getId(), message.getText(), message.getMessageType().toString(), message.getRideId()));
+            messageReceivedDTOs.add(new MessageReceivedDTO(message.getId(), message.getTimeSent().toString(), message.getSender().getId(), message.getReceiver().getId(), message.getText(), message.getMessageType().toString(), message.getRideId()));
         }
 
         return new ResponseEntity<>(
@@ -264,9 +263,8 @@ public class AppUserController {
 
         this.simpMessagingTemplate.convertAndSend("/ride-notification-message/" + receiver.getId(), messageSent);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return new ResponseEntity<>(
-                new MessageReceivedDTO(saved.getId(), saved.getTimeSent().format(formatter), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId()),
+                new MessageReceivedDTO(saved.getId(), saved.getTimeSent().toString(), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId()),
                 HttpStatus.OK);
 
 //        return new ResponseEntity<>(new MessageReceivedDTO(10L, "11.11.2022.", 1L, messageSent.getReceiverId(), messageSent.getMessage(), messageSent.getType(), messageSent.getRideId()), HttpStatus.OK);
