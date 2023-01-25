@@ -220,13 +220,11 @@ public class AppUserController {
 
     @GetMapping(value = "/{id}/message", produces = "application/json")
     @PreAuthorize(value = "hasRole('ADMIN') or @userSecurity.hasUserId(authentication, #id, 'Message')")
-    public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Integer id) {
+    public ResponseEntity<MessageResponseDTO> getMessagesById(@PathVariable Integer id, Pageable page) {
 
         AppUser appUser = appUserService.findById(id.longValue());
 
-
-
-        List<Message> messages = messageService.getMessagesBySenderOrReceiver(appUser, appUser);
+        List<Message> messages = messageService.getMessagesBySenderOrReceiver(appUser, appUser, page);
 
         ArrayList<MessageReceivedDTO> messageReceivedDTOs = new ArrayList<>();
 
@@ -249,13 +247,15 @@ public class AppUserController {
     public ResponseEntity<MessageReceivedDTO> sendMessagesById(@PathVariable Integer id,
                                                                @Valid @RequestBody MessageSentDTO messageSent) {
 
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         AppUser sender = appUserService.findByEmail(authentication.getName());
 //        AppUser receiver = appUserService.findById(messageSent.getReceiverId());
         AppUser receiver = appUserService.findById(id.longValue());
-//        Ride ride = rideService.getRideById(messageSent.getRideId());
+
+        Integer rideId = 0;
+        if (messageSent.getRideId() != 0)
+            rideId = rideService.getRideById(messageSent.getRideId()).getId().intValue();
 
         Message message = new Message(null, sender, receiver, messageSent.getMessage(), LocalDateTime.now(), Message.MESSAGE_TYPE.valueOf(messageSent.getType().toLowerCase()), messageSent.getRideId());
 
@@ -376,6 +376,16 @@ public class AppUserController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
+    }
+
+    @GetMapping(value = "/admins", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<UserResponseDTO>> getAdmins() {
+        List<AppUser> allUsers = (List<AppUser>) appUserService.getAll();
+        List<UserResponseDTO> ret = new ArrayList<>();
+        for (AppUser appUser : allUsers)
+            if (appUser.getRole().equals(Role.ADMIN))
+                ret.add(new UserResponseDTO(appUser));
+        return new ResponseEntity<>(ret, HttpStatus.OK);
     }
 
 }

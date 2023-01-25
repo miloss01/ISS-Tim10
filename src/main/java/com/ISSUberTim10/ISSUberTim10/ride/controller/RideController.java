@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
+import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.FavoriteLocation;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
@@ -23,7 +24,9 @@ import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IPanicService;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -80,6 +83,7 @@ public class RideController {
     @PreAuthorize(value = "hasRole('DRIVER') or hasRole('PASSENGER')")
     ResponseEntity<RideDTO> addRide(@Valid @RequestBody RideCreationDTO rideCreation){
         System.out.println("Usao u zakazivanje");
+        System.out.println(rideCreation.getDistance());
         Ride newRideRequest = new Ride(rideCreation);
 
         // throws 404 if passenger already in active ride
@@ -217,6 +221,9 @@ public class RideController {
         AppUser user = appUserService.findByEmail(userDetails.getUsername());
         Panic panic = new Panic(0L, user, ride, LocalDateTime.now(), panicReason.getReason());
         panic = panicService.save(panic);
+
+        String ret = panic.getAppUser().getName() + " " + panic.getAppUser().getLastName() + " panicked during ride with " + ride.getDriver().getName() + " " + ride.getDriver().getLastName() + " as driver and stated the folowing reason: " + panic.getReason();
+        simpMessagingTemplate.convertAndSend("/ride-notification-panic", new NotificationDTO(ret, panic.getRide().getId().intValue(), "PANIC"));
 
         return new ResponseEntity<>(new PanicExpandedDTO(panic), HttpStatus.OK);
     }
@@ -379,6 +386,41 @@ public class RideController {
 
         favoriteLocationService.delete(id);
         return new ResponseEntity<>("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping(value = "/getAllRides", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RideResponseDTO> getAllRides(Pageable page,
+                                                       @RequestParam(required = false) String from,
+                                                       @RequestParam(required = false) String to) {
+
+        List<Ride> rides = rideService.getAll(page);
+
+        ArrayList<RideDTO> rideDTOs = new ArrayList<>();
+
+        LocalDateTime fromDate;
+        LocalDateTime toDate;
+
+        if (from == null)
+            fromDate = LocalDateTime.of(2000, 1, 1, 1, 1);
+        else
+            fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatterWithSeconds);
+
+        if (to == null)
+            toDate = LocalDateTime.of(3000, 1, 1, 1, 1);
+        else
+            toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatterWithSeconds);
+
+        for (Ride ride : rides)
+            if (ride.getStartTime() != null &&
+                    ride.getEndTime() != null &&
+                    ride.getStartTime().isAfter(fromDate) &&
+                    ride.getEndTime().isBefore(toDate))
+                rideDTOs.add(new RideDTO(ride));
+
+        return new ResponseEntity<>(
+                new RideResponseDTO(rideDTOs.size(), rideDTOs),
+                HttpStatus.OK
+        );
     }
 
 }

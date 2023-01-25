@@ -26,7 +26,7 @@ public class WorkingTimeService implements IWorkingTimeService {
 
     @Override
     public WorkingTime update(WorkingTime workingTime) {
-        Optional<WorkingTime> found = workingTimeRepository.findFirstByDriverOrderByStartTimeStartTimeDesc(workingTime.getDriver());
+        Optional<WorkingTime> found = workingTimeRepository.findFirstByDriverOrderByStartTimeStartTimeDesc(workingTime.getDriver().getId());
         if(!found.isPresent()) throw new CustomException("Working time does not exist!", HttpStatus.NOT_FOUND);
         checkIfVehicleRegistered(workingTime);
         checkIfShiftNotOngoing(workingTime);

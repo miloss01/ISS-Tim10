@@ -16,6 +16,7 @@ import java.util.List;
 
 public interface IRideService {
     public Collection<Ride> getAll();
+    public List<Ride> getAll(Pageable pageable);
 
     public void createAll();
 
