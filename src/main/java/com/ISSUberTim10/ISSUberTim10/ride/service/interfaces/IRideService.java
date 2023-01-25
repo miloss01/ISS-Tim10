@@ -48,16 +48,4 @@ public interface IRideService {
     Ride startRide(Ride ride);
 
     Ride getDriverEarliestAcceptedRide(Driver driver);
-
-    ArrayList<Ride> getAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
-
-    Report makeReportForRideNum(LocalDateTime fromDate, LocalDateTime toDate, Driver driver, ArrayList<Ride> rides);
-
-    Report makeReportForDistance(LocalDateTime fromDate, LocalDateTime toDate, Driver driver, ArrayList<Ride> rides);
-
-    StatisticsDTO makeStatisticsForMonth(Driver driver);
-
-    StatisticsDTO makeStatisticsForYear(Driver driver);
-
-    StatisticsDTO makeStatisticsForDay(Driver driver);
 }
