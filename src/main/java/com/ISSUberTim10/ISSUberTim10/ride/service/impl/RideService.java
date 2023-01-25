@@ -24,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -149,13 +148,13 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public ArrayList<Ride> getAllStartDateBetween(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
+    public ArrayList<Ride> getAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
         return rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
     }
 
     @Override
-    public Report makeReportForRideNum(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
-        ArrayList<Ride> rides = rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+    public Report makeReportForRideNum(LocalDateTime fromDate, LocalDateTime toDate, Driver driver, ArrayList<Ride> rides) {
+//        ArrayList<Ride> rides = rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
         //double total = 0;
         HashMap<LocalDate, Double> values = new HashMap<>();
         for (Ride ride: rides) {
@@ -169,8 +168,8 @@ public class RideService implements IRideService {
     }
 
     @Override
-    public Report makeReportForDistance(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
-        ArrayList<Ride> rides = rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+    public Report makeReportForDistance(LocalDateTime fromDate, LocalDateTime toDate, Driver driver, ArrayList<Ride> rides) {
+//        ArrayList<Ride> rides = rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
         double total = 0;
         HashMap<LocalDate, Double> values = new HashMap<>();
         for (Ride ride: rides) {
@@ -612,10 +611,17 @@ public class RideService implements IRideService {
 
     private boolean isPassengerAlreadyInARide(Ride newRideRequest, ArrayList<Ride.RIDE_STATUS> statuses) {
         Passenger passenger = new Passenger();
+        System.out.println(newRideRequest.getPassengers().iterator().next().getId());
+        System.out.println(newRideRequest.getPassengers().iterator().next().getId());
         for (Passenger passengerIncluded: newRideRequest.getPassengers()){
-            if (passengerIncluded.getId() != 0L) passenger.setId(passengerIncluded.getId());
+            if (passengerIncluded.getId() != 0L) {
+                passenger.setId(passengerIncluded.getId());
+//                Optional<Passenger> optioonal = passengerRepository.findByEmail(passengerIncluded.getEmail());
+//                passenger = optioonal.get();
+            }
         }
 //        passengerRepository.save(passenger);
+//        System.out.println(passenger.getId());
         Optional<Ride> found = rideRepository.findByPassengersContainingAndRideStatusIn(passenger, statuses);
         return found.isPresent();
     }

@@ -421,7 +421,8 @@ public class RideController {
         Driver driver = driverService.getById(Long.valueOf(driverId));
         LocalDateTime fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatter);
         LocalDateTime toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatter);
-        Report report = rideService.makeReportForRideNum(fromDate, toDate, driver);
+        ArrayList<Ride> rides = rideService.getAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+        Report report = rideService.makeReportForRideNum(fromDate, toDate, driver, rides);
         System.out.println("KRAJ");
         return new ResponseEntity<>(
                 new ReportDTO(report),
@@ -437,7 +438,8 @@ public class RideController {
         Driver driver = driverService.getById(Long.valueOf(driverId));
         LocalDateTime fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatter);
         LocalDateTime toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatter);
-        Report report = rideService.makeReportForDistance(fromDate, toDate, driver);
+        ArrayList<Ride> rides = rideService.getAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+        Report report = rideService.makeReportForDistance(fromDate, toDate, driver, rides);
         return new ResponseEntity<>(
                 new ReportDTO(report),
                 HttpStatus.OK

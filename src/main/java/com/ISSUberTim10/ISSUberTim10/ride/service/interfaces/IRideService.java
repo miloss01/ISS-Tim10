@@ -49,11 +49,11 @@ public interface IRideService {
 
     Ride getDriverEarliestAcceptedRide(Driver driver);
 
-    ArrayList<Ride> getAllStartDateBetween(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
+    ArrayList<Ride> getAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
 
-    Report makeReportForRideNum(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
+    Report makeReportForRideNum(LocalDateTime fromDate, LocalDateTime toDate, Driver driver, ArrayList<Ride> rides);
 
-    Report makeReportForDistance(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
+    Report makeReportForDistance(LocalDateTime fromDate, LocalDateTime toDate, Driver driver, ArrayList<Ride> rides);
 
     StatisticsDTO makeStatisticsForMonth(Driver driver);
 
