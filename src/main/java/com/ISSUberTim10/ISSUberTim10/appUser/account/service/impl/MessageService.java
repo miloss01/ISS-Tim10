@@ -5,6 +5,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.account.Message;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.MessageRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +17,8 @@ public class MessageService implements IMessageService {
     private MessageRepository messageRepository;
 
     @Override
-    public List<Message> getMessagesBySenderOrReceiver(AppUser sender, AppUser receiver) {
-        return messageRepository.findAllBySenderOrReceiver(sender, receiver);
+    public List<Message> getMessagesBySenderOrReceiver(AppUser sender, AppUser receiver, Pageable pageable) {
+        return messageRepository.findAllBySenderOrReceiver(sender, receiver, pageable);
     }
 
     @Override

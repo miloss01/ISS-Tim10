@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Getter
 @Setter
@@ -20,22 +17,22 @@ public class DriverDTO {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer id;
-    @NotNull
+    @NotBlank(message = "Field (name) cannot be empty")
     @Size(max = 100, message = "Field (name) cannot be longer than 100 characters!")
     private String name;
-    @NotNull
+    @NotBlank(message = "Field (surname) cannot be empty")
     @Size(max = 100, message = "Field (surname) cannot be longer than 100 characters!")
     private String surname;
-    @Pattern(regexp="^data:image.*$",message="Field (profilePicture) must be an image")
+    @Pattern(regexp="(^data:image.*$)|(^http.*$)", message="Field (profilePicture) must be an image")
     private String profilePicture;
-    @NotNull
+    @NotBlank(message = "Field (telephoneNumber) cannot be empty")
     @Size(max = 18, message = "Field (telephoneNumber) cannot be longer than 18 characters!")
     private String telephoneNumber;
-    @NotNull
+    @NotBlank(message = "Field (email) cannot be empty")
     @Email(message = "Field (email) does not have valid format.")
     @Size(max = 100, message = "Field (email) cannot be longer than 100 characters!")
     private String email;
-    @NotNull
+    @NotBlank(message = "Field (address) cannot be empty")
     @Size(max = 100, message = "Field (address) cannot be longer than 100 characters!")
     private String address;
     @JsonInclude(JsonInclude.Include.NON_NULL)
