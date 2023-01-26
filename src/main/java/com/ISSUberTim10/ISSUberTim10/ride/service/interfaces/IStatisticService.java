@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride.service.interfaces;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.ride.Report;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
@@ -22,4 +23,9 @@ public interface IStatisticService {
     StatisticsDTO makeStatisticsForYear(Driver driver);
 
     StatisticsDTO makeStatisticsForDay(Driver driver);
+
+
+    ArrayList<Ride> getAllByStartTimeBetweenAndPassenger(LocalDateTime fromDate, LocalDateTime toDate, Passenger passenger);
+
+
 }
