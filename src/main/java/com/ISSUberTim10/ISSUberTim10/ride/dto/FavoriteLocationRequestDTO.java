@@ -33,7 +33,6 @@ public class FavoriteLocationRequestDTO {
     @NotNull(message = "Field (locations) is required!")
     @Valid
     private List<DepartureDestinationLocationsDTO> locations;
-    @NotNull(message = "Field (passengers) is required!")
     @Valid
     private List<UserResponseDTO> passengers;
 
