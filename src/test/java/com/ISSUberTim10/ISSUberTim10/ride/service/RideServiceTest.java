@@ -2,10 +2,12 @@ package com.ISSUberTim10.ISSUberTim10.ride.service;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.Route;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RideRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.service.impl.RideService;
+import org.glassfish.jersey.internal.inject.Custom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,14 +16,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,12 +78,13 @@ public class RideServiceTest {
 
     @Test
     public void shouldFindAllRides() {
-        when(rideRepository.findAll()).thenReturn(Arrays.asList(pendingRide, acceptedRide));
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        when(rideRepository.findAll()).thenReturn(mocks);
 
         List<Ride> rides = (List<Ride>) rideService.getAll();
-        assertThat(rides.size()).isEqualTo(2);
-        assertThat(rides.get(0).getId()).isEqualTo(1L);
-        assertThat(rides.get(1).getId()).isEqualTo(2L);
+        assertThat(rides.size()).isEqualTo(mocks.size());
+        assertThat(rides.get(0).getId()).isEqualTo(mocks.get(0).getId());
+        assertThat(rides.get(1).getId()).isEqualTo(mocks.get(1).getId());
 
         verify(rideRepository, times(1)).findAll();
     }
@@ -91,6 +97,203 @@ public class RideServiceTest {
         assertThat(rides.size()).isEqualTo(0);
 
         verify(rideRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void shouldFindAllRidesWithoutPageable() {
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        when(rideRepository.findAll(Pageable.unpaged())).thenReturn(page);
+
+        List<Ride> rides = rideService.getAll(Pageable.unpaged());
+        assertThat(rides.size()).isEqualTo(mocks.size());
+        assertThat(rides.get(0).getId()).isEqualTo(mocks.get(0).getId());
+        assertThat(rides.get(1).getId()).isEqualTo(mocks.get(1).getId());
+
+        verify(rideRepository, times(1)).findAll(Pageable.unpaged());
+    }
+
+    @Test
+    public void shouldFindAllRidesWithPageable() {
+        List<Ride> mocks = Arrays.asList(finishedRide, activeRide);
+        Page page = new PageImpl(mocks);
+        Pageable pageable = PageRequest.of(1, 2, Sort.by("id").descending());
+        when(rideRepository.findAll(pageable)).thenReturn(page);
+
+        List<Ride> rides = rideService.getAll(pageable);
+        assertThat(rides.size()).isEqualTo(2);
+        assertThat(rides.get(0).getId()).isEqualTo(finishedRide.getId());
+        assertThat(rides.get(1).getId()).isEqualTo(activeRide.getId());
+
+        verify(rideRepository, times(1)).findAll(pageable);
+    }
+
+    @Test
+    public void shouldFindRideWithProvidedId() {
+        when(rideRepository.findById(anyLong())).thenReturn(Optional.of(pendingRide));
+
+        Ride ride = rideService.getRideById(anyLong());
+
+        assertThat(ride).isEqualTo(pendingRide);
+
+        verify(rideRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    public void shouldThrowExceptionForNoRideFound() {
+        when(rideRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() -> {
+            Ride ride = rideService.getRideById(anyLong());
+        });
+
+        assertThat(thrown).isInstanceOf(CustomException.class);
+        CustomException customException = (CustomException) thrown;
+        assertThat(customException.message).isEqualTo("Ride does not exist!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.NOT_FOUND);
+
+        verify(rideRepository, times(1)).findById(anyLong());
+
+    }
+
+    @Test
+    public void shouldFindAllRidesWithProvidedDriverWithoutPageable() {
+        Driver driver = new Driver();
+        driver.setId(1L);
+        pendingRide.setDriver(driver);
+        acceptedRide.setDriver(driver);
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        when(rideRepository.findAllByDriver(Pageable.unpaged(), driver)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByDriver(Pageable.unpaged(), driver);
+        for (Ride ride : rides)
+            assertThat(ride.getDriver()).isEqualTo(driver);
+
+        verify(rideRepository, times(1)).findAllByDriver(Pageable.unpaged(), driver);
+
+    }
+
+    @Test
+    public void shouldNotFindAnyRidesWithProvidedDriverWithoutPageable() {
+        Driver driver = new Driver();
+        driver.setId(10L);
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        when(rideRepository.findAllByDriver(Pageable.unpaged(), driver)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByDriver(Pageable.unpaged(), driver);
+        for (Ride ride : rides)
+            assertThat(ride.getDriver()).isNotEqualTo(driver);
+
+        verify(rideRepository, times(1)).findAllByDriver(Pageable.unpaged(), driver);
+
+    }
+
+    @Test
+    public void shouldFindAllRidesWithProvidedDriverAndPageable() {
+        Driver driver = new Driver();
+        driver.setId(1L);
+        pendingRide.setDriver(driver);
+        acceptedRide.setDriver(driver);
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        Pageable pageable = PageRequest.of(1, 1, Sort.by("id"));
+        when(rideRepository.findAllByDriver(pageable, driver)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByDriver(pageable, driver);
+        for (Ride ride : rides)
+            assertThat(ride.getDriver()).isEqualTo(driver);
+
+        verify(rideRepository, times(1)).findAllByDriver(pageable, driver);
+
+    }
+
+    @Test
+    public void shouldNotFindAnyRidesWithProvidedDriverAndPageable() {
+        Driver driver = new Driver();
+        driver.setId(10L);
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        Pageable pageable = PageRequest.of(1, 1, Sort.by("id"));
+        when(rideRepository.findAllByDriver(pageable, driver)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByDriver(pageable, driver);
+        for (Ride ride : rides)
+            assertThat(ride.getDriver()).isNotEqualTo(driver);
+
+        verify(rideRepository, times(1)).findAllByDriver(pageable, driver);
+
+    }
+
+    @Test
+    public void shouldFindAllRidesWithProvidedPassengerWithoutPageable() {
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        pendingRide.setPassengers(Arrays.asList(passenger));
+        acceptedRide.setPassengers(Arrays.asList(passenger));
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        when(rideRepository.findAllByPassengersContaining(Pageable.unpaged(), passenger)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByPassenger(Pageable.unpaged(), passenger);
+        for (Ride ride : rides)
+            assertThat(ride.getPassengers()).contains(passenger);
+
+        verify(rideRepository, times(1)).findAllByPassengersContaining(Pageable.unpaged(), passenger);
+
+    }
+
+    @Test
+    public void shouldNotFindAnyRidesWithProvidedPassengerWithoutPageable() {
+        Passenger passenger = new Passenger();
+        passenger.setId(10L);
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        when(rideRepository.findAllByPassengersContaining(Pageable.unpaged(), passenger)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByPassenger(Pageable.unpaged(), passenger);
+        for (Ride ride : rides)
+            assertThat(ride.getPassengers()).doesNotContain(passenger);
+
+        verify(rideRepository, times(1)).findAllByPassengersContaining(Pageable.unpaged(), passenger);
+
+    }
+
+    @Test
+    public void shouldFindAllRidesWithProvidedPassengerAndPageable() {
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        pendingRide.setPassengers(Arrays.asList(passenger));
+        acceptedRide.setPassengers(Arrays.asList(passenger));
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        Pageable pageable = PageRequest.of(1, 1, Sort.by("id"));
+        when(rideRepository.findAllByPassengersContaining(pageable, passenger)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByPassenger(pageable, passenger);
+        for (Ride ride : rides)
+            assertThat(ride.getPassengers()).contains(passenger);
+
+        verify(rideRepository, times(1)).findAllByPassengersContaining(pageable, passenger);
+
+    }
+
+    @Test
+    public void shouldNotFindAnyRidesWithProvidedPassengerAndPageable() {
+        Passenger passenger = new Passenger();
+        passenger.setId(10L);
+        List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
+        Page page = new PageImpl(mocks);
+        Pageable pageable = PageRequest.of(1, 1, Sort.by("id"));
+        when(rideRepository.findAllByPassengersContaining(pageable, passenger)).thenReturn(page);
+
+        List<Ride> rides = rideService.getByPassenger(pageable, passenger);
+        for (Ride ride : rides)
+            assertThat(ride.getPassengers()).doesNotContain(passenger);
+
+        verify(rideRepository, times(1)).findAllByPassengersContaining(pageable, passenger);
+
     }
 
 }
