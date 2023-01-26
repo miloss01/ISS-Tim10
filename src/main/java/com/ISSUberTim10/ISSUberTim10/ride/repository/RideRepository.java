@@ -16,9 +16,9 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
 
 
-    public Page<Ride> findAll(Pageable pageable);
-    public Page findAllByDriver(Pageable pageable, Driver driver);
-    public Page findAllByPassengersContaining(Pageable pageable, Passenger passenger);
+    public Page<Ride> findAll(Pageable pageable);//done
+    public Page findAllByDriver(Pageable pageable, Driver driver);//done
+    public Page findAllByPassengersContaining(Pageable pageable, Passenger passenger);//done
     public Optional<List<Ride>> findByDriverAndRideStatus(Driver driver, Ride.RIDE_STATUS rideStatus);
     public Optional<Ride> findByPassengersContainingAndRideStatus(Passenger passenger, Ride.RIDE_STATUS rideStatus);
 
