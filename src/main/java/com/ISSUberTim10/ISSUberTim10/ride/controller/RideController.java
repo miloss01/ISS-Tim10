@@ -95,6 +95,7 @@ public class RideController {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue(), ""));
         }
+        rideDTO.setDistance(null);
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 
     }
