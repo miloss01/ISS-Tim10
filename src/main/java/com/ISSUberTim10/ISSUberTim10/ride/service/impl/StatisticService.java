@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride.service.impl;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.WorkingTime;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.WorkingTimeRepository;
@@ -29,6 +30,11 @@ public class StatisticService implements IStatisticService {
     @Override
     public ArrayList<Ride> getAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver) {
         return rideRepository.findAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
+    }
+
+    @Override
+    public ArrayList<Ride> getAllByStartTimeBetweenAndPassenger(LocalDateTime fromDate, LocalDateTime toDate, Passenger passenger) {
+        return rideRepository.findAllByStartTimeBetweenAndPassengersContaining(fromDate, toDate, passenger);
     }
 
     @Override

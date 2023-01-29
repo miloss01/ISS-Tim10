@@ -1,5 +1,6 @@
 package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
@@ -52,6 +53,23 @@ public class StatisticsController {
         );
     }
 
+    @GetMapping(value = "/passenger-report-ride-number/{passengerId}/{from}/{to}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ReportDTO> getPassengerRideNumberReport(@PathVariable Integer passengerId,
+                                                         @PathVariable String from,
+                                                         @PathVariable String to) {
+        System.out.println("USAO");
+        Passenger passenger = passengerService.getPassenger(Long.valueOf(passengerId));
+        LocalDateTime fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatter);
+        LocalDateTime toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatter);
+        ArrayList<Ride> rides = statisticService.getAllByStartTimeBetweenAndPassenger(fromDate, toDate, passenger);
+        Report report = statisticService.makeReportForRideNum(fromDate, toDate, null, rides);
+        System.out.println("KRAJ");
+        return new ResponseEntity<>(
+                new ReportDTO(report),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping(value = "/report-distance/{driverId}/{from}/{to}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReportDTO> getDistanceReport(@PathVariable Integer driverId,
                                                        @PathVariable String from,
@@ -68,6 +86,22 @@ public class StatisticsController {
         );
     }
 
+    @GetMapping(value = "/passenger-report-distance/{passengerId}/{from}/{to}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ReportDTO> getPassengerDistanceReport(@PathVariable Integer passengerId,
+                                                       @PathVariable String from,
+                                                       @PathVariable String to) {
+
+        Passenger passenger = passengerService.getPassenger(Long.valueOf(passengerId));
+        LocalDateTime fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatter);
+        LocalDateTime toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatter);
+        ArrayList<Ride> rides = statisticService.getAllByStartTimeBetweenAndPassenger(fromDate, toDate, passenger);
+        Report report = statisticService.makeReportForDistance(fromDate, toDate, null, rides);
+        return new ResponseEntity<>(
+                new ReportDTO(report),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping(value = "/report-money/{driverId}/{from}/{to}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReportDTO> getMoneyReport(@PathVariable Integer driverId,
                                                     @PathVariable String from,
@@ -78,6 +112,22 @@ public class StatisticsController {
         LocalDateTime toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatter);
         ArrayList<Ride> rides = statisticService.getAllByStartTimeBetweenAndDriver(fromDate, toDate, driver);
         Report report = statisticService.makeReportForMoney(fromDate, toDate, driver, rides);
+        return new ResponseEntity<>(
+                new ReportDTO(report),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping(value = "/passenger-report-money/{passengerId}/{from}/{to}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ReportDTO> getPassengerMoneyReport(@PathVariable Integer passengerId,
+                                                    @PathVariable String from,
+                                                    @PathVariable String to) {
+
+        Passenger passenger = passengerService.getPassenger(Long.valueOf(passengerId));
+        LocalDateTime fromDate = LocalDateTime.parse(from, StringFormatting.dateTimeFormatter);
+        LocalDateTime toDate = LocalDateTime.parse(to, StringFormatting.dateTimeFormatter);
+        ArrayList<Ride> rides = statisticService.getAllByStartTimeBetweenAndPassenger(fromDate, toDate, passenger);
+        Report report = statisticService.makeReportForMoney(fromDate, toDate, null, rides);
         return new ResponseEntity<>(
                 new ReportDTO(report),
                 HttpStatus.OK

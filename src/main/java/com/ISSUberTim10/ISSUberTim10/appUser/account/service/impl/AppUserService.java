@@ -33,6 +33,8 @@ public class AppUserService implements IAppUserService {
     @Autowired
     private INoteService noteService;
 
+    private static final Long ADMIN_ID = 5L;
+
     @Override
     public Collection<AppUser> getAll() {
         return appUserRepository.findAll();
@@ -173,6 +175,11 @@ public class AppUserService implements IAppUserService {
     @Override
     public Optional<AppUser> findByEmailOpt(String email) {
         return appUserRepository.findByEmail(email);
+    }
+
+    @Override
+    public AppUser getAdmin() {
+        return appUserRepository.getById(ADMIN_ID);
     }
 
 

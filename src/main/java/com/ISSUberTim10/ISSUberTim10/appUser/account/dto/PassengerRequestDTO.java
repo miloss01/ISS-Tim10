@@ -13,6 +13,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 public class PassengerRequestDTO {
 
+
     @NotBlank(message = "Field (name) must not be empty!")
     @Size(max = 100, message = "Field (name) cannot be longer than 100 characters!")
     private String name;
