@@ -98,7 +98,8 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Driver'))")
+    @PreAuthorize(value = "hasRole('ADMIN') or hasRole('PASSENGER') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Driver'))")
+//    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Driver'))")
     public ResponseEntity<DriverDTO> getDriver(@PathVariable Integer id) {
 
         Driver driver = driverService.getById(id.longValue());
@@ -173,7 +174,7 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize(value = "hasRole('ADMIN') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Vehicle'))")
+    @PreAuthorize(value = "hasRole('ADMIN') or hasRole('PASSENGER') or (hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #id, 'Vehicle'))")
     public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Integer id) {
 
         Driver driver = driverService.findDriverById(id);

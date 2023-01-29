@@ -1,25 +1,17 @@
 package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
 import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
-import com.ISSUberTim10.ISSUberTim10.ride.FavoriteLocation;
+import com.ISSUberTim10.ISSUberTim10.ride.*;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IAppUserService;
-import com.ISSUberTim10.ISSUberTim10.auth.AuthService;
-import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
-import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IFavoriteLocationService;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.interfaces.IPassengerService;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IVehicleTypeService;
-import com.ISSUberTim10.ISSUberTim10.ride.DepartureDestination;
-import com.ISSUberTim10.ISSUberTim10.ride.Location;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.service.interfaces.IDriverService;
-import com.ISSUberTim10.ISSUberTim10.ride.NotificationSchedule;
-import com.ISSUberTim10.ISSUberTim10.ride.Panic;
-import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IPanicService;
 import com.ISSUberTim10.ISSUberTim10.ride.service.interfaces.IRideService;
@@ -34,14 +26,12 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/ride")
@@ -105,6 +95,7 @@ public class RideController {
             this.simpMessagingTemplate.convertAndSend("/ride-notification-passenger/" + p.getId(),
                     new NotificationDTO("Driver has been appointed.\nHang on and wait for their acceptance.", saved.getId().intValue(), ""));
         }
+        rideDTO.setDistance(null);
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 
     }
@@ -423,4 +414,4 @@ public class RideController {
         );
     }
 
-}
+    }

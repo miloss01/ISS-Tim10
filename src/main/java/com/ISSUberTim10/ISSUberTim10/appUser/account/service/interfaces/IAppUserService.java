@@ -46,4 +46,7 @@ public interface IAppUserService {
 
 
     Optional<AppUser> findByEmailOpt(String email);
+
+    AppUser getAdmin();
+
 }

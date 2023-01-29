@@ -9,11 +9,10 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.WorkingTime;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleTypeRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.WorkingTimeRepository;
-import com.ISSUberTim10.ISSUberTim10.auth.JwtTokenUtil;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.*;
-import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.StatisticsDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.CoordinatesRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RejectionRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RideRepository;
@@ -23,10 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -100,7 +98,9 @@ public class RideService implements IRideService {
 
     @Override
     public List<Ride> getByPassenger(Pageable pageable, Passenger passenger) {
-        return rideRepository.findAllByPassengersContaining(pageable, passenger).getContent();
+        Optional<List<Ride>> rides = rideRepository.findByPassengersId(pageable, passenger.getId());
+        if (rides.isPresent()) return rides.get();
+        return new ArrayList<>();
     }
 
     @Override
@@ -148,7 +148,6 @@ public class RideService implements IRideService {
         return earliestRide;
 
     }
-
 
 
     @Override
@@ -237,7 +236,6 @@ public class RideService implements IRideService {
     }
 
     private void fillRideRequest(Ride newRideRequest, Driver availableDriver) {
-        int distance = 10;
         Rejection rejection = new Rejection();
         rejection.setId(0L);
         rejection.setRejectionTime(LocalDateTime.now());
@@ -247,7 +245,10 @@ public class RideService implements IRideService {
             found.ifPresent(passengers::add);
         }
         ArrayList<Route> routes = (ArrayList<Route>) newRideRequest.getRoutes();
+//        double distance = calculateDistance(routes.get(0).getDepartureCoordinates(), routes.get(0).getDestinationCoordinates());
+//        System.out.println(distance);
 //        routes.get(0).setMileage(distance);
+
         routes.get(0).setOrderr(1);
         routes.get(0).getDepartureCoordinates().setId(0L);
         routes.get(0).getDestinationCoordinates().setId(0L);
@@ -260,6 +261,43 @@ public class RideService implements IRideService {
         newRideRequest.setRideStatus(Ride.RIDE_STATUS.pending);
         newRideRequest.setRejection(rejection);
         rejection.setRide(newRideRequest);
+    }
+
+    double toRadians(double coordinate)
+    {
+        // cmath library in C++
+        // defines the constant
+        // M_PI as the value of
+        // pi accurate to 1e-30
+        double one_deg = (Math.PI) / 180;
+        return (one_deg * coordinate);
+    }
+
+    private double calculateDistance(Coordinates departureCoordinates, Coordinates destinationCoordinates) {
+        double lat1 = toRadians(departureCoordinates.getLatitude());
+        double long1 = toRadians(departureCoordinates.getLongitude());
+        double lat2 = toRadians(destinationCoordinates.getLatitude());
+        double long2 = toRadians(destinationCoordinates.getLongitude());
+
+        // Haversine Formula
+        double dlong = long2 - long1;
+        double dlat = lat2 - lat1;
+
+        double ans = Math.pow(Math.sin(dlat / 2), 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                        Math.pow(Math.sin(dlong / 2), 2);
+
+        ans = 2 * Math.asin(Math.sqrt(ans));
+
+        // Radius of Earth in
+        // Kilometers, R = 6371
+        // Use R = 3956 for miles
+        double R = 6371;
+
+        // Calculate the result
+        ans = ans * R;
+
+        return ans;
     }
 
     private Driver findBestDriver(ArrayList<Vehicle> vehicles, ArrayList<Ride.RIDE_STATUS> statuses, Ride newRideRequest) {
@@ -320,10 +358,17 @@ public class RideService implements IRideService {
 
     private boolean isPassengerAlreadyInARide(Ride newRideRequest, ArrayList<Ride.RIDE_STATUS> statuses) {
         Passenger passenger = new Passenger();
+        System.out.println(newRideRequest.getPassengers().iterator().next().getId());
+        System.out.println(newRideRequest.getPassengers().iterator().next().getId());
         for (Passenger passengerIncluded: newRideRequest.getPassengers()){
-            if (passengerIncluded.getId() != 0L) passenger.setId(passengerIncluded.getId());
+            if (passengerIncluded.getId() != 0L) {
+                passenger.setId(passengerIncluded.getId());
+//                Optional<Passenger> optioonal = passengerRepository.findByEmail(passengerIncluded.getEmail());
+//                passenger = optioonal.get();
+            }
         }
 //        passengerRepository.save(passenger);
+//        System.out.println(passenger.getId());
         Optional<Ride> found = rideRepository.findByPassengersContainingAndRideStatusIn(passenger, statuses);
         return found.isPresent();
     }

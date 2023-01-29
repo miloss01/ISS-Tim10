@@ -124,19 +124,19 @@ public class AppUserController {
                                                          Pageable page,
                                                          @RequestParam(required = false) String from,
                                                          @RequestParam(required = false) String to) {
-        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
-        List<Ride> rides;
-        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-        rides = resultPage.getContent();
-        for (Ride ride : rides) {
-            ridesDTO.add(new RideDTO(ride));
-            System.out.println(ride.getId());
-        }
-        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
+//        Page<Ride> resultPage = rideService.getByUser(id.longValue(), page);
+//        List<Ride> rides;
+//        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
+//        rides = resultPage.getContent();
+//        for (Ride ride : rides) {
+//            ridesDTO.add(new RideDTO(ride));
+//            System.out.println(ride.getId());
+//        }
+//        RideResponseDTO responseDTO = new RideResponseDTO(ridesDTO.size(), ridesDTO);
 
         AppUser appUser = appUserService.findById(id.longValue());
 
-
+        List<Ride> rides;
         if (appUser.getRole() == Role.DRIVER)
             rides = rideService.getByDriver(page, (Driver) appUser);
         else if (appUser.getRole() == Role.PASSENGER)
@@ -170,23 +170,6 @@ public class AppUserController {
                 new RideResponseDTO(rideDTOs.size(), rideDTOs),
                 HttpStatus.OK
         );
-
-
-
-//        ArrayList<RideDTO> ridesDTO = new ArrayList<>();
-//        ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
-//        ArrayList<UserDTO> passengers = new ArrayList<>();
-//        passengers.add(new UserDTO(2L, "pepe"));
-//        passengers.add(new UserDTO(2L, "guug"));
-//        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
-//        passengers.add(new UserDTO(1L, "eheh"));
-//        ridesDTO.add(new RideDTO(1L, locations, "12.10.2022. 11:17", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        ridesDTO.add(new RideDTO(1L, locations, "05.12.202. 11:00", "10.10.2022. 11:00", 123, new UserDTO(1L, "didi"),
-//                passengers, 5, "", true, true, null, new RejectionDTO("zato", "11.11.2022.")));
-//        return new ResponseEntity<>(new RideResponseDTO(ridesDTO.size(), ridesDTO), HttpStatus.OK);
     }
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
@@ -245,8 +228,9 @@ public class AppUserController {
 
         ArrayList<MessageReceivedDTO> messageReceivedDTOs = new ArrayList<>();
 
-        for (Message message : messages)
+        for (Message message : messages){
             messageReceivedDTOs.add(new MessageReceivedDTO(message.getId(), message.getTimeSent().toString(), message.getSender().getId(), message.getReceiver().getId(), message.getText(), message.getMessageType().toString(), message.getRideId()));
+        }
 
         return new ResponseEntity<>(
                 new MessageResponseDTO(messageReceivedDTOs.size(), messageReceivedDTOs),
@@ -268,6 +252,7 @@ public class AppUserController {
         AppUser sender = appUserService.findByEmail(authentication.getName());
 //        AppUser receiver = appUserService.findById(messageSent.getReceiverId());
         AppUser receiver = appUserService.findById(id.longValue());
+
         Integer rideId = 0;
         if (messageSent.getRideId() != 0)
             rideId = rideService.getRideById(messageSent.getRideId()).getId().intValue();
@@ -278,9 +263,11 @@ public class AppUserController {
 
         this.simpMessagingTemplate.convertAndSend("/ride-notification-message/" + receiver.getId(), messageSent);
 
-        return new ResponseEntity<>(
-                new MessageReceivedDTO(saved.getId(), saved.getTimeSent().toString(), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId()),
-                HttpStatus.OK);
+        MessageReceivedDTO dto = new MessageReceivedDTO(saved.getId(), saved.getTimeSent().toString(), saved.getSender().getId(), saved.getReceiver().getId(), saved.getText(), saved.getMessageType().toString(), saved.getRideId());
+
+        this.simpMessagingTemplate.convertAndSend("/chat/" + receiver.getId() + "/" + sender.getId(), dto);
+
+        return new ResponseEntity<>( dto, HttpStatus.OK);
 
 //        return new ResponseEntity<>(new MessageReceivedDTO(10L, "11.11.2022.", 1L, messageSent.getReceiverId(), messageSent.getMessage(), messageSent.getType(), messageSent.getRideId()), HttpStatus.OK);
     }
@@ -318,7 +305,7 @@ public class AppUserController {
     }
 
     @PutMapping(value = "/changeActiveFlag/{id}", consumes = "application/json", produces = "application/json")
-    @PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
+    //@PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
     public ResponseEntity<IsActiveDTO> changeActiveFlag(@PathVariable Integer id, @RequestBody IsActiveDTO isActiveDTO) {
         AppUser appUser = appUserService.findById(id.longValue());
         appUser.setActiveFlag(isActiveDTO.isActive());
@@ -327,6 +314,13 @@ public class AppUserController {
         }
         appUserService.save(appUser);
         return new ResponseEntity<>(isActiveDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/activeFlag/{id}", produces = "application/json")
+    //@PreAuthorize(value = "@userSecurity.hasUserId(authentication, #id, 'Active flag')")
+    public ResponseEntity<IsActiveDTO> getActiveFlag(@PathVariable Integer id) {
+        AppUser appUser = appUserService.findById(id.longValue());
+        return new ResponseEntity<>(new IsActiveDTO(appUser.isActiveFlag()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
