@@ -156,7 +156,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/passenger/{passengerId}/active", produces = "application/json")
+    @GetMapping(value = "/passenger/{passengerId}/active")
     @PreAuthorize(value = "hasRole('PASSENGER')")
 //    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #passengerId, 'Ride')")
     ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
