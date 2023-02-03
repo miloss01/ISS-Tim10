@@ -296,4 +296,117 @@ public class RideServiceTest {
 
     }
 
+    @Test
+    public void shouldFindRideWithProvidedDriverAndStatus() {
+        Driver driver = new Driver();
+        driver.setId(2L);
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.pending)).thenReturn(Optional.of(Arrays.asList(pendingRide)));
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted)).thenReturn(Optional.of(Arrays.asList(acceptedRide)));
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active)).thenReturn(Optional.of(Arrays.asList(activeRide)));
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.finished)).thenReturn(Optional.of(Arrays.asList(finishedRide)));
+
+        Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.pending);
+        assertThat(ride).isEqualTo(pendingRide);
+        ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.accepted);
+        assertThat(ride).isEqualTo(acceptedRide);
+        ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.active);
+        assertThat(ride).isEqualTo(activeRide);
+        ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.finished);
+        assertThat(ride).isEqualTo(finishedRide);
+
+        verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.pending);
+        verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted);
+        verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
+        verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.finished);
+    }
+
+    @Test
+    public void shouldNotFindRideWithProvidedDriverAndStatus() {
+        Driver driver = new Driver();
+        driver.setId(2L);
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.pending)).thenReturn(Optional.of(new ArrayList<Ride>()));
+
+        Throwable thrown = catchThrowable(() -> {
+            Ride ride = rideService.getByDriverAndStatus(driver, Ride.RIDE_STATUS.pending);
+        });
+
+        assertThat(thrown).isInstanceOf(CustomException.class);
+        CustomException customException = (CustomException) thrown;
+        assertThat(customException.message).isEqualTo(Ride.RIDE_STATUS.pending.toString() + " ride does not exist!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.NOT_FOUND);
+
+        verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.pending);
+    }
+
+    @Test
+    public void shouldFindRideWithProvidedPassengerAndStatus() {
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        when(rideRepository.findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.pending)).thenReturn(Optional.of(pendingRide));
+        when(rideRepository.findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.accepted)).thenReturn(Optional.of(acceptedRide));
+        when(rideRepository.findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.active)).thenReturn(Optional.of(activeRide));
+        when(rideRepository.findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.finished)).thenReturn(Optional.of(finishedRide));
+
+        Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.pending);
+        assertThat(ride).isEqualTo(pendingRide);
+        ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.accepted);
+        assertThat(ride).isEqualTo(acceptedRide);
+        ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.active);
+        assertThat(ride).isEqualTo(activeRide);
+        ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.finished);
+        assertThat(ride).isEqualTo(finishedRide);
+
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.pending);
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.accepted);
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.active);
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.finished);
+    }
+
+    @Test
+    public void shouldNotFindRideWithProvidedPassengerAndStatus() {
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        when(rideRepository.findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.pending)).thenReturn(Optional.empty());
+
+        Throwable thrown = catchThrowable(() -> {
+            Ride ride = rideService.getByPassengerAndStatus(passenger, Ride.RIDE_STATUS.pending);
+        });
+
+        assertThat(thrown).isInstanceOf(CustomException.class);
+        CustomException customException = (CustomException) thrown;
+        assertThat(customException.message).isEqualTo(Ride.RIDE_STATUS.pending.toString() + " ride does not exist!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.NOT_FOUND);
+
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.pending);
+    }
+
+    @Test
+    public void shouldFindActiveRideForProvidedDriver() {
+        Driver driver = new Driver();
+        driver.setId(2L);
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active)).thenReturn(Optional.of(Arrays.asList(activeRide)));
+
+        Ride ride = rideService.getActiveDriverRide(driver);
+        assertThat(ride).isEqualTo(activeRide);
+
+        verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
+    }
+
+    @Test
+    public void shouldNotFindActiveRideForProvidedDriver() {
+        Driver driver = new Driver();
+        driver.setId(2L);
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active)).thenReturn(Optional.of(new ArrayList<Ride>()));
+
+        Throwable thrown = catchThrowable(() -> {
+            Ride ride = rideService.getActiveDriverRide(driver);
+        });
+
+        assertThat(thrown).isInstanceOf(CustomException.class);
+        CustomException customException = (CustomException) thrown;
+        assertThat(customException.message).isEqualTo("Active ride does not exist!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.NOT_FOUND);
+
+        verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
+    }
 }

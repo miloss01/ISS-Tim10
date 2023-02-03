@@ -270,8 +270,8 @@ public class DriverController {
         if (workingHourDTO.getStart() != null) {
             try {
                 workingTime.setDriver(driver);
-                workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getStart().replace('T', ' '), formatter));
-                if (workingHourDTO.getEnd() != null ) workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getStart().replace('T', ' '), formatter));
+                workingTime.setStartTime(LocalDateTime.now());
+                if (workingHourDTO.getEnd() != null ) workingTime.setEndTime(LocalDateTime.now());
             } catch (DateTimeParseException ex) {
                 throw new CustomException("Wrong date format!", HttpStatus.BAD_REQUEST);
             }
@@ -281,8 +281,8 @@ public class DriverController {
         }else {
             workingTime.setDriver(driver);
             try {
-                if (workingHourDTO.getStart() != null ) workingTime.setStartTime(LocalDateTime.parse(workingHourDTO.getEnd().replace('T', ' '), formatter));
-                if (workingHourDTO.getEnd() != null ) workingTime.setEndTime(LocalDateTime.parse(workingHourDTO.getEnd().replace('T', ' '), formatter));
+                if (workingHourDTO.getStart() != null ) workingTime.setStartTime(LocalDateTime.now());
+                if (workingHourDTO.getEnd() != null ) workingTime.setEndTime(LocalDateTime.now());
                 saved = workingTimeService.update(workingTime);
             } catch (DateTimeParseException ex) {
                 throw new CustomException("Wrong date format!", HttpStatus.BAD_REQUEST);

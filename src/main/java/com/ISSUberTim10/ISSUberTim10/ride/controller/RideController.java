@@ -100,7 +100,7 @@ public class RideController {
 
     }
 
-    @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")
+    @GetMapping(value = "/driver/{driverId}/active", produces = "application/json")//done
    // @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> getRideByDriverId(@PathVariable Integer driverId){
@@ -117,7 +117,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/driver/{driverId}/accepted", produces = "application/json")
+    @GetMapping(value = "/driver/{driverId}/accepted", produces = "application/json")//done
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> getAcceptedRideByDriverId(@PathVariable Integer driverId){
@@ -129,7 +129,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/driver/{driverId}/pending", produces = "application/json")
+    @GetMapping(value = "/driver/{driverId}/pending", produces = "application/json")//done
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> getPendingRideByDriverId(@PathVariable Integer driverId){
@@ -147,7 +147,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/passenger/{passengerId}/active", produces = "application/json")
+    @GetMapping(value = "/passenger/{passengerId}/active")//done
     @PreAuthorize(value = "hasRole('PASSENGER')")
 //    @PreAuthorize(value = "hasRole('PASSENGER') and @userSecurity.hasUserId(authentication, #passengerId, 'Ride')")
     ResponseEntity<RideDTO> getRideByPassengerId(@PathVariable Integer passengerId){
@@ -160,7 +160,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/passenger/{passengerId}/accepted", produces = "application/json")
+    @GetMapping(value = "/passenger/{passengerId}/accepted", produces = "application/json")//done
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     ResponseEntity<RideDTO> getAcceptedRideByPassengerId(@PathVariable Integer passengerId){
 
@@ -171,7 +171,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/passenger/{passengerId}/pending", produces = "application/json")
+    @GetMapping(value = "/passenger/{passengerId}/pending", produces = "application/json")//done
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     ResponseEntity<RideDTO> getPendingRideByPassengerId(@PathVariable Integer passengerId) {
 
@@ -183,13 +183,13 @@ public class RideController {
 
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{id}", produces = "application/json")//done
     ResponseEntity<RideDTO> getRideById(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/withdraw", produces = "application/json")
+    @PutMapping(value = "/{id}/withdraw", produces = "application/json")//done
     @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<RideDTO> cancelRide(@PathVariable Integer id){
         Ride ride = rideService.getRideById(id.longValue());

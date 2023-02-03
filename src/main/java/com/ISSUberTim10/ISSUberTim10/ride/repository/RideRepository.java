@@ -26,17 +26,17 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     //ArrayList<Ride> findAllByStartTimeGreaterThanEqualOrEndTimeLessThanEqual(LocalDateTime minusHours, LocalDateTime plusHours);
 
-    Optional<Ride> findByPassengersContainingAndRideStatusIn(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses);
+    Optional<Ride> findByPassengersContainingAndRideStatusIn(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses); //done
 
-    ArrayList<Ride> findAllByRideStatusIn(ArrayList<Ride.RIDE_STATUS> statuses);
+//    ArrayList<Ride> findAllByRideStatusIn(ArrayList<Ride.RIDE_STATUS> statuses);
 
-    ArrayList<Ride> findAllByRideStatusInAndDriver(ArrayList<Ride.RIDE_STATUS> statuses, Driver driver);
+    ArrayList<Ride> findAllByRideStatusInAndDriver(ArrayList<Ride.RIDE_STATUS> statuses, Driver driver); //done
 
-    ArrayList<Ride> findAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
+    ArrayList<Ride> findAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver); //done
 
-    ArrayList<Ride> findAllByDriver(Driver driver);
+    ArrayList<Ride> findAllByDriver(Driver driver); //done
 
-    ArrayList<Ride> findAllByStartTimeBetweenAndPassengersContaining(LocalDateTime fromDate, LocalDateTime toDate, Passenger passenger);
+    ArrayList<Ride> findAllByStartTimeBetweenAndPassengersContaining(LocalDateTime fromDate, LocalDateTime toDate, Passenger passenger); //done
 
 
 }
