@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -274,5 +275,108 @@ public class RideRepositoryTestEmbedded {
             rideRepository.findByPassengersContainingAndRideStatusIn(passenger, statuses);
         });
     }
+
+
+//    public Optional<List<Ride>> findByPassengersId(Pageable pageable, Long id);
+//    public Optional<List<Ride>> findByDriverAndRideStatus(Driver driver, Ride.RIDE_STATUS rideStatus);
+//    public Optional<Ride> findByPassengersContainingAndRideStatus(Passenger passenger, Ride.RIDE_STATUS rideStatus);
+
+
+    @Test
+    public void shouldFindAllRidesByPassengerIdAndWithoutPageable() {
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        Optional<List<Ride>> rides = rideRepository.findByPassengersId(Pageable.unpaged(), passenger.getId());
+        assertThat(rides.get().size()).isEqualTo(3);
+        for (Ride ride : rides.get()) {
+            Boolean found = false;
+            for (Passenger ridePassenger : ride.getPassengers())
+                if (ridePassenger.getId() == passenger.getId())
+                    found = true;
+            assertThat(found).isEqualTo(true);
+        }
+    }
+
+    @Test
+    public void shouldFindAllRidesByPassengerIdAndWithPageable() {
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        Pageable pageable = PageRequest.of(1, 2, Sort.by("id"));
+        Optional<List<Ride>> rides = rideRepository.findByPassengersId(pageable, passenger.getId());
+        assertThat(rides.get().size()).isEqualTo(1);
+        for (Ride ride : rides.get()) {
+            Boolean found = false;
+            for (Passenger ridePassenger : ride.getPassengers())
+                if (ridePassenger.getId() == passenger.getId())
+                    found = true;
+            assertThat(found).isEqualTo(true);
+        }
+    }
+
+    @Test
+    public void shouldNotFindAnyRidesByPassengerIdAndWithoutPageable() {
+        Passenger passenger = new Passenger();
+        passenger.setId(10L);
+        Optional<List<Ride>> rides = rideRepository.findByPassengersId(Pageable.unpaged(), passenger.getId());
+        assertThat(rides.get().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldFindAllRidesWithGivenDriverAndStatus() {
+        Driver driver = new Driver();
+        driver.setId(2L);
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted);
+        assertThat(rides.get().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldNotFindRidesWithGivenDriverAndStatus() {
+        Driver driver = new Driver();
+        driver.setId(4L);
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
+        assertThat(rides.get().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldNotFindRidesWithInvalidDriver() {
+        Driver driver = null;
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
+        assertThat(rides.get().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldNotFindRidesWithInvalidStatus() {
+        Driver driver = new Driver();
+        driver.setId(2L);
+        Optional<List<Ride>> rides = rideRepository.findByDriverAndRideStatus(driver, null);
+        assertThat(rides.get().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldFindRideWithPassengerAndStatus() {
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+        Optional<Ride> found= rideRepository.findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.active);
+        assertThat(found.isPresent()).isTrue();
+        assertThat(found.get().getId()).isEqualTo(1L);
+    }
+
+    @Test
+    public void shouldNotFindRideWithPassengerAndStatus() {
+        Passenger passenger = new Passenger();
+        passenger.setId(8L);
+        Optional<Ride> found= rideRepository.findByPassengersContainingAndRideStatus(passenger, Ride.RIDE_STATUS.accepted);
+        assertThat(found.isPresent()).isFalse();
+    }
+
+    @Test
+    public void shouldThrowErrorWithInvalidPassenger() {
+        Passenger passenger = null;
+        Exception exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+            rideRepository.findByPassengersContainingAndRideStatus(passenger, null);
+        });
+    }
+
 
 }

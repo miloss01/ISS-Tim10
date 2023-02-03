@@ -170,17 +170,17 @@ insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 2, 2);
 
-insert into driver (id, vehicle_id) values (6, 3);
-insert into driver (id, vehicle_id) values (7, 4);
+insert into driver (id, vehicle_id) values (9, 3);
+insert into driver (id, vehicle_id) values (10, 4);
 
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 6);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 9);
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'accepted', 7);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'accepted', 10);
 
 insert into routes_rides (ride_id, route_id) values (7, 1);
 insert into routes_rides (ride_id, route_id) values (8, 1);
