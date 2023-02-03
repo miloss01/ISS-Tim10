@@ -3,10 +3,15 @@ package com.ISSUberTim10.ISSUberTim10.ride.service;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
+import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.Route;
+import com.ISSUberTim10.ISSUberTim10.ride.repository.CoordinatesRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RideRepository;
+import com.ISSUberTim10.ISSUberTim10.ride.repository.RouteRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.service.impl.RideService;
+import com.beust.ah.A;
 import org.glassfish.jersey.internal.inject.Custom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +39,12 @@ public class RideServiceTest {
 
     @Mock
     private RideRepository rideRepository;
+
+    @Mock
+    private RouteRepository routeRepository;
+
+    @Mock
+    private CoordinatesRepository coordinatesRepository;
     @Autowired
     @InjectMocks
     private RideService rideService;
@@ -409,4 +420,167 @@ public class RideServiceTest {
 
         verify(rideRepository, times(1)).findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.active);
     }
+
+    @Test
+    public void shouldNotAcceptRideNotInPendingStatus() {
+        Throwable thrown = catchThrowable(() -> {
+            rideService.acceptRide(activeRide);
+        });
+
+        assertThat(thrown).isInstanceOf(CustomExceptionWithMessage.class);
+        CustomExceptionWithMessage customException = (CustomExceptionWithMessage) thrown;
+        assertThat(customException.message).isEqualTo("Cannot accept a ride that is not in status PENDING!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void shouldAcceptRideInPendingStatus() {
+        when(rideRepository.save(pendingRide)).thenReturn(pendingRide);
+
+        Ride ride = rideService.acceptRide(pendingRide);
+
+        assertThat(ride.getRideStatus().toString()).isEqualTo(Ride.RIDE_STATUS.accepted.toString());
+
+    }
+
+    @Test
+    public void shouldSaveRideRequest() {
+        Ride newRideRequest = getDummyRide();
+
+        Coordinates departureCoordinates = new Coordinates();
+        departureCoordinates.setId(1L);
+        departureCoordinates.setLatitude(14);
+        departureCoordinates.setLongitude(15);
+        departureCoordinates.setAddress("Some address");
+
+        Coordinates destinationCoordinates = new Coordinates();
+        destinationCoordinates.setId(1L);
+        destinationCoordinates.setLatitude(14);
+        destinationCoordinates.setLongitude(15);
+        destinationCoordinates.setAddress("Some address");
+
+        Route route = new Route();
+        route.setDestinationCoordinates(destinationCoordinates);
+        route.setDepartureCoordinates(departureCoordinates);
+
+        ArrayList<Route> routes = new ArrayList<>();
+        routes.add(route);
+        newRideRequest.setRoutes(routes);
+
+        when(rideRepository.save(newRideRequest)).thenReturn(newRideRequest);
+        when(coordinatesRepository.save(departureCoordinates)).thenReturn(departureCoordinates);
+        when(coordinatesRepository.save(destinationCoordinates)).thenReturn(destinationCoordinates);
+        when(routeRepository.save(route)).thenReturn(route);
+
+        rideService.save(newRideRequest);
+
+        assertThat(newRideRequest.getRoutes()).contains(route);
+
+    }
+
+    @Test
+    public void shouldNotWithdrawRideNotInStatusPendingOrAccepted() {
+        Throwable thrown = catchThrowable(() -> {
+            rideService.withdrawRide(activeRide);
+        });
+
+        assertThat(thrown).isInstanceOf(CustomExceptionWithMessage.class);
+        CustomExceptionWithMessage customException = (CustomExceptionWithMessage) thrown;
+        assertThat(customException.message).isEqualTo("Cannot cancel a ride that is not in status PENDING or STARTED!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void shouldWithdrawRideIfStatusPendingOrAccepted() {
+        when(rideRepository.save(pendingRide)).thenReturn(pendingRide);
+        when(rideRepository.save(acceptedRide)).thenReturn(acceptedRide);
+
+        Ride withdrawnPending = rideService.withdrawRide(pendingRide);
+        Ride withdrawnAccepted = rideService.withdrawRide(acceptedRide);
+
+        assertThat(withdrawnPending.getRideStatus().toString()).isEqualTo(Ride.RIDE_STATUS.rejected.toString());
+        assertThat(withdrawnAccepted.getRideStatus().toString()).isEqualTo(Ride.RIDE_STATUS.rejected.toString());
+
+    }
+
+    @Test
+    public void shouldNotStartRideNotInAcceptedStatus() {
+        Throwable thrown = catchThrowable(() -> {
+            rideService.startRide(pendingRide);
+        });
+
+        assertThat(thrown).isInstanceOf(CustomExceptionWithMessage.class);
+        CustomExceptionWithMessage customException = (CustomExceptionWithMessage) thrown;
+        assertThat(customException.message).isEqualTo("Cannot start a ride that is not in status ACCEPTED!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void shouldStartRideInAcceptedStatus() {
+        when(rideRepository.save(acceptedRide)).thenReturn(acceptedRide);
+
+        Ride ride = rideService.startRide(acceptedRide);
+
+        assertThat(ride.getRideStatus().toString()).isEqualTo(Ride.RIDE_STATUS.active.toString());
+
+    }
+
+    @Test
+    public void shouldGetDriverEarliestAcceptedRide() {
+        Ride earliestAcceptedRide = getDummyRide();
+        earliestAcceptedRide.setRideStatus(Ride.RIDE_STATUS.accepted);
+        earliestAcceptedRide.setStartTime(LocalDateTime.now().plusHours(1));
+
+        Ride secondAcceptedRide = getDummyRide();
+        secondAcceptedRide.setRideStatus(Ride.RIDE_STATUS.accepted);
+        secondAcceptedRide.setStartTime(LocalDateTime.now().plusHours(2));
+
+        Ride thirdAcceptedRide = getDummyRide();
+        thirdAcceptedRide.setRideStatus(Ride.RIDE_STATUS.accepted);
+        thirdAcceptedRide.setStartTime(LocalDateTime.now().plusHours(3));
+
+        Driver driver = new Driver();
+        ArrayList<Ride> rides = new ArrayList<>();
+        rides.add(earliestAcceptedRide);
+        rides.add(secondAcceptedRide);
+        rides.add(thirdAcceptedRide);
+
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted)).thenReturn(Optional.of(rides));
+        Optional<List<Ride>> acceptedRides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted);
+
+        Ride earliestReturned = rideService.getDriverEarliestAcceptedRide(driver);
+
+        assertThat(earliestReturned.getStartTime()).isBeforeOrEqualTo(earliestAcceptedRide.getStartTime());
+
+        for (Ride ride: acceptedRides.get()) {
+            assertThat(earliestAcceptedRide.getStartTime()).isBeforeOrEqualTo(ride.getStartTime());
+        }
+
+    }
+
+    @Test
+    public void shouldNotGetDriverEarliestAcceptedRideForNoAcceptedRides() {
+
+        Driver driver = new Driver();
+        ArrayList<Ride> rides = new ArrayList<>();
+
+        when(rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted)).thenReturn(Optional.of(rides));
+        Optional<List<Ride>> acceptedRides = rideRepository.findByDriverAndRideStatus(driver, Ride.RIDE_STATUS.accepted);
+
+        Throwable thrown = catchThrowable(() -> {
+            rideService.getDriverEarliestAcceptedRide(driver);
+        });
+
+        assertThat(thrown).isInstanceOf(CustomException.class);
+        CustomException customException = (CustomException) thrown;
+        assertThat(customException.message).isEqualTo("Accepted ride does not exist!");
+        assertThat(customException.httpStatus).isEqualTo(HttpStatus.NOT_FOUND);
+
+
+    }
+
+
 }
