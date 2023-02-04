@@ -549,7 +549,6 @@ public class RideServiceTest {
 
     @Test
     public void shouldBookRide() {
-        //napravi normalnog vozaca, koordinate i vehicle ko covek ajde laku noc
         VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
         Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
         makeValidRideRequest(dummyVehicle, false);
@@ -572,7 +571,6 @@ public class RideServiceTest {
 
     @Test
     public void shouldBookRideWithMoreData() {
-        //napravi normalnog vozaca, koordinate i vehicle ko covek ajde laku noc
         VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
         Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
         Vehicle notValidVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, false, true);
@@ -667,7 +665,6 @@ public class RideServiceTest {
     @Test
     public void shouldNotBookRideDriverBlocked() {
         pendingRide.getDriver().setBlockedFlag(true);
-        //napravi normalnog vozaca, koordinate i vehicle ko covek ajde laku noc
         VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
         Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
         makeValidRideRequest(dummyVehicle, false);
@@ -687,7 +684,6 @@ public class RideServiceTest {
 
     @Test
     public void shouldNotBookRideDriverTired() {
-        //napravi normalnog vozaca, koordinate i vehicle ko covek ajde laku noc
         VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
         Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
         makeValidRideRequest(dummyVehicle, false);
