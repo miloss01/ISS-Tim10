@@ -3,29 +3,26 @@ package com.ISSUberTim10.ISSUberTim10.ride.controller;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.LoginDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.TokenResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.exceptions.ErrorMessage;
+import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.RideCreationDTO;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -36,9 +33,15 @@ public class RideControllerTest {
     private String passToken = "";
     private String driverToken = "";
     private String adminToken = "";
+    private String passHasOnePendingToken = "";
+
+    private String passHasNoRidesToken = "";
     private HttpHeaders passHeader = new HttpHeaders();
     private HttpHeaders driverHeader = new HttpHeaders();
     private HttpHeaders adminHeader = new HttpHeaders();
+    private HttpHeaders passHasOnePendingHeader = new HttpHeaders();
+    private HttpHeaders passHasNoRidesHeader = new HttpHeaders();
+
     private String unauthorizedResponse = "Unauthorized!\r\n";
     private String accessDeniedResponse = "Access denied!\r\n";
 
@@ -51,22 +54,32 @@ public class RideControllerTest {
         LoginDTO passCred = new LoginDTO("nana@DEsi.com", "333");
         LoginDTO driverCred = new LoginDTO("boki@DEsi.com", "333");
         LoginDTO adminCred = new LoginDTO("dmina@gmail.com", "333");
+        LoginDTO passHasOnePendingCred = new LoginDTO("testHasOnePending@DEsi.com", "333");
+        LoginDTO passHasNoRidesCred = new LoginDTO("testHasNoRidesPassenger@DEsi.com", "333");
 
         HttpEntity<LoginDTO> passEntity = new HttpEntity<>(passCred);
         HttpEntity<LoginDTO> driverEntity = new HttpEntity<>(driverCred);
         HttpEntity<LoginDTO> adminEntity = new HttpEntity<>(adminCred);
+        HttpEntity<LoginDTO> passHasOnePendingEntity = new HttpEntity<>(passHasOnePendingCred);
+        HttpEntity<LoginDTO> passHasNoRidesEntity = new HttpEntity<>(passHasNoRidesCred);
 
         ResponseEntity<TokenResponseDTO> passResult = restTemplate.postForEntity(loginUrl, passEntity, TokenResponseDTO.class);
         ResponseEntity<TokenResponseDTO> driverResult = restTemplate.postForEntity(loginUrl, driverEntity, TokenResponseDTO.class);
         ResponseEntity<TokenResponseDTO> adminResult = restTemplate.postForEntity(loginUrl, adminEntity, TokenResponseDTO.class);
+        ResponseEntity<TokenResponseDTO> passHasOnePendingResult = restTemplate.postForEntity(loginUrl, passHasOnePendingEntity, TokenResponseDTO.class);
+        ResponseEntity<TokenResponseDTO> passHasNoRidesResult = restTemplate.postForEntity(loginUrl, passHasNoRidesEntity, TokenResponseDTO.class);
 
         passToken = passResult.getBody().getAccessToken();
         driverToken = driverResult.getBody().getAccessToken();
         adminToken = adminResult.getBody().getAccessToken();
+        passHasOnePendingToken = passHasOnePendingResult.getBody().getAccessToken();
+        passHasNoRidesToken = passHasNoRidesResult.getBody().getAccessToken();
 
         passHeader.set("Authorization", "Bearer " + passToken);
         driverHeader.set("Authorization", "Bearer " + driverToken);
         adminHeader.set("Authorization", "Bearer " + adminToken);
+        passHasOnePendingHeader.set("Authorization", "Bearer " + passHasOnePendingToken);
+        passHasNoRidesHeader.set("Authorization", "Bearer " + passHasNoRidesToken);
     }
 
     @BeforeAll
@@ -605,20 +618,18 @@ public class RideControllerTest {
         assertThat(errorMessage.getMessage()).isEqualTo("Cannot cancel a ride that is not in status PENDING or STARTED!");
     }
 
-//    @Test // pada iz nekog debilnog razloga, ne kontam kako da sredim
-//    public void shouldReturnUnauthorizedBecauseNoTokenForWithdrawRide() {
-//        ResponseEntity<String> responseEntity = restTemplate.exchange(
-//                prefix + "/1/withdraw",
-//                HttpMethod.PUT,
-//                null,
-//                String.class
-//        );
-//
-//        String text = responseEntity.getBody();
-//
-//        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-//        assertThat(text).isEqualTo(unauthorizedResponse);
-//    }
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForWithdrawRide() {
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                prefix + "/1/withdraw",
+                HttpMethod.PUT,
+                null,
+                Void.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
 
     @Test
     public void shouldNotWithdrawBecauseAccessDenied() {
@@ -633,6 +644,162 @@ public class RideControllerTest {
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    @Test
+    public void shouldNotAddRideBecausePassengerAlreadyInRide() {
+        RideCreationDTO rideCreationDTO = this.createRideCreationDTOWithPassengerAlreadyInRide();
+
+        ResponseEntity<ErrorMessage> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasOnePendingHeader),
+                ErrorMessage.class
+        );
+
+        ErrorMessage errorMessage = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(errorMessage.getMessage()).isEqualTo("Cannot create a ride while you have one already pending!");
+    }
+
+    @Test
+    public void shouldAddRide() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+
+        ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                RideDTO.class
+        );
+
+        RideDTO rideDTO = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldNotAddRideBecauseNoVehiclesAvailable() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.setVehicleType(Vehicle.VEHICLE_TYPE.van.toString());
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForAddingRide() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, null),
+                Void.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldReturnAccessDeniedBecauseProvidedDriverTokenForAddingRide() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, driverHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    private RideCreationDTO createValidRideCreationDTO() {
+        Coordinates departureCoordinates = new Coordinates();
+        departureCoordinates.setId(1L);
+        departureCoordinates.setLatitude(14);
+        departureCoordinates.setLongitude(15);
+        departureCoordinates.setAddress("Some address");
+
+        Coordinates destinationCoordinates = new Coordinates();
+        destinationCoordinates.setId(1L);
+        destinationCoordinates.setLatitude(14);
+        destinationCoordinates.setLongitude(15);
+        destinationCoordinates.setAddress("Some address");
+
+        ArrayList<DepartureDestinationLocationsDTO> locationDTOS = new ArrayList<>();
+        DepartureDestinationLocationsDTO ddDTO = new DepartureDestinationLocationsDTO();
+        ddDTO.setDeparture(new LocationDTO(departureCoordinates));
+        ddDTO.setDestination(new LocationDTO(destinationCoordinates));
+        locationDTOS.add(ddDTO);
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(12L);
+        userDTO.setEmail("testHasNoRides@DEsi.com");
+        ArrayList<UserDTO> passengers = new ArrayList<>();
+        passengers.add(userDTO);
+
+        RideCreationDTO rideCreationDTO = new RideCreationDTO();
+        rideCreationDTO.setLocations(locationDTOS);
+        rideCreationDTO.setPassengers(passengers);
+        rideCreationDTO.setVehicleType("standard");
+        rideCreationDTO.setBabyTransport(false);
+        rideCreationDTO.setPetTransport(false);
+        rideCreationDTO.setDistance(10.0);
+        rideCreationDTO.setPrice(100.0);
+        rideCreationDTO.setStartTime(LocalDateTime.now().plusMinutes(10).toString());
+
+        return rideCreationDTO;
+    }
+
+    private RideCreationDTO createRideCreationDTOWithPassengerAlreadyInRide() {
+        Coordinates departureCoordinates = new Coordinates();
+        departureCoordinates.setId(1L);
+        departureCoordinates.setLatitude(14);
+        departureCoordinates.setLongitude(15);
+        departureCoordinates.setAddress("Some address");
+
+        Coordinates destinationCoordinates = new Coordinates();
+        destinationCoordinates.setId(1L);
+        destinationCoordinates.setLatitude(14);
+        destinationCoordinates.setLongitude(15);
+        destinationCoordinates.setAddress("Some address");
+
+        ArrayList<DepartureDestinationLocationsDTO> locationDTOS = new ArrayList<>();
+        DepartureDestinationLocationsDTO ddDTO = new DepartureDestinationLocationsDTO();
+        ddDTO.setDeparture(new LocationDTO(departureCoordinates));
+        ddDTO.setDestination(new LocationDTO(destinationCoordinates));
+        locationDTOS.add(ddDTO);
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(11L);
+        userDTO.setEmail("testHasOnePending@DEsi.com");
+        ArrayList<UserDTO> passengers = new ArrayList<>();
+        passengers.add(userDTO);
+
+        RideCreationDTO rideCreationDTO = new RideCreationDTO();
+        rideCreationDTO.setLocations(locationDTOS);
+        rideCreationDTO.setPassengers(passengers);
+        rideCreationDTO.setVehicleType("standard");
+        rideCreationDTO.setBabyTransport(false);
+        rideCreationDTO.setPetTransport(false);
+        rideCreationDTO.setDistance(10.0);
+        rideCreationDTO.setPrice(100.0);
+
+        return rideCreationDTO;
     }
 
 }
