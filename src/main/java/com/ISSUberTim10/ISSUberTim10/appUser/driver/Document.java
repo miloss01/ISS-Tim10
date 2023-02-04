@@ -22,6 +22,7 @@ public class Document {
 
     private String title;
 
+    @Lob
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)

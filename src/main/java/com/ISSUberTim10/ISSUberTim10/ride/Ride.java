@@ -1,11 +1,18 @@
 package com.ISSUberTim10.ISSUberTim10.ride;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.VehicleType;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.RideCreationDTO;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @NoArgsConstructor
@@ -39,11 +46,10 @@ public class Ride {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "passengers_rides",
             joinColumns = @JoinColumn(name = "ride_id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id"))
+            inverseJoinColumns = @JoinColumn(name = "passenger_id")
+    )
     private Collection<Passenger> passengers;
 
-//    route - Mapiranje TODO
-//    private Route route;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "routes_rides",
             joinColumns = @JoinColumn(name = "ride_id"),
@@ -70,6 +76,36 @@ public class Ride {
     @ToString.Exclude
     private Rejection rejection;
 
+    public Ride(RideCreationDTO rideCreation) {
+        ArrayList<Passenger> passengers = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
+        for (UserDTO userResponseDTO: rideCreation.getPassengers()) {
+            if (!names.contains(userResponseDTO.getEmail())) {
+                names.add(userResponseDTO.getEmail());
+                passengers.add(new Passenger(userResponseDTO));
+            }
+        }
+        ArrayList<Route> routes = new ArrayList<>();
+        for(DepartureDestinationLocationsDTO routeDto: rideCreation.getLocations()){
+            routes.add(new Route(routeDto, rideCreation.getDistance()));
+        }
+        this.passengers = passengers;
+        this.routes = routes;
+        try {
+            this.startTime = LocalDateTime.parse(rideCreation.getStartTime().replace('T', ' '), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        } catch (Exception ex) {this.startTime = LocalDateTime.now();}
+        this.petsFlag = rideCreation.isPetTransport();
+        this.babyFlag = rideCreation.isBabyTransport();
+        Driver dummy = new Driver();
+        Vehicle dummyVehicle = new Vehicle();
+        dummyVehicle.setVehicleType(new VehicleType(0L, Vehicle.VEHICLE_TYPE.valueOf(rideCreation.getVehicleType()), 0));
+        dummy.setVehicle(dummyVehicle);
+        this.driver = dummy;
+        this.estimatedTimeMinutes = rideCreation.getEstimatedTimeMinutes();
+        this.endTime = this.getStartTime().plusMinutes(this.estimatedTimeMinutes);
+        this.price = rideCreation.getPrice();
+    }
+
 //    @Enumerated
 //    @Column(name = "vehicle_type")
 //    private Vehicle.VEHICLE_TYPE vehicleType;
@@ -84,7 +120,7 @@ public class Ride {
     }
 
     public String getVehicleType() {
-        return this.getDriver().getVehicle().getVehicleType().toString();
+        return this.getDriver().getVehicle().getVehicleType().getName().toString();
     }
 
     public boolean isBabyTransport() {

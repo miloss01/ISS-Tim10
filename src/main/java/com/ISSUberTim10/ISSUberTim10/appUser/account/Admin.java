@@ -13,22 +13,6 @@ import javax.persistence.*;
 @ToString
 @Entity
 @Table(name = "admin")
-public class Admin {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    private String username;
-
-    private String password;
-
-    private String name;
-
-    @Column(name = "last_name")
-    private String lastName;
-
-    @Column(name = "profile_image")
-    private String profileImage;
-
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Admin extends AppUser {
 }

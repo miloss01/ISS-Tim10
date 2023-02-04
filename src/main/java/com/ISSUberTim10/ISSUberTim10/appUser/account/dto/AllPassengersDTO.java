@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @AllArgsConstructor
@@ -12,7 +13,7 @@ import java.util.List;
 public class AllPassengersDTO {
 
     private int totalCount;
-
+    @Valid
     private List<PassengerResponseDTO> results;
 
 }

@@ -1,8 +1,10 @@
 package com.ISSUberTim10.ISSUberTim10.ride.dto;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
 import com.ISSUberTim10.ISSUberTim10.helper.StringFormatting;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
+import com.ISSUberTim10.ISSUberTim10.ride.Route;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.format.DateTimeFormatterBuilder;
@@ -13,6 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.Valid;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,32 +24,45 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class RideDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+    @Valid
     private ArrayList<DepartureDestinationLocationsDTO> locations;
     private String startTime;
     private String endTime;
     private int totalCost;
+    @Valid
     private UserDTO driver;
+    @Valid
     private ArrayList<UserDTO> passengers;
     private int estimatedTimeInMinutes;
     private String vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
+    @JsonInclude(JsonInclude.Include. NON_NULL)
+    private String scheduleTime;
 
     @JsonInclude(JsonInclude.Include. NON_NULL)
     private String status;
 
+    @Valid
     private RejectionDTO rejection;
 
+    @JsonInclude(JsonInclude.Include. NON_NULL)
+    private Double distance;
 
-    public RideDTO(Ride ride) { //TODO sredi ovo sa listama molim te
+    public RideDTO(Ride ride) {
         ArrayList<DepartureDestinationLocationsDTO> locations = new ArrayList<>();
+        for (Route route: ride.getRoutes()) {
+            locations.add(new DepartureDestinationLocationsDTO(route));
+        }
         ArrayList<UserDTO> passengers = new ArrayList<>();
-        locations.add(new DepartureDestinationLocationsDTO(new LocationDTO("Strazilovska 19, Novi Sad", 45.2501342, 19.8480507), new LocationDTO("Fruskogorska 5, Novi Sad", 45.2523302, 19.7586626)));
-        passengers.add(new UserDTO(1L, ""));
+        for (Passenger passenger: ride.getPassengers()) {
+            passengers.add(new UserDTO(passenger));
+        }
         this.id = ride.getId();
         this.locations = locations;
-        this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatter);
-        this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatter);
+        this.startTime = ride.getStartTime().format(StringFormatting.dateTimeFormatterWithSeconds);
+        this.scheduleTime = ride.getStartTime().format(StringFormatting.dateTimeFormatterWithSeconds);
+        this.endTime = ride.getEndTime().format(StringFormatting.dateTimeFormatterWithSeconds);
         this.totalCost = (int) ride.getPrice();
         this.driver = new UserDTO(ride.getDriver());
         this.passengers = passengers;
@@ -54,6 +71,8 @@ public class RideDTO {
         this.babyTransport = ride.isBabyTransport();
         this.petTransport = ride.isPetTransport();
         this.status = ride.getRideStatus().toString();
+        ArrayList<Route> routes = new ArrayList<>(ride.getRoutes());
+        this.distance = routes.get(0).getMileage();
         if (ride.getRejection() != null) this.rejection = new RejectionDTO(ride.getRejection());
     }
 }

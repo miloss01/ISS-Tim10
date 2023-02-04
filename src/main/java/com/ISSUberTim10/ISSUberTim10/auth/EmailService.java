@@ -18,11 +18,11 @@ public class EmailService {
     @Value("${postmark.sender}")
     private String sender;
 
-    public void sendEmail(String receiver, String text) {
+    public void sendEmail(String receiver, String subject, String text) {
 
         ApiClient client = Postmark.getApiClient(this.key);
 
-        Message message = new Message(this.sender, receiver, "Passenger account activation", text);
+        Message message = new Message(this.sender, receiver, subject, text);
 
         try {
             MessageResponse response = client.deliverMessage(message);

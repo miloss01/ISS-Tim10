@@ -1,13 +1,12 @@
 package com.ISSUberTim10.ISSUberTim10.ride;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
+import lombok.*;
 
 import javax.persistence.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -25,5 +24,13 @@ public class Coordinates {
 
     @Column
     private String address;
+
+    public Coordinates(LocationDTO locationDTO) {
+        this(null, locationDTO.getLatitude(), locationDTO.getLongitude(), locationDTO.getAddress());
+    }
+
+    public Coordinates(LocationDTO locationDTO, Long id) {
+        this(id, locationDTO.getLatitude(), locationDTO.getLongitude(), locationDTO.getAddress());
+    }
 
 }
