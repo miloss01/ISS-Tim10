@@ -72,8 +72,6 @@ public class RideController {
     @PostMapping(consumes = "application/json", produces = "application/json")
     @PreAuthorize(value = "hasRole('DRIVER') or hasRole('PASSENGER')")
     ResponseEntity<RideDTO> addRide(@Valid @RequestBody RideCreationDTO rideCreation){
-        System.out.println("Usao u zakazivanje");
-        System.out.println(rideCreation.getDistance());
         Ride newRideRequest = new Ride(rideCreation);
 
         // throws 404 if passenger already in active ride
