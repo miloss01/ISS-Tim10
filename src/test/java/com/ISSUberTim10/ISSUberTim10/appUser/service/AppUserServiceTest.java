@@ -1,9 +1,10 @@
-package com.ISSUberTim10.ISSUberTim10.spring.service;
+package com.ISSUberTim10.ISSUberTim10.appUser.service;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.AppUserRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.service.impl.AppUserService;
+import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -36,7 +36,7 @@ public class AppUserServiceTest {
 
         Mockito.when(appUserRepository.findById(123L)).thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, () -> appUserService.blockUser(123));
+        assertThrows(CustomException.class, () -> appUserService.blockUser(123));
 
         verify(appUserRepository, times(1)).findById(123L);
     }

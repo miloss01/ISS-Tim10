@@ -1,4 +1,4 @@
-package com.ISSUberTim10.ISSUberTim10.spring.repository;
+package com.ISSUberTim10.ISSUberTim10.appUser.repository;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.AppUserRepository;
