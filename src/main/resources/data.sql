@@ -203,7 +203,19 @@ insert into routes_rides (ride_id, route_id) values (9, 1);
 insert into routes_rides (ride_id, route_id) values (10, 1);
 insert into routes_rides (ride_id, route_id) values (11, 1);
 
-insert into passengers_rides (passenger_id, ride_id) values (11, 11);
-insert into passengers_rides (passenger_id, ride_id) values (12, 10);
-insert into passengers_rides (passenger_id, ride_id) values (12, 9);
+insert into passengers_rides (passenger_id, ride_id) values (11, 9);
+insert into passengers_rides (passenger_id, ride_id) values (12, 11);
 
+
+insert into location (latitude, longitude, address)
+values (45.2366791, 19.8160032, 'Mornarska 2, Novi Sad');
+insert into location (latitude, longitude, address)
+values (45.2471018, 19.8328788, 'Gogoljeva 32, Novi Sad');
+
+insert into departure_destination (departure_id, destination_id)
+values (1, 2);
+
+insert into favorite_locations (favorite_name, maker_id, vehicle_type_id, baby_transport, pet_transport)
+values ('home-work', 12, 1, 0, 0);
+insert into favorite_locations (favorite_name, maker_id, vehicle_type_id, baby_transport, pet_transport)
+values ('salas', 12, 1, 0, 0);

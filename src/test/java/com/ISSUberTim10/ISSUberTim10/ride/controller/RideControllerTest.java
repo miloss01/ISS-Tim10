@@ -1,13 +1,17 @@
 package com.ISSUberTim10.ISSUberTim10.ride.controller;
 
+import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.LoginDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.TokenResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserDTO;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.dto.UserResponseDTO;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.exceptions.ErrorMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
+import com.ISSUberTim10.ISSUberTim10.ride.FavoriteLocation;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
+import com.beust.ah.A;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -20,6 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -950,7 +955,7 @@ public class RideControllerTest {
     }
 
     @Test
-    public void shouldNotCancelBecauseAccessDenied() {
+    public void shouldNotCancelRideBecauseAccessDenied() {
         String reasonForCancelling = "Here is the reason.";
         ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
         ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -967,7 +972,7 @@ public class RideControllerTest {
     }
 
     @Test
-    public void shouldNotCancelBecauseNullReason() {
+    public void shouldNotCancelRideBecauseNullReason() {
         ReasonDTO reasonDTO = new ReasonDTO();
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 prefix + "/9/cancel",
@@ -983,7 +988,7 @@ public class RideControllerTest {
     }
 
     @Test
-    public void shouldNotCancelBecauseReasonLongerThan250Characters() {
+    public void shouldNotCancelRideBecauseReasonLongerThan250Characters() {
         ReasonDTO reasonDTO = new ReasonDTO();
         reasonDTO.setReason("ResponseEntity<String> responseEntity = restTemplate.exchange(\n" +
                 "                new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),\n" +
@@ -1002,7 +1007,258 @@ public class RideControllerTest {
 
     }
 
-    
+    @Test
+    public void shouldSaveFavoriteLocation() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ResponseEntity<FavoriteLocationResponseDTO> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO, passHeader),
+                FavoriteLocationResponseDTO.class
+        );
+
+        FavoriteLocationResponseDTO responseDTO = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        assertThat(responseDTO.getFavoriteName()).isEqualTo(requestDTO.getFavoriteName());
+        assertThat(responseDTO.getVehicleType()).isEqualTo(requestDTO.getVehicleType());
+        assertThat(responseDTO.getLocations().get(0).getDeparture().getAddress()).isEqualTo(requestDTO.getLocations().get(0).getDeparture().getAddress());
+        assertThat(responseDTO.getLocations().get(0).getDeparture().getLongitude()).isEqualTo(requestDTO.getLocations().get(0).getDeparture().getLongitude());
+        assertThat(responseDTO.getLocations().get(0).getDeparture().getLatitude()).isEqualTo(requestDTO.getLocations().get(0).getDeparture().getLatitude());
+        assertThat(responseDTO.getLocations().get(0).getDestination().getAddress()).isEqualTo(requestDTO.getLocations().get(0).getDestination().getAddress());
+        assertThat(responseDTO.getLocations().get(0).getDestination().getLongitude()).isEqualTo(requestDTO.getLocations().get(0).getDestination().getLongitude());
+        assertThat(responseDTO.getLocations().get(0).getDestination().getLatitude()).isEqualTo(requestDTO.getLocations().get(0).getDestination().getLatitude());
+        assertThat(responseDTO.getPassengers().get(0).getEmail()).isEqualTo("nana@DEsi.com");
+    }
+
+    @Test
+    public void shouldNotSaveFavoriteLocationBecauseNullName() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        requestDTO.setFavoriteName(null);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO, passHeader),
+                String.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (favorite name) is required!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotSaveFavoriteLocationBecauseNameLongerThan40Characters() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        requestDTO.setFavoriteName("nullnullnullnullnullnullnullnullnullnullnull");
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO, passHeader),
+                String.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (favorite name) cannot be longer than 40 characters!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotSaveFavoriteLocationBecauseNullLocations() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        requestDTO.setLocations(null);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO, passHeader),
+                String.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (locations) is required!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+    @Test
+    public void shouldNotSaveFavoriteLocationBecauseInvalidVehicleType() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        requestDTO.setVehicleType("This is not a valid vehicle type string");
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO, passHeader),
+                String.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (vehicle type) has incorrect value!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotSaveFavoriteLocationBecauseAnyOfPassengersDoesNotExist() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ArrayList<UserResponseDTO> passengers = (ArrayList<UserResponseDTO>) requestDTO.getPassengers();
+        passengers.add(new UserResponseDTO(150L, "nonexistent@email.com"));
+        requestDTO.setPassengers(passengers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO, passHeader),
+                String.class
+        );
+
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(text).isEqualTo("Passenger does not exist!");
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForSaveFavoriteLocation() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO),
+                Void.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldNotSaveFavoriteLocationBecauseAccessDenied() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.POST,
+                new HttpEntity<>(requestDTO, driverHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    @Test
+    public void shouldGetFavoriteLocations() {
+        ResponseEntity<List> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.GET,
+                new HttpEntity<>(passHasNoRidesHeader),
+                List.class
+        );
+
+        List<FavoriteLocationResponseDTO> responseDTO = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseDTO.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForGetFavoriteLocations() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.GET,
+                new HttpEntity<>(requestDTO),
+                Void.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldNotGetFavoriteLocationsBecauseAccessDenied() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites",
+                HttpMethod.GET,
+                new HttpEntity<>(requestDTO, driverHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    @Test
+    public void shouldDeleteFavoriteLocation() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites/1",
+                HttpMethod.DELETE,
+                new HttpEntity<>(passHasNoRidesHeader),
+                String.class
+        );
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    public void shouldNotDeleteFavoriteLocationBecauseItDoesNotExist() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites/1123",
+                HttpMethod.DELETE,
+                new HttpEntity<>(passHasNoRidesHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(text).isEqualTo("Favorite location does not exist!");
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForDeleteFavoriteLocations() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                prefix + "/favorites/1",
+                HttpMethod.DELETE,
+                new HttpEntity<>(requestDTO),
+                Void.class
+        );
+
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldNotDeleteFavoriteLocationsBecauseAccessDenied() {
+        FavoriteLocationRequestDTO requestDTO = createValidFavoriteLocationRequestDTO();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/favorites/1",
+                HttpMethod.DELETE,
+                new HttpEntity<>(requestDTO, driverHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+
     private RideCreationDTO createValidRideCreationDTO() {
         Coordinates departureCoordinates = new Coordinates();
         departureCoordinates.setId(1L);
@@ -1078,5 +1334,18 @@ public class RideControllerTest {
         return rideCreationDTO;
     }
 
+    private FavoriteLocationRequestDTO createValidFavoriteLocationRequestDTO() {
+        RideCreationDTO rideCreationDTO = createValidRideCreationDTO();
+        FavoriteLocationRequestDTO requestDTO = new FavoriteLocationRequestDTO();
+        requestDTO.setFavoriteName("Home - work");
+        requestDTO.setLocations(rideCreationDTO.getLocations());
+        ArrayList<UserResponseDTO> passengers = new ArrayList<>();
+        passengers.add(new UserResponseDTO(1L, "nana@DEsi.com"));
+        requestDTO.setPassengers(passengers);
+        requestDTO.setVehicleType("standard");
+        requestDTO.setBabyTransport(true);
+        requestDTO.setPetTransport(false);
+        return requestDTO;
+    }
 
 }
