@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class ReasonDTO {
     @NotBlank(message = "Field (reason) is required!")
-    @Size(max = 500, message = "Field (reason) cannot be longer than 500 characters!")
+    @Size(max = 250, message = "Field (reason) cannot be longer than 250 characters!")
     private String reason;
 
 

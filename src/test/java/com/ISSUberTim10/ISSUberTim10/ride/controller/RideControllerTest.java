@@ -7,10 +7,7 @@ import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
 import com.ISSUberTim10.ISSUberTim10.exceptions.ErrorMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
-import com.ISSUberTim10.ISSUberTim10.ride.dto.DepartureDestinationLocationsDTO;
-import com.ISSUberTim10.ISSUberTim10.ride.dto.LocationDTO;
-import com.ISSUberTim10.ISSUberTim10.ride.dto.RideCreationDTO;
-import com.ISSUberTim10.ISSUberTim10.ride.dto.RideDTO;
+import com.ISSUberTim10.ISSUberTim10.ride.dto.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -34,14 +31,17 @@ public class RideControllerTest {
     private String driverToken = "";
     private String adminToken = "";
     private String passHasOnePendingToken = "";
-
     private String passHasNoRidesToken = "";
+
+    private String driverHasOneAcceptedToken = "";
+    private String driverHasOnePendingToken = "";
     private HttpHeaders passHeader = new HttpHeaders();
     private HttpHeaders driverHeader = new HttpHeaders();
     private HttpHeaders adminHeader = new HttpHeaders();
     private HttpHeaders passHasOnePendingHeader = new HttpHeaders();
     private HttpHeaders passHasNoRidesHeader = new HttpHeaders();
-
+    private HttpHeaders driverHasOneAcceptedHeader = new HttpHeaders();
+    private HttpHeaders driverHasOnePendingHeader = new HttpHeaders();
     private String unauthorizedResponse = "Unauthorized!\r\n";
     private String accessDeniedResponse = "Access denied!\r\n";
 
@@ -56,30 +56,40 @@ public class RideControllerTest {
         LoginDTO adminCred = new LoginDTO("dmina@gmail.com", "333");
         LoginDTO passHasOnePendingCred = new LoginDTO("testHasOnePending@DEsi.com", "333");
         LoginDTO passHasNoRidesCred = new LoginDTO("testHasNoRidesPassenger@DEsi.com", "333");
+        LoginDTO driverHasOneAcceptedCred = new LoginDTO("testCancel@DEsi.com", "333");
+        LoginDTO driverHasOnePendingCred = new LoginDTO("testExecute@DEsi.com", "333");
 
         HttpEntity<LoginDTO> passEntity = new HttpEntity<>(passCred);
         HttpEntity<LoginDTO> driverEntity = new HttpEntity<>(driverCred);
         HttpEntity<LoginDTO> adminEntity = new HttpEntity<>(adminCred);
         HttpEntity<LoginDTO> passHasOnePendingEntity = new HttpEntity<>(passHasOnePendingCred);
         HttpEntity<LoginDTO> passHasNoRidesEntity = new HttpEntity<>(passHasNoRidesCred);
+        HttpEntity<LoginDTO> driverHasOneAcceptedEntity = new HttpEntity<>(driverHasOneAcceptedCred);
+        HttpEntity<LoginDTO> driverHasOnePendingEntity = new HttpEntity<>(driverHasOnePendingCred);
 
         ResponseEntity<TokenResponseDTO> passResult = restTemplate.postForEntity(loginUrl, passEntity, TokenResponseDTO.class);
         ResponseEntity<TokenResponseDTO> driverResult = restTemplate.postForEntity(loginUrl, driverEntity, TokenResponseDTO.class);
         ResponseEntity<TokenResponseDTO> adminResult = restTemplate.postForEntity(loginUrl, adminEntity, TokenResponseDTO.class);
         ResponseEntity<TokenResponseDTO> passHasOnePendingResult = restTemplate.postForEntity(loginUrl, passHasOnePendingEntity, TokenResponseDTO.class);
         ResponseEntity<TokenResponseDTO> passHasNoRidesResult = restTemplate.postForEntity(loginUrl, passHasNoRidesEntity, TokenResponseDTO.class);
+        ResponseEntity<TokenResponseDTO> driverHasOneAcceptedResult = restTemplate.postForEntity(loginUrl, driverHasOneAcceptedEntity, TokenResponseDTO.class);
+        ResponseEntity<TokenResponseDTO> driverHasOnePendingResult = restTemplate.postForEntity(loginUrl, driverHasOnePendingEntity, TokenResponseDTO.class);
 
         passToken = passResult.getBody().getAccessToken();
         driverToken = driverResult.getBody().getAccessToken();
         adminToken = adminResult.getBody().getAccessToken();
         passHasOnePendingToken = passHasOnePendingResult.getBody().getAccessToken();
         passHasNoRidesToken = passHasNoRidesResult.getBody().getAccessToken();
+        driverHasOneAcceptedToken = driverHasOneAcceptedResult.getBody().getAccessToken();
+        driverHasOnePendingToken = driverHasOnePendingResult.getBody().getAccessToken();
 
         passHeader.set("Authorization", "Bearer " + passToken);
         driverHeader.set("Authorization", "Bearer " + driverToken);
         adminHeader.set("Authorization", "Bearer " + adminToken);
         passHasOnePendingHeader.set("Authorization", "Bearer " + passHasOnePendingToken);
         passHasNoRidesHeader.set("Authorization", "Bearer " + passHasNoRidesToken);
+        driverHasOneAcceptedHeader.set("Authorization", "Bearer " + driverHasOneAcceptedToken);
+        driverHasOnePendingHeader.set("Authorization", "Bearer " + driverHasOnePendingToken);
     }
 
     @BeforeAll
@@ -664,7 +674,135 @@ public class RideControllerTest {
     }
 
     @Test
-    public void shouldAddRide() {
+    public void shouldNotAddRideBecauseNullLocations() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.setLocations(null);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (locations) is required!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotAddRideBecauseInvalidLongitudeCoordinateBiggerThan180() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.getLocations().get(0).getDeparture().setLongitude(250.0);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (longitude) cannot be bigger than 180!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotAddRideBecauseInvalidLongitudeCoordinateSmallerThanMinus180() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.getLocations().get(0).getDeparture().setLongitude(-250.0);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (longitude) cannot be smaller than -180!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotAddRideBecauseNullPassengers() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.setPassengers(null);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (passengers) is required!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotAddRideBecausePassengerWithNullId() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.getPassengers().get(0).setId(null);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (id) is required!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotAddRideBecausePassengerWithInvalidEmail() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.getPassengers().get(0).setEmail("nullnullnullnullnullnullnullsdfsdfsdfsfnullnullnullnullnullnullnull@llnull.com");
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (email) does not have valid format.\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotAddRideBecauseInvalidVehicleType() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.setVehicleType("non existent vehicle type");
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (vehicle type) has incorrect value!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldNotAddRideBecauseNullVehicleType() {
+        RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
+        rideCreationDTO.setVehicleType(null);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix,
+                HttpMethod.POST,
+                new HttpEntity<>(rideCreationDTO, passHasNoRidesHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (vehicleType) is required!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldAddRideWithAllValidParameters() {
         RideCreationDTO rideCreationDTO = this.createValidRideCreationDTO();
 
         ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
@@ -727,6 +865,144 @@ public class RideControllerTest {
         assertThat(text).isEqualTo(accessDeniedResponse);
     }
 
+    @Test
+    public void shouldCancelPendingRide() {
+        String reasonForCancelling = "Here is the reason.";
+        ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
+        ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
+                prefix + "/9/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, driverHasOnePendingHeader),
+                RideDTO.class
+        );
+
+        RideDTO rideDTO = responseEntity.getBody();
+
+        assertThat(rideDTO.getId()).isEqualTo(9L);
+        assertThat(rideDTO.getStatus()).isEqualTo(Ride.RIDE_STATUS.rejected.toString());
+    }
+
+    @Test
+    public void shouldCancelAcceptedRide() {
+        String reasonForCancelling = "Here is the reason.";
+        ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
+        ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
+                prefix + "/10/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),
+                RideDTO.class
+        );
+
+        RideDTO rideDTO = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        assertThat(rideDTO.getId()).isEqualTo(10L);
+        assertThat(rideDTO.getStatus()).isEqualTo(Ride.RIDE_STATUS.rejected.toString());
+    }
+
+    @Test
+    public void shouldNotCancelRideBecauseRideDoesNotExist() {
+        String reasonForCancelling = "Here is the reason.";
+        ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/100/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(text).isEqualTo("Ride does not exist!");
+    }
+
+    @Test
+    public void shouldNotCancelRideBecauseRideIsNotPendingOrAccepted() {
+        String reasonForCancelling = "Here is the reason.";
+        ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
+        ResponseEntity<ErrorMessage> responseEntity = restTemplate.exchange(
+                prefix + "/11/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),
+                ErrorMessage.class
+        );
+
+        ErrorMessage errorMessage = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(errorMessage.getMessage()).isEqualTo("Cannot cancel a ride that is not in status PENDING or ACCEPTED!");
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForCancelRide() {
+        String reasonForCancelling = "Here is the reason.";
+        ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                prefix + "/9/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, null),
+                Void.class
+        );
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldNotCancelBecauseAccessDenied() {
+        String reasonForCancelling = "Here is the reason.";
+        ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/9/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, passHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    @Test
+    public void shouldNotCancelBecauseNullReason() {
+        ReasonDTO reasonDTO = new ReasonDTO();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/9/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (reason) is required!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void shouldNotCancelBecauseReasonLongerThan250Characters() {
+        ReasonDTO reasonDTO = new ReasonDTO();
+        reasonDTO.setReason("ResponseEntity<String> responseEntity = restTemplate.exchange(\n" +
+                "                new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),\n" +
+                "        String errorMessage = responseEntity.getBody();\n" +
+                "        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);\nResponseEntity<String> responseEntity = restTemplate.exchang");
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/9/cancel",
+                HttpMethod.PUT,
+                new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),
+                String.class
+        );
+
+        String errorMessage = responseEntity.getBody();
+        assertThat(errorMessage).isEqualTo("Field (reason) cannot be longer than 250 characters!\n");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    
     private RideCreationDTO createValidRideCreationDTO() {
         Coordinates departureCoordinates = new Coordinates();
         departureCoordinates.setId(1L);
@@ -801,5 +1077,6 @@ public class RideControllerTest {
 
         return rideCreationDTO;
     }
+
 
 }

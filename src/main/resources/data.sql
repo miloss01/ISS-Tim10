@@ -194,9 +194,16 @@ insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'accepted', 10);
 
+insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
+panic_flag, pets_flag, price, ride_status, driver_id) values
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 10);
 
-insert into routes_rides (ride_id, route_id) values (7, 1);
-insert into routes_rides (ride_id, route_id) values (8, 1);
 
-insert into passengers_rides (passenger_id, ride_id) values (11, 9);
-insert into passengers_rides (passenger_id, ride_id) values (12, 8);
+insert into routes_rides (ride_id, route_id) values (9, 1);
+insert into routes_rides (ride_id, route_id) values (10, 1);
+insert into routes_rides (ride_id, route_id) values (11, 1);
+
+insert into passengers_rides (passenger_id, ride_id) values (11, 11);
+insert into passengers_rides (passenger_id, ride_id) values (12, 10);
+insert into passengers_rides (passenger_id, ride_id) values (12, 9);
+
