@@ -72,8 +72,6 @@ public class RideController {
     @PostMapping(consumes = "application/json", produces = "application/json")
     @PreAuthorize(value = "hasRole('PASSENGER')")
     ResponseEntity<RideDTO> addRide(@Valid @RequestBody RideCreationDTO rideCreation){
-        System.out.println("Usao u zakazivanje");
-        System.out.println(rideCreation.getDistance());
         Ride newRideRequest = new Ride(rideCreation);
 
         // throws 404 if passenger already in active ride
@@ -202,7 +200,7 @@ public class RideController {
         return new ResponseEntity<>(rideDTO, HttpStatus.OK);
 }
 
-    @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json")
+    @PutMapping(value = "/{id}/panic", consumes = "application/json", produces = "application/json") //done
     @PreAuthorize(value = "hasRole('PASSENGER') or hasRole('DRIVER')")
     ResponseEntity<PanicExpandedDTO> addPanic(@PathVariable Integer id,@Valid @RequestBody ReasonDTO panicReason){
         Ride ride = rideService.getRideById(id.longValue());
@@ -219,7 +217,7 @@ public class RideController {
         return new ResponseEntity<>(new PanicExpandedDTO(panic), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/start", produces = "application/json")
+    @PutMapping(value = "/{id}/start", produces = "application/json") //done
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> startRide(@PathVariable Integer id){
@@ -233,7 +231,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/accept", produces = "application/json")
+    @PutMapping(value = "/{id}/accept", produces = "application/json") //done
     //@PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> acceptRide(@PathVariable Integer id){
@@ -249,7 +247,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDTO(ride), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/end", produces = "application/json")
+    @PutMapping(value = "/{id}/end", produces = "application/json") //done
 //    @PreAuthorize(value = "hasRole('DRIVER') and @userSecurity.hasUserId(authentication, #driverId, 'Ride')")
     @PreAuthorize(value = "hasRole('DRIVER')")
     ResponseEntity<RideDTO> endRide(@PathVariable Integer id){
@@ -379,7 +377,7 @@ public class RideController {
         return new ResponseEntity<>("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(value = "/getAllRides", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getAllRides", produces = MediaType.APPLICATION_JSON_VALUE) //tvoje
     public ResponseEntity<RideResponseDTO> getAllRides(Pageable page,
                                                        @RequestParam(required = false) String from,
                                                        @RequestParam(required = false) String to) {

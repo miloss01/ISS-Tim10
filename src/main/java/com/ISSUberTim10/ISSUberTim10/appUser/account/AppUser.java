@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import static javax.persistence.InheritanceType.JOINED;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString

@@ -1,13 +1,22 @@
 package com.ISSUberTim10.ISSUberTim10.ride.service;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.Passenger;
+import com.ISSUberTim10.ISSUberTim10.appUser.account.repository.PassengerRepository;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.Driver;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.Vehicle;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.VehicleType;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.WorkingTime;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleRepository;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.VehicleTypeRepository;
+import com.ISSUberTim10.ISSUberTim10.appUser.driver.repository.WorkingTimeRepository;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomException;
 import com.ISSUberTim10.ISSUberTim10.exceptions.CustomExceptionWithMessage;
 import com.ISSUberTim10.ISSUberTim10.ride.Coordinates;
 import com.ISSUberTim10.ISSUberTim10.ride.Ride;
 import com.ISSUberTim10.ISSUberTim10.ride.Route;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.CoordinatesRepository;
+import com.ISSUberTim10.ISSUberTim10.ride.Rejection;
+import com.ISSUberTim10.ISSUberTim10.ride.repository.RejectionRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RideRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.repository.RouteRepository;
 import com.ISSUberTim10.ISSUberTim10.ride.service.impl.RideService;
@@ -21,17 +30,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +53,16 @@ public class RideServiceTest {
 
     @Mock
     private CoordinatesRepository coordinatesRepository;
+    @Mock
+    private RejectionRepository rejectionRepository;
+    @Mock
+    private PassengerRepository passengerRepository;
+    @Mock
+    private WorkingTimeRepository workingTimeRepository;
+    @Mock
+    private VehicleRepository vehicleRepository;
+    @Mock
+    private VehicleTypeRepository vehicleTypeRepository;
     @Autowired
     @InjectMocks
     private RideService rideService;
@@ -53,6 +71,10 @@ public class RideServiceTest {
     private Ride acceptedRide = null;
     private Ride activeRide = null;
     private Ride finishedRide = null;
+    private Ride rejectedRide = null;
+    private final String REJECTION_REASON = "I have to go";
+    private ArrayList<Ride.RIDE_STATUS> statuses = new ArrayList<>();
+
 
     private Ride getDummyRide() {
         Passenger passenger = new Passenger();
@@ -85,6 +107,14 @@ public class RideServiceTest {
         finishedRide = getDummyRide();
         finishedRide.setId(4L);
         finishedRide.setRideStatus(Ride.RIDE_STATUS.finished);
+
+        rejectedRide = getDummyRide();
+        rejectedRide.setId(4L);
+        rejectedRide.setRideStatus(Ride.RIDE_STATUS.rejected);
+
+        statuses.add(Ride.RIDE_STATUS.active);
+        statuses.add(Ride.RIDE_STATUS.accepted);
+        statuses.add(Ride.RIDE_STATUS.pending);
     }
 
     @Test
@@ -245,13 +275,12 @@ public class RideServiceTest {
         acceptedRide.setPassengers(Arrays.asList(passenger));
         List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
         Page page = new PageImpl(mocks);
-        when(rideRepository.findAllByPassengersContaining(Pageable.unpaged(), passenger)).thenReturn(page);
 
         List<Ride> rides = rideService.getByPassenger(Pageable.unpaged(), passenger);
         for (Ride ride : rides)
             assertThat(ride.getPassengers()).contains(passenger);
 
-        verify(rideRepository, times(1)).findAllByPassengersContaining(Pageable.unpaged(), passenger);
+        verify(rideRepository, times(1)).findByPassengersId(Pageable.unpaged(), passenger.getId());
 
     }
 
@@ -261,13 +290,12 @@ public class RideServiceTest {
         passenger.setId(10L);
         List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
         Page page = new PageImpl(mocks);
-        when(rideRepository.findAllByPassengersContaining(Pageable.unpaged(), passenger)).thenReturn(page);
 
         List<Ride> rides = rideService.getByPassenger(Pageable.unpaged(), passenger);
         for (Ride ride : rides)
             assertThat(ride.getPassengers()).doesNotContain(passenger);
 
-        verify(rideRepository, times(1)).findAllByPassengersContaining(Pageable.unpaged(), passenger);
+        verify(rideRepository, times(1)).findByPassengersId(Pageable.unpaged(), passenger.getId());
 
     }
 
@@ -280,13 +308,12 @@ public class RideServiceTest {
         List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
         Page page = new PageImpl(mocks);
         Pageable pageable = PageRequest.of(1, 1, Sort.by("id"));
-        when(rideRepository.findAllByPassengersContaining(pageable, passenger)).thenReturn(page);
 
         List<Ride> rides = rideService.getByPassenger(pageable, passenger);
         for (Ride ride : rides)
             assertThat(ride.getPassengers()).contains(passenger);
 
-        verify(rideRepository, times(1)).findAllByPassengersContaining(pageable, passenger);
+        verify(rideRepository, times(1)).findByPassengersId(pageable, passenger.getId());
 
     }
 
@@ -297,13 +324,12 @@ public class RideServiceTest {
         List<Ride> mocks = Arrays.asList(pendingRide, acceptedRide);
         Page page = new PageImpl(mocks);
         Pageable pageable = PageRequest.of(1, 1, Sort.by("id"));
-        when(rideRepository.findAllByPassengersContaining(pageable, passenger)).thenReturn(page);
 
         List<Ride> rides = rideService.getByPassenger(pageable, passenger);
         for (Ride ride : rides)
             assertThat(ride.getPassengers()).doesNotContain(passenger);
 
-        verify(rideRepository, times(1)).findAllByPassengersContaining(pageable, passenger);
+        verify(rideRepository, times(1)).findByPassengersId(pageable, passenger.getId());
 
     }
 
@@ -582,5 +608,282 @@ public class RideServiceTest {
 
     }
 
+    @Test
+    public void shouldEndRide() {
+        when(rideRepository.save(any(Ride.class))).thenAnswer(invocation ->
+                invocation.getArgument(0, Ride.class));
+        Ride ride = rideService.endRide(activeRide);
+        verify(rideRepository, times(1)).save(ride);
+        assertThat(ride.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.finished);
+        assertThat(ride.getEndTime()).isEqualTo(activeRide.getEndTime());
+        assertThat(ride.getStartTime()).isEqualTo(activeRide.getStartTime());
+    }
 
+    @Test
+    public void shouldThrowExceptionPendingEndRide() {
+        Exception exception = assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.endRide(pendingRide);
+        });
+        verify(rideRepository, never()).save(any(Ride.class));
+        assertThat(pendingRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.pending);
+//        assertThat(exception.getMessage()).isEqualTo("Cannot end a ride that is not in status ACTIVE!");
+    }
+
+    @Test
+    public void shouldThrowExceptionFinishedEndRide() {
+        Exception exception = assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.endRide(finishedRide);
+        });
+        verify(rideRepository, never()).save(any(Ride.class));
+        assertThat(finishedRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.finished);
+//        assertThat(exception.getMessage()).isEqualTo("Cannot end a ride that is not in status ACTIVE!");
+    }
+
+    @Test
+    public void shouldThrowExceptionAcceptedEndRide() {
+        Exception exception = assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.endRide(acceptedRide);
+        });
+        verify(rideRepository, never()).save(any(Ride.class));
+        assertThat(acceptedRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.accepted);
+//        assertThat(exception.getMessage()).isEqualTo("Cannot end a ride that is not in status ACTIVE!");
+    }
+
+    @Test
+    public void shouldThrowExceptionRejectedEndRide() {
+        Exception exception = assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.endRide(rejectedRide);
+        });
+        verify(rideRepository, never()).save(any(Ride.class));
+        assertThat(rejectedRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.rejected);
+//        assertThat(exception.getMessage()).isEqualTo("Cannot end a ride that is not in status ACTIVE!");
+    }
+
+    @Test
+    public void shouldCancelPendingRideWithExplanation() { //pending, accepted happy flow
+        when(rideRepository.save(any(Ride.class))).thenAnswer(invocation ->
+                invocation.getArgument(0, Ride.class));
+        Ride ride = rideService.cancelRideWithExplanation(pendingRide, REJECTION_REASON);
+        verify(rideRepository, times(1)).save(ride);
+        verify(rejectionRepository, times(1)).save(ride.getRejection());
+        assertThat(ride.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.rejected);
+        assertThat(ride.getRejection().getReason()).isEqualTo(REJECTION_REASON);
+    }
+
+    @Test
+    public void shouldCancelAcceptedRideWithExplanation() { //pending, accepted happy flow
+        when(rideRepository.save(any(Ride.class))).thenAnswer(invocation ->
+                invocation.getArgument(0, Ride.class));
+        Ride ride = rideService.cancelRideWithExplanation(acceptedRide, REJECTION_REASON);
+        verify(rideRepository, times(1)).save(ride);
+        verify(rejectionRepository, times(1)).save(ride.getRejection());
+        assertThat(ride.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.rejected);
+        assertThat(ride.getRejection().getReason()).isEqualTo(REJECTION_REASON);
+    }
+
+    @Test
+    public void shouldThrowExceptionCancelFinishedRideWithExplanation() {
+        Exception exception = assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.cancelRideWithExplanation(finishedRide, REJECTION_REASON);
+        });
+        verify(rideRepository, never()).save(any(Ride.class));
+        verify(rejectionRepository, never()).save(any(Rejection.class));
+        assertThat(finishedRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.finished);
+//        assertThat(exception.getMessage()).isEqualTo("Cannot end a ride that is not in status ACTIVE!");
+    }
+
+    @Test
+    public void shouldThrowExceptionCancelActiveRideWithExplanation() {
+        Exception exception = assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.cancelRideWithExplanation(activeRide, REJECTION_REASON);
+        });
+        verify(rideRepository, never()).save(any(Ride.class));
+        verify(rejectionRepository, never()).save(any(Rejection.class));
+        assertThat(activeRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.active);
+//        assertThat(exception.getMessage()).isEqualTo("Caption.getMessage()).isEqualTo("Cannot end a ride that is not in status ACTIVE!");
+    }
+
+    @Test
+    public void shouldThrowExceptionCancelRejectedRideWithExplanation() {
+        Exception exception = assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.cancelRideWithExplanation(rejectedRide, REJECTION_REASON);
+        });
+        verify(rideRepository, never()).save(any(Ride.class));
+        verify(rejectionRepository, never()).save(any(Rejection.class));
+        assertThat(rejectedRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.rejected);
+    }
+
+    @Test
+    public void shouldBookRide() {
+        VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
+        Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
+        makeValidRideRequest(dummyVehicle, false);
+        ArrayList<Vehicle> vehicles = new ArrayList<>();
+        vehicles.add(dummyVehicle);
+        when(vehicleTypeRepository.getByName(dummyVehicle.getVehicleType().getName())).thenReturn(vehicleType);
+        when(vehicleRepository.findByVehicleType(vehicleType)).thenReturn(vehicles);
+        boolean result = rideService.isBookableRide(pendingRide);
+        verify(vehicleTypeRepository, times(2)).getByName(dummyVehicle.getVehicleType().getName());
+        verify(vehicleRepository, times(1)).findByVehicleType(vehicleType);
+        verify(passengerRepository, times(pendingRide.getPassengers().size())).findByEmail(anyString());
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        verify(rideRepository, times(1)).findAllByRideStatusInAndDriver(eq(statuses), any(Driver.class));
+        verify(workingTimeRepository, times(1)).findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class));
+        assertThat(result).isTrue();
+        assertThat(pendingRide.getRejection()).isNotNull();
+        assertThat(pendingRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.pending);
+        assertThat(pendingRide.getDriver().getId()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldBookRideWithMoreData() {
+        VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
+        Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
+        Vehicle notValidVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, false, true);
+        Driver secondDriver = new Driver();
+        secondDriver.setId(4L);
+        //////////////////
+        secondDriver.setActiveFlag(true);
+        /////////////
+        Vehicle anotherValidVehicle = new Vehicle(1L, secondDriver, "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
+        makeValidRideRequest(dummyVehicle, true);
+        ArrayList<Vehicle> vehicles = new ArrayList<>();
+        vehicles.add(dummyVehicle);
+        vehicles.add(notValidVehicle);
+        vehicles.add(anotherValidVehicle);
+        Passenger passenger = new Passenger();
+        passenger.setId(0L);
+        Passenger passenger2 = new Passenger();
+        passenger2.setId(1L);
+        pendingRide.setPassengers(Arrays.asList(passenger, passenger2));
+        ArrayList<Ride> rides = new ArrayList<>();
+        rides.add(pendingRide);
+        when(vehicleTypeRepository.getByName(dummyVehicle.getVehicleType().getName())).thenReturn(vehicleType);
+        when(vehicleRepository.findByVehicleType(vehicleType)).thenReturn(vehicles);
+        when(rideRepository.findAllByRideStatusInAndDriver(statuses, pendingRide.getDriver())).thenReturn(rides);
+        boolean result = rideService.isBookableRide(pendingRide);
+        verify(vehicleTypeRepository, times(2)).getByName(dummyVehicle.getVehicleType().getName());
+        verify(vehicleRepository, times(1)).findByVehicleType(vehicleType);
+        verify(passengerRepository, times(pendingRide.getPassengers().size())).findByEmail(anyString());
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        verify(rideRepository, times(2)).findAllByRideStatusInAndDriver(eq(statuses), any(Driver.class));
+        verify(workingTimeRepository, times(1)).findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class));
+        assertThat(result).isTrue();
+        assertThat(pendingRide.getRejection()).isNotNull();
+        assertThat(pendingRide.getRideStatus()).isEqualTo(Ride.RIDE_STATUS.pending);
+        assertThat(pendingRide.getDriver().getId()).isEqualTo(4);
+    }
+
+    @Test
+    public void shouldNotBookRidePassengerHasPending() {
+        VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
+        Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
+        makeValidRideRequest(dummyVehicle, false);
+        doReturn(Optional.of(activeRide)).when(rideRepository).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        assertThrows(CustomExceptionWithMessage.class, () -> {
+            rideService.isBookableRide(pendingRide);
+        });
+        verify(vehicleTypeRepository, never()).getByName(dummyVehicle.getVehicleType().getName());
+        verify(vehicleRepository, never()).findByVehicleType(vehicleType);
+        verify(passengerRepository, never()).findByEmail(anyString());
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        verify(rideRepository, never()).findAllByRideStatusInAndDriver(eq(statuses), any(Driver.class));
+        verify(workingTimeRepository, never()).findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class));
+    }
+
+    @Test
+    public void shouldNotBookRideNoVehicles() {
+        VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
+        Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
+        makeValidRideRequest(dummyVehicle, false);
+        ArrayList<Vehicle> vehicles = new ArrayList<>();
+        when(vehicleTypeRepository.getByName(dummyVehicle.getVehicleType().getName())).thenReturn(vehicleType);
+        when(vehicleRepository.findByVehicleType(vehicleType)).thenReturn(vehicles);
+        boolean result = rideService.isBookableRide(pendingRide);
+        verify(vehicleTypeRepository, times(1)).getByName(dummyVehicle.getVehicleType().getName());
+        verify(vehicleRepository, times(1)).findByVehicleType(vehicleType);
+        verify(passengerRepository, never()).findByEmail(anyString());
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        verify(rideRepository, never()).findAllByRideStatusInAndDriver(eq(statuses), any(Driver.class));
+        verify(workingTimeRepository, never()).findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void shouldNotBookRideNoAppropriate() {
+        VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
+        Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, false, false);
+        makeValidRideRequest(dummyVehicle, true);
+        ArrayList<Vehicle> vehicles = new ArrayList<>();
+        vehicles.add(dummyVehicle);
+        when(vehicleTypeRepository.getByName(dummyVehicle.getVehicleType().getName())).thenReturn(vehicleType);
+        when(vehicleRepository.findByVehicleType(vehicleType)).thenReturn(vehicles);
+        boolean result = rideService.isBookableRide(pendingRide);
+        verify(vehicleTypeRepository, times(1)).getByName(dummyVehicle.getVehicleType().getName());
+        verify(vehicleRepository, times(1)).findByVehicleType(vehicleType);
+        verify(passengerRepository, never()).findByEmail(anyString());
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        verify(rideRepository, never()).findAllByRideStatusInAndDriver(eq(statuses), any(Driver.class));
+        verify(workingTimeRepository, never()).findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void shouldNotBookRideDriverBlocked() {
+        pendingRide.getDriver().setBlockedFlag(true);
+        VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
+        Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
+        makeValidRideRequest(dummyVehicle, false);
+        ArrayList<Vehicle> vehicles = new ArrayList<>();
+        vehicles.add(dummyVehicle);
+        when(vehicleTypeRepository.getByName(dummyVehicle.getVehicleType().getName())).thenReturn(vehicleType);
+        when(vehicleRepository.findByVehicleType(vehicleType)).thenReturn(vehicles);
+        boolean result = rideService.isBookableRide(pendingRide);
+        verify(vehicleTypeRepository, times(1)).getByName(dummyVehicle.getVehicleType().getName());
+        verify(vehicleRepository, times(1)).findByVehicleType(vehicleType);
+        verify(passengerRepository, never()).findByEmail(anyString());
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        verify(rideRepository, times(1)).findAllByRideStatusInAndDriver(eq(statuses), any(Driver.class));
+        verify(workingTimeRepository, times(1)).findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void shouldNotBookRideDriverTired() {
+        VehicleType vehicleType = new VehicleType(0L, Vehicle.VEHICLE_TYPE.standard, 0);
+        Vehicle dummyVehicle = new Vehicle(1L, pendingRide.getDriver(), "model", "plate", 5, new Coordinates(1L, 10.0, 10.0, "adres"), vehicleType, true, true);
+        makeValidRideRequest(dummyVehicle, false);
+        ArrayList<Vehicle> vehicles = new ArrayList<>();
+        vehicles.add(dummyVehicle);
+        ArrayList<WorkingTime> workingTimes = new ArrayList<>();
+        workingTimes.add(new WorkingTime(1L, LocalDateTime.now().minusHours(8), LocalDateTime.now(), pendingRide.getDriver()));
+        workingTimes.add(new WorkingTime(1L, LocalDateTime.now().minusMinutes(1), null, pendingRide.getDriver()));
+        when(vehicleTypeRepository.getByName(dummyVehicle.getVehicleType().getName())).thenReturn(vehicleType);
+        when(vehicleRepository.findByVehicleType(vehicleType)).thenReturn(vehicles);
+        when(workingTimeRepository.findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class))).thenReturn(workingTimes);
+        boolean result = rideService.isBookableRide(pendingRide);
+        verify(vehicleTypeRepository, times(1)).getByName(dummyVehicle.getVehicleType().getName());
+        verify(vehicleRepository, times(1)).findByVehicleType(vehicleType);
+        verify(passengerRepository, never()).findByEmail(anyString());
+        verify(rideRepository, times(1)).findByPassengersContainingAndRideStatusIn(any(Passenger.class), eq(statuses));
+        verify(rideRepository, times(1)).findAllByRideStatusInAndDriver(eq(statuses), any(Driver.class));
+        verify(workingTimeRepository, times(1)).findByDriverAndStartTimeGreaterThanEqual(eq(pendingRide.getDriver()), any(LocalDateTime.class));
+        assertThat(result).isFalse();
+    }
+
+    private void makeValidRideRequest(Vehicle dummyVehicle, boolean flagsWanted) {
+        pendingRide.getDriver().setActiveFlag(true);
+        pendingRide.getDriver().setId(2L);
+        pendingRide.getDriver().setVehicle(dummyVehicle);
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        pendingRide.setBabyFlag(flagsWanted);
+        pendingRide.setPetsFlag(flagsWanted);
+        pendingRide.setPassengers(Arrays.asList(passenger));
+        pendingRide.setEstimatedTimeMinutes(15);
+        pendingRide.setPrice(1500);
+        ArrayList<Route> routes = new ArrayList<>();
+        routes.add(new Route(1L, new Coordinates(), new Coordinates(), 10.0, 1, null));
+        pendingRide.setRoutes(routes);
+    }
 }

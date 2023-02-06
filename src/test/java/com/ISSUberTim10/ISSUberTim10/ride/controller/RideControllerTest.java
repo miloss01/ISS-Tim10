@@ -892,7 +892,7 @@ public class RideControllerTest {
         String reasonForCancelling = "Here is the reason.";
         ReasonDTO reasonDTO = new ReasonDTO(reasonForCancelling);
         ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
-                prefix + "/10/cancel",
+                prefix + "/15/cancel",
                 HttpMethod.PUT,
                 new HttpEntity<>(reasonDTO, driverHasOneAcceptedHeader),
                 RideDTO.class
@@ -902,7 +902,7 @@ public class RideControllerTest {
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(rideDTO.getId()).isEqualTo(10L);
+        assertThat(rideDTO.getId()).isEqualTo(15L);
         assertThat(rideDTO.getStatus()).isEqualTo(Ride.RIDE_STATUS.rejected.toString());
     }
 
@@ -1317,7 +1317,7 @@ public class RideControllerTest {
         locationDTOS.add(ddDTO);
 
         UserDTO userDTO = new UserDTO();
-        userDTO.setId(11L);
+        userDTO.setId(13L);
         userDTO.setEmail("testHasOnePending@DEsi.com");
         ArrayList<UserDTO> passengers = new ArrayList<>();
         passengers.add(userDTO);
@@ -1347,5 +1347,349 @@ public class RideControllerTest {
         requestDTO.setPetTransport(false);
         return requestDTO;
     }
+
+    @Test
+    public void shouldActivatePanicPassenger() {
+        ResponseEntity<PanicExpandedDTO> response = restTemplate.exchange(
+                prefix + "/1/panic",
+                HttpMethod.PUT,
+                new HttpEntity<>(new ReasonDTO("aaaaaaaaaa"), passHeader),
+                PanicExpandedDTO.class
+        );
+        PanicExpandedDTO panicExpandedDTO = response.getBody();
+        assert panicExpandedDTO != null;
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(panicExpandedDTO.getReason()).isEqualTo("aaaaaaaaaa");
+        assertThat(panicExpandedDTO.getRide().getId()).isEqualTo(1);
+        assertThat(panicExpandedDTO.getUser().getId()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldActivatePanicDriver() {
+        ResponseEntity<PanicExpandedDTO> response = restTemplate.exchange(
+                prefix + "/1/panic",
+                HttpMethod.PUT,
+                new HttpEntity<>(new ReasonDTO("aaaaaaaaaa"), driverHeader),
+                PanicExpandedDTO.class
+        );
+        PanicExpandedDTO panicExpandedDTO = response.getBody();
+        assert panicExpandedDTO != null;
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(panicExpandedDTO.getReason()).isEqualTo("aaaaaaaaaa");
+        assertThat(panicExpandedDTO.getRide().getId()).isEqualTo(1);
+        assertThat(panicExpandedDTO.getUser().getId()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldNotActivatePanicNoRideFound() {
+        ResponseEntity<String> response = restTemplate.exchange(
+                prefix + "/1111/panic",
+                HttpMethod.PUT,
+                new HttpEntity<>(new ReasonDTO("aaaaaaaaaa"), driverHeader),
+                String.class
+        );
+        String text = response.getBody();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(text).isEqualTo("Ride does not exist!");
+    }
+
+    @Test
+    public void shouldNotActivatePanicNoRequestBody() {
+        ResponseEntity<String> response = restTemplate.exchange(
+                prefix + "/1/panic",
+                HttpMethod.PUT,
+                new HttpEntity<>(null, adminHeader),
+                String.class
+        );
+        String text = response.getBody();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    @Test
+    public void shouldNotActivatePanicWrongRequestBody() {
+        ResponseEntity<String> response = restTemplate.exchange(
+                prefix + "/1/panic",
+                HttpMethod.PUT,
+                new HttpEntity<>(new ReasonDTO(), adminHeader),
+                String.class
+        );
+        String text = response.getBody();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(text).isEqualTo("Field (reason) is required!\n");
+    }
+
+    @Test
+    public void shouldNotActivatePanicWrongAuthorisation() {
+        ResponseEntity<String> response = restTemplate.exchange(
+                prefix + "/1/panic",
+                HttpMethod.PUT,
+                new HttpEntity<>(new ReasonDTO("aaaaaaaaaa"), adminHeader),
+                String.class
+        );
+        String text = response.getBody();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    @Test
+    public void shouldNotActivatePanicNoAuthorisation() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/1/panic",
+                HttpMethod.PUT,
+                new HttpEntity<>(new ReasonDTO("aaaaaaaaaa"), null),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(text).isEqualTo(unauthorizedResponse);
+    }
+
+    @Test
+    public void shouldAcceptRide() {
+        ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
+                prefix + "/9/accept",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                RideDTO.class
+        );
+        RideDTO rideDTO = responseEntity.getBody();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assert rideDTO != null;
+        assertThat(rideDTO.getStatus()).isEqualTo("accepted");
+    }
+
+    @Test
+    public void shouldNotAcceptRideBecauseRideDoesNotExist() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/100/accept",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(text).isEqualTo("Ride does not exist!");
+    }
+
+    @Test
+    public void shouldNotAcceptRideBecauseRideIsNotAccepted() {
+        ResponseEntity<ErrorMessage> responseEntity = restTemplate.exchange(
+                prefix + "/1/accept",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                ErrorMessage.class
+        );
+
+        ErrorMessage errorMessage = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assert errorMessage != null;
+        assertThat(errorMessage.getMessage()).isEqualTo("Cannot accept a ride that is not in status PENDING!");
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForAcceptRide() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/1/accept",
+                HttpMethod.PUT,
+                null,
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(text).isEqualTo(unauthorizedResponse);
+    }
+
+    @Test
+    public void shouldNotAcceptBecauseAccessDenied() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/1/accept",
+                HttpMethod.PUT,
+                new HttpEntity<>(passHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    @Test
+    public void shouldStartRide() {
+        ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
+                prefix + "/10/start",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                RideDTO.class
+        );
+        RideDTO rideDTO = responseEntity.getBody();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assert rideDTO != null;
+        assertThat(rideDTO.getStatus()).isEqualTo("active");
+    }
+
+    @Test
+    public void shouldNotStartRideBecauseRideDoesNotExist() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/100/start",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(text).isEqualTo("Ride does not exist!");
+    }
+
+    @Test
+    public void shouldNotStartRideBecauseRideIsNotAccepted() {
+        ResponseEntity<ErrorMessage> responseEntity = restTemplate.exchange(
+                prefix + "/1/start",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                ErrorMessage.class
+        );
+
+        ErrorMessage errorMessage = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assert errorMessage != null;
+        assertThat(errorMessage.getMessage()).isEqualTo("Cannot start a ride that is not in status ACCEPTED!");
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForStartRide() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/1/start",
+                HttpMethod.PUT,
+                null,
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(text).isEqualTo(unauthorizedResponse);
+    }
+
+    @Test
+    public void shouldNotStartBecauseAccessDenied() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/1/start",
+                HttpMethod.PUT,
+                new HttpEntity<>(passHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+    @Test
+    public void shouldEndRide() {
+        ResponseEntity<RideDTO> responseEntity = restTemplate.exchange(
+                prefix + "/11/end",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                RideDTO.class
+        );
+        RideDTO rideDTO = responseEntity.getBody();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assert rideDTO != null;
+        assertThat(rideDTO.getStatus()).isEqualTo("finished");
+    }
+
+    @Test
+    public void shouldNotEndRideBecauseRideDoesNotExist() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/100/end",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(text).isEqualTo("Ride does not exist!");
+    }
+
+    @Test
+    public void shouldNotEndRideBecauseRideIsNotAccepted() {
+        ResponseEntity<ErrorMessage> responseEntity = restTemplate.exchange(
+                prefix + "/2/end",
+                HttpMethod.PUT,
+                new HttpEntity<>(driverHeader),
+                ErrorMessage.class
+        );
+
+        ErrorMessage errorMessage = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assert errorMessage != null;
+        assertThat(errorMessage.getMessage()).isEqualTo("Cannot end a ride that is not in status ACTIVE!");
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedBecauseNoTokenForEndRide() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/1/end",
+                HttpMethod.PUT,
+                null,
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(text).isEqualTo(unauthorizedResponse);
+    }
+
+    @Test
+    public void shouldNotEndBecauseAccessDenied() {
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                prefix + "/1/end",
+                HttpMethod.PUT,
+                new HttpEntity<>(passHeader),
+                String.class
+        );
+
+        String text = responseEntity.getBody();
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(text).isEqualTo(accessDeniedResponse);
+    }
+
+//    @Test
+//    public void shouldGetAllRides() {
+//        Map<String, String> params = new HashMap<>();
+//        params.put("from", "11.11.2002. 12:00:00");
+//        params.put("to", "11.11.2040. 12:00:00");
+//        org.springframework.data.domain.Pageable pageable = PageRequest.of(1, 1, Sort.by("id"));
+//        String urlTemplate = UriComponentsBuilder.fromHttpUrl(prefix + "/getAllRides")
+//                .queryParam("from", "11.11.2002. 12:00:00")
+//                .queryParam("to", "11.11.2040. 12:00:00")
+//                .encode()
+//                .toUriString();
+//        ResponseEntity<RideResponseDTO> response = restTemplate.exchange(
+//                prefix + "/getAllRides",
+//                HttpMethod.GET,
+//                new HttpEntity<>(pageable),
+//                RideResponseDTO.class
+//        );
+//        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+//
+//    }
 
 }

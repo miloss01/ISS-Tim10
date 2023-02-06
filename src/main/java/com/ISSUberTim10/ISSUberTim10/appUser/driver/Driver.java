@@ -2,15 +2,13 @@ package com.ISSUberTim10.ISSUberTim10.appUser.driver;
 
 import com.ISSUberTim10.ISSUberTim10.appUser.account.AppUser;
 import com.ISSUberTim10.ISSUberTim10.appUser.driver.dto.DriverDTO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString

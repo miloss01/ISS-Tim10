@@ -309,8 +309,9 @@ public class RideService implements IRideService {
             if (vehicle.getDriver().isActiveFlag() && isDriverCapable(vehicle.getDriver()) && !vehicle.getDriver().isBlockedFlag()) {
                 if (canBookThen(rides, newRideRequest)) return vehicle.getDriver();
                 for (Ride ride : rides) {
-                    long minutesBetween = Math.abs(ChronoUnit.MINUTES.between(ride.getEndTime(), newRideRequest.getStartTime()));
+                    long minutesBetween = Math.abs(ChronoUnit.MINUTES.between(newRideRequest.getStartTime(), ride.getEndTime()));
                     if (minutesBetween < closestTime) {
+                        System.out.println(minutesBetween);
                         closestTime = minutesBetween;
                         closestDriver = vehicle.getDriver();
                     }
@@ -326,8 +327,9 @@ public class RideService implements IRideService {
     private boolean canBookThen(ArrayList<Ride> rides, Ride newRideRequest) {
         for (Ride ride: rides) {
             if((ride.getStartTime().isBefore(newRideRequest.getStartTime()) && newRideRequest.getStartTime().isBefore(ride.getEndTime()))
-            && (ride.getStartTime().isBefore(newRideRequest.getEndTime()) && newRideRequest.getEndTime().isBefore(ride.getEndTime()))
-            && (ride.getStartTime().isBefore(newRideRequest.getStartTime()) && ride.getEndTime().isAfter(newRideRequest.getEndTime())))
+            || (ride.getStartTime().isBefore(newRideRequest.getEndTime()) && newRideRequest.getEndTime().isBefore(ride.getEndTime()))
+            || (ride.getStartTime().isBefore(newRideRequest.getStartTime()) && ride.getEndTime().isAfter(newRideRequest.getEndTime()))
+            || ride.getStartTime().isEqual(newRideRequest.getStartTime()))
                 return false;
         }
         return true;

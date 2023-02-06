@@ -40,7 +40,7 @@ public class RideRepositoryTestEmbedded {
     @Test
     public void shouldFindAllRidesWithoutPageable() {
         Page<Ride> rides = rideRepository.findAll(Pageable.unpaged());
-        assertThat(rides.getContent().size()).isEqualTo(8);
+        assertThat(rides.getContent().size()).isEqualTo(11);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class RideRepositoryTestEmbedded {
     @Test
     public void shouldNotFindAnyRidesWithGivenDriver() {
         Driver driver = new Driver();
-        driver.setId(10L);
+        driver.setId(100L);
         Page<Ride> rides = rideRepository.findAllByDriver(Pageable.unpaged(), driver);
         assertThat(rides.getContent().size()).isEqualTo(0);
     }

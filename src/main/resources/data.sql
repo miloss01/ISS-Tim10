@@ -18,9 +18,9 @@ registration_plate, current_coordinates_id, vehicle_type_id) values
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'nova tojota', 5, 1, '007-sg', 1, 2);
---insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
---registration_plate, current_coordinates_id, vehicle_type_id) values
---(1, 'citroen', 5, 1, '007-ssadg', 2, 1);
+insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+registration_plate, current_coordinates_id, vehicle_type_id) values
+(1, 'citroen', 5, 1, '007-ssadg', 2, 1);
 
 
 
@@ -42,15 +42,22 @@ values (1, 'Bulevar Oslobodjenja', 1, 'driver@DEsi.com', 'Popov', 'Sandra', '$2a
 
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'marija@DEsi.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (1, 'Bulevar Oslobodjenja', 0, 'zakontrolerPutnik@DEsi.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (1, 'Bulevar Oslobodjenja', 0, 'zakontrolerVozac@DEsi.com', 'Popov', 'Sandra', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 2);
 
 
 insert into passenger (id) values (1);
 insert into passenger (id) values (3);
 insert into passenger (id) values (6);
 insert into passenger (id) values (8);
+insert into passenger (id) values (9);
 insert into driver (id, vehicle_id) values (2, 1);
 insert into driver (id, vehicle_id) values (4, 2);
 insert into driver (id, vehicle_id) values (7, 3);
+insert into driver (id, vehicle_id) values (10, 4);
+
 insert into admin (id) values (5);
 
 --insert into admin (last_name, name, password, profile_image, username)
@@ -73,34 +80,39 @@ values (2.3, 1, 1, 2);
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-06-12 07:03:24', '2026-06-12 07:03:24', 15, 1, 0, 100.0, 'active', 2);
+(0, '2026-06-12 07:03:24', '2026-06-12 07:03:24', 15, 1, 0, 100.0, 'active', 2); --withdraw koristi
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 08:03:24', 15, 1, 0, 100.0, 'accepted', 2);
+(0, '2026-04-12 07:03:24', '2026-04-12 08:03:24', 15, 1, 0, 100.0, 'accepted', 2); --koristi
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-05-12 07:03:24', '2026-05-13 07:15:24', 15, 1, 0, 100.0, 'pending', 2);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'accepted', 7);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'accepted', 7); --withdraw koristi
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 7);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 7); --withdraw koristi
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 4);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 4); --koristi
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2024-02-05 07:03:24', 15, 1, 0, 100.0, 'finished', 4);
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2026-07-11 07:03:24', 15, 1, 0, 100.0, 'finished', 4);
---insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
---panic_flag, pets_flag, price, ride_status, driver_id) values
---(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 2);
---insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
---panic_flag, pets_flag, price, ride_status, driver_id) values
---(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 2);
+insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
+panic_flag, pets_flag, price, ride_status, driver_id) values
+(0, '2026-04-12 07:03:24', '2026-07-11 07:03:24', 15, 1, 0, 100.0, 'pending', 10);
+insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
+panic_flag, pets_flag, price, ride_status, driver_id) values
+(0, '2026-04-12 07:03:24', '2026-07-11 07:03:24', 15, 1, 0, 100.0, 'accepted', 10);
+insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
+panic_flag, pets_flag, price, ride_status, driver_id) values
+(0, '2026-04-12 07:03:24', '2026-07-11 07:03:24', 15, 1, 0, 100.0, 'active', 10);
+
+
 
 insert into passengers_rides (passenger_id, ride_id) values (1, 1);
 insert into passengers_rides (passenger_id, ride_id) values (1, 2);
@@ -110,7 +122,9 @@ insert into passengers_rides (passenger_id, ride_id) values (6, 5);
 insert into passengers_rides (passenger_id, ride_id) values (8, 6);
 insert into passengers_rides (passenger_id, ride_id) values (8, 7);
 insert into passengers_rides (passenger_id, ride_id) values (8, 8);
-
+insert into passengers_rides (passenger_id, ride_id) values (9, 9);
+insert into passengers_rides (passenger_id, ride_id) values (9, 10);
+insert into passengers_rides (passenger_id, ride_id) values (9, 11);
 
 insert into routes_rides (ride_id, route_id) values (1, 1);
 insert into routes_rides (ride_id, route_id) values (2, 1);
@@ -120,7 +134,9 @@ insert into routes_rides (ride_id, route_id) values (5, 1);
 insert into routes_rides (ride_id, route_id) values (6, 1);
 insert into routes_rides (ride_id, route_id) values (7, 1);
 insert into routes_rides (ride_id, route_id) values (8, 1);
-
+insert into routes_rides (ride_id, route_id) values (9, 1);
+insert into routes_rides (ride_id, route_id) values (10, 1);
+insert into routes_rides (ride_id, route_id) values (11, 1);
 insert into review (comment, rating, passenger_id, ride_id, for_driver)
 values ('Dobar', 5, 1, 1, 2);
 
@@ -158,53 +174,66 @@ values ('work', 'so hard', 'every night', 'and', 'day', 'csr', 4, 0, 'promena', 
 
 
 
+
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'testExecute@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'testCancel@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'testHasOnePending@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
+
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'testHasNoRidesPassenger@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
+
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'testHasNoRidesDriver@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 
+insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+registration_plate, current_coordinates_id, vehicle_type_id) values
+(1, 'neka tojota nesto', 5, 1, '007-sg', 2, 2);
 
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 2, 2);
-insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
-registration_plate, current_coordinates_id, vehicle_type_id) values
-(1, 'neka tojota nesto', 5, 1, '007-sg', 2, 2);
+
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 2, 1);
 
-insert into driver (id, vehicle_id) values (9, 4);
-insert into driver (id, vehicle_id) values (10, 5);
-insert into driver (id, vehicle_id) values (13, 6);
-insert into passenger (id) values (11);
-insert into passenger (id) values (12);
+insert into driver (id, vehicle_id) values (11, 5);
+insert into driver (id, vehicle_id) values (12, 6);
+insert into driver (id, vehicle_id) values (15, 7);
+
+insert into passenger (id) values (13);
+insert into passenger (id) values (14);
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 9);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 11);
+
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'accepted', 10);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'accepted', 12);
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
-(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 10);
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'finished', 12);
+
+insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
+panic_flag, pets_flag, price, ride_status, driver_id) values
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 11);
 
 
-insert into routes_rides (ride_id, route_id) values (9, 1);
-insert into routes_rides (ride_id, route_id) values (10, 1);
-insert into routes_rides (ride_id, route_id) values (11, 1);
+insert into routes_rides (ride_id, route_id) values (12, 1);
+insert into routes_rides (ride_id, route_id) values (13, 1);
+insert into routes_rides (ride_id, route_id) values (14, 1);
+insert into routes_rides (ride_id, route_id) values (15, 1);
 
-insert into passengers_rides (passenger_id, ride_id) values (11, 9);
-insert into passengers_rides (passenger_id, ride_id) values (12, 11);
+insert into passengers_rides (passenger_id, ride_id) values (13, 12);
+insert into passengers_rides (passenger_id, ride_id) values (14, 14);
 
 
 insert into location (latitude, longitude, address)
@@ -216,6 +245,6 @@ insert into departure_destination (departure_id, destination_id)
 values (1, 2);
 
 insert into favorite_locations (favorite_name, maker_id, vehicle_type_id, baby_transport, pet_transport)
-values ('home-work', 12, 1, 0, 0);
+values ('home-work', 14, 1, 0, 0);
 insert into favorite_locations (favorite_name, maker_id, vehicle_type_id, baby_transport, pet_transport)
-values ('salas', 12, 1, 0, 0);
+values ('salas', 14, 1, 0, 0);

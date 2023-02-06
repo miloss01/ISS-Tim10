@@ -36,12 +36,12 @@ public interface IRideService {
     public Ride getByPassengerAndStatus(Passenger passenger, Ride.RIDE_STATUS status);//done
 
     Ride acceptRide(Ride id);
-    Ride endRide(Ride id);
-    Ride cancelRideWithExplanation(Ride id, String reason);
+    Ride endRide(Ride id); //done
+    Ride cancelRideWithExplanation(Ride id, String reason); //done
 
     boolean isBookableRide(Ride newRideRequest);
 
-    Ride save(Ride newRideRequest);
+    Ride save(Ride newRideRequest); //ne treba pak
 
     Ride withdrawRide(Ride ride);
 
