@@ -31,7 +31,7 @@ import java.util.List;
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RideControllerTest {
 
-    private String prefix = "http://localhost:8081/api/ride";
+    private String prefix = "http://localhost:8080/api/ride";
     private String passToken = "";
     private String driverToken = "";
     private String adminToken = "";
@@ -54,7 +54,7 @@ public class RideControllerTest {
     private TestRestTemplate restTemplate;
 
     private void login() {
-        String loginUrl = "http://localhost:8081/api/user/login";
+        String loginUrl = "http://localhost:8080/api/user/login";
 
         LoginDTO passCred = new LoginDTO("nana@DEsi.com", "333");
         LoginDTO driverCred = new LoginDTO("boki@DEsi.com", "333");
