@@ -190,6 +190,10 @@ values (1, 'Bulevar Oslobodjenja', 0, 'testHasNoRidesPassenger@DEsi.com', 'Petro
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'testHasNoRidesDriver@DEsi.com', 'Petrovic', 'Petar', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
 
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (1, 'Bulevar Oslobodjenja', 0, 'testExecuteSelenium@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
+
+
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 2, 2);
@@ -202,9 +206,15 @@ insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
 (1, 'neka tojota nesto', 5, 1, '007-sg', 2, 1);
 
+insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
+registration_plate, current_coordinates_id, vehicle_type_id) values
+(1, 'neka tojota nesto', 5, 1, '007-sg', 2, 1);
+
 insert into driver (id, vehicle_id) values (11, 5);
 insert into driver (id, vehicle_id) values (12, 6);
 insert into driver (id, vehicle_id) values (15, 7);
+insert into driver (id, vehicle_id) values (16, 8);
+
 
 insert into passenger (id) values (13);
 insert into passenger (id) values (14);
@@ -226,11 +236,17 @@ insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
 (0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 11);
 
+insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
+panic_flag, pets_flag, price, ride_status, driver_id) values
+(0, '2026-04-12 07:03:24', '2026-04-12 07:03:24', 15, 1, 0, 100.0, 'pending', 16);
+
 
 insert into routes_rides (ride_id, route_id) values (12, 1);
 insert into routes_rides (ride_id, route_id) values (13, 1);
 insert into routes_rides (ride_id, route_id) values (14, 1);
 insert into routes_rides (ride_id, route_id) values (15, 1);
+insert into routes_rides (ride_id, route_id) values (16, 1);
+
 
 insert into passengers_rides (passenger_id, ride_id) values (13, 12);
 insert into passengers_rides (passenger_id, ride_id) values (14, 14);
