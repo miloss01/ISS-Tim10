@@ -40,7 +40,7 @@ public class RideRepositoryTestEmbedded {
     @Test
     public void shouldFindAllRidesWithoutPageable() {
         Page<Ride> rides = rideRepository.findAll(Pageable.unpaged());
-        assertThat(rides.getContent().size()).isEqualTo(11);
+        assertThat(rides.getContent().size()).isEqualTo(16);
     }
 
     @Test

@@ -193,6 +193,9 @@ values (1, 'Bulevar Oslobodjenja', 0, 'testHasNoRidesDriver@DEsi.com', 'Petrovic
 insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
 values (1, 'Bulevar Oslobodjenja', 0, 'testExecuteSelenium@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 1);
 
+insert into app_user (active_flag, address, blocked_flag, email, last_name, name, password, phone, profile_image, role)
+values (1, 'Bulevar Oslobodjenja', 0, 'testBookingSelenium@DEsi.com', 'Petrovic', 'Bojan', '$2a$10$IXA3XB8wgTEXkJKIB5OCyOauVHACKU01elKgnVPcRMcXjZ56iZLEC', '0654324', 'https://www.rd.com/wp-content/uploads/2017/09/01-shutterstock_476340928-Irina-Bg.jpg?resize=768,512', 0);
+
 
 insert into vehicle (baby_flag, model, num_of_seats, pets_flag,
 registration_plate, current_coordinates_id, vehicle_type_id) values
@@ -218,6 +221,7 @@ insert into driver (id, vehicle_id) values (16, 8);
 
 insert into passenger (id) values (13);
 insert into passenger (id) values (14);
+insert into passenger (id) values (17);
 
 insert into ride (baby_flag, start_time, end_time, estimated_time_minutes,
 panic_flag, pets_flag, price, ride_status, driver_id) values
