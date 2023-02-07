@@ -19,24 +19,24 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     public Page<Ride> findAll(Pageable pageable);//done
     public Page findAllByDriver(Pageable pageable, Driver driver);//done
     public Page findAllByPassengersContaining(Pageable pageable, Passenger passenger);//done
-    public Optional<List<Ride>> findByPassengersId(Pageable pageable, Long id);
-    public Optional<List<Ride>> findByDriverAndRideStatus(Driver driver, Ride.RIDE_STATUS rideStatus);
-    public Optional<Ride> findByPassengersContainingAndRideStatus(Passenger passenger, Ride.RIDE_STATUS rideStatus);
+    public Optional<List<Ride>> findByPassengersId(Pageable pageable, Long id);//done
+    public Optional<List<Ride>> findByDriverAndRideStatus(Driver driver, Ride.RIDE_STATUS rideStatus);//done
+    public Optional<Ride> findByPassengersContainingAndRideStatus(Passenger passenger, Ride.RIDE_STATUS rideStatus);//done
 
 
     //ArrayList<Ride> findAllByStartTimeGreaterThanEqualOrEndTimeLessThanEqual(LocalDateTime minusHours, LocalDateTime plusHours);
 
-    Optional<Ride> findByPassengersContainingAndRideStatusIn(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses);
+    Optional<Ride> findByPassengersContainingAndRideStatusIn(Passenger passenger, ArrayList<Ride.RIDE_STATUS> statuses); //done
 
-    ArrayList<Ride> findAllByRideStatusIn(ArrayList<Ride.RIDE_STATUS> statuses);
+//    ArrayList<Ride> findAllByRideStatusIn(ArrayList<Ride.RIDE_STATUS> statuses);
 
-    ArrayList<Ride> findAllByRideStatusInAndDriver(ArrayList<Ride.RIDE_STATUS> statuses, Driver driver);
+    ArrayList<Ride> findAllByRideStatusInAndDriver(ArrayList<Ride.RIDE_STATUS> statuses, Driver driver); //done
 
-    ArrayList<Ride> findAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver);
+    ArrayList<Ride> findAllByStartTimeBetweenAndDriver(LocalDateTime fromDate, LocalDateTime toDate, Driver driver); //done
 
-    ArrayList<Ride> findAllByDriver(Driver driver);
+    ArrayList<Ride> findAllByDriver(Driver driver); //done
 
-    ArrayList<Ride> findAllByStartTimeBetweenAndPassengersContaining(LocalDateTime fromDate, LocalDateTime toDate, Passenger passenger);
+    ArrayList<Ride> findAllByStartTimeBetweenAndPassengersContaining(LocalDateTime fromDate, LocalDateTime toDate, Passenger passenger); //done
 
 
 }

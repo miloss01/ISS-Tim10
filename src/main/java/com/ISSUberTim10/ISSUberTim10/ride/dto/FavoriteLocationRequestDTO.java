@@ -25,9 +25,8 @@ import java.util.List;
 @ToString
 public class FavoriteLocationRequestDTO {
 
-    @NotNull(message = "Field (favorite name) is required!")
     @NotEmpty(message = "Field (favorite name) is required!")
-    @Size(max = 40, message = "Field (favorite name) cannot be longer than 100 characters!")
+    @Size(max = 40, message = "Field (favorite name) cannot be longer than 40 characters!")
     private String favoriteName;
 
     @NotNull(message = "Field (locations) is required!")
